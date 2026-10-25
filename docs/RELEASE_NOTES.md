@@ -18,6 +18,8 @@ Linux distribution added: `Atomic Clock Sync-1.8.0-linux-x86_64.AppImage` and `A
 
 Distribution now uses individual platform packages only. Removed the combined Mac/Windows ZIP from 1.8.0 and replaced the bundling command with `npm run checksums` for current-version platform packages.
 
+Added `Atomic Clock Sync-1.8.0-linux-x86_64.rpm` for RPM-based distributions and included RPM in the Linux build and checksum commands. RPM architecture, version, metadata and embedded application payload are verified against the tested Linux application; native Fedora/openSUSE installation and desktop integration remain untested.
+
 ## 1.7.0 — Back in Time
 
 - Added a Hill Valley time laboratory inspired by Back to the Future, with original red, green and amber seven-segment time circuits and a vector flux capacitor.

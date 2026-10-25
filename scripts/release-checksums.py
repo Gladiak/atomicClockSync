@@ -7,7 +7,7 @@ release = root / 'release'
 metadata = json.loads((root / 'package.json').read_text())
 prefix = f"{metadata['build']['productName']}-{metadata['version']}"
 # Only individual current-version platform packages belong in the manifest.
-patterns = ('*-mac.zip', 'windows-*-portable.exe', 'linux-*.AppImage', 'linux-*.deb')
+patterns = ('*-mac.zip', 'windows-*-portable.exe', 'linux-*.AppImage', 'linux-*.deb', 'linux-*.rpm')
 packages = sorted({file for pattern in patterns
                    for file in release.glob(f'{prefix}-{pattern}') if file.is_file()})
 if not packages:
