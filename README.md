@@ -40,7 +40,7 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **1.4.0**. The local `release/` directory contains:
+Current version: **1.4.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
 
 | Package | Contents | Status |
 | --- | --- | --- |
@@ -77,6 +77,8 @@ Choose a palette in **Settings → Theme**. The choice persists across launches 
 Requires **Node.js 22.12 or later** and npm. From a local checkout:
 
 ```sh
+git clone https://github.com/Gladiak/atomicClockSync.git
+cd atomicClockSync
 npm ci
 node node_modules/electron/install.js
 npm start
