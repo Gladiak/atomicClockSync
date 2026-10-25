@@ -116,9 +116,9 @@ app.whenReady().then(async () => {
     await run("document.getElementById('theme-select').value='lime';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
     await run("document.querySelector('[data-page=settings]').click(); document.getElementById('wave-type').value='sine-gated'; document.getElementById('wave-type').dispatchEvent(new Event('change'))");
     await assertFits();
-    assert.match(await run("document.getElementById('profile-hint').textContent"), /Pause a zero/);
+    assert.match(await run("document.getElementById('profile-hint').textContent"), /Fully silent intervals/);
     await run("document.querySelector('[data-page=sync]').click()");
-    assert.match(await run("document.getElementById('wave-label').textContent"), /PAUSE COMPLETE/);
+    assert.match(await run("document.getElementById('wave-label').textContent"), /FULL PAUSES/);
     assert.match(await run("document.getElementById('wave-path').getAttribute('d')"), /62/);
     window.webContents.reload();
     await new Promise(resolve => window.webContents.once('did-finish-load', resolve));
@@ -132,7 +132,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.getElementById('start-button').classList.contains('running')"), true);
     await run("document.getElementById('theme-select').value='lime';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
     await pause(2500);
-    assert.equal(await run("document.getElementById('status-badge').textContent"), 'IN TRASMISSIONE');
+    assert.equal(await run("document.getElementById('status-badge').textContent"), 'TRANSMITTING');
     await run("document.getElementById('start-button').click()");
     await until("!document.getElementById('start-button').disabled");
     await run("localStorage.setItem('atomic.history','[]')");
@@ -190,14 +190,14 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.getElementById('duration').disabled"), true);
     assert.equal(await run("document.getElementById('sync-button').disabled"), true);
     await pause(2500);
-    assert.equal(await run("document.getElementById('status-badge').textContent"), 'IN TRASMISSIONE');
+    assert.equal(await run("document.getElementById('status-badge').textContent"), 'TRANSMITTING');
     await run("document.getElementById('volume').value=20;document.getElementById('volume').dispatchEvent(new Event('input'))");
     assert.equal(await run("document.getElementById('volume-value').textContent"), '20%');
     await capture('desktop-transmitting.png');
     await run("document.getElementById('confirmed-button').click()");
     await until("!document.getElementById('start-button').disabled");
     assert.equal(await run("document.querySelectorAll('.history-row').length"), 1);
-    assert.equal(await run("document.querySelector('.history-status').textContent"), '✓ Ricezione confermata da te');
+    assert.equal(await run("document.querySelector('.history-status').textContent"), '✓ Reception confirmed by you');
     await run("document.getElementById('start-button').click()");
     await until("document.getElementById('start-button').classList.contains('running')");
     await run("window.dispatchEvent(new KeyboardEvent('keydown',{code:'Escape'}))");
@@ -226,11 +226,11 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.documentElement.scrollWidth <= window.innerWidth"), true);
     await capture('desktop-compact.png');
     ipcMain.removeHandler('clock:sync');
-    ipcMain.handle('clock:sync', () => ({ok:false,error:'NTP non disponibile (test offline)'}));
+    ipcMain.handle('clock:sync', () => ({ok:false,error:'NTP unavailable (offline test)'}));
     window.webContents.reload();
     await new Promise(resolve => window.webContents.once('did-finish-load', resolve));
     await until("!document.getElementById('start-button').disabled");
-    assert.match(await run("document.getElementById('source-label').textContent"), /Ora del computer/);
+    assert.match(await run("document.getElementById('source-label').textContent"), /System clock/);
     await run("document.querySelector('[data-page=history]').click()");
     await assertFits();
     await run("document.querySelector('[data-page=sync]').click()");
@@ -240,7 +240,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.getElementById('wave-type').value"), 'sine');
     powerMonitor.emit('suspend');
     await until("!document.getElementById('start-button').disabled");
-    assert.match(await run("document.querySelector('.history-status').textContent"), /Interrotta dall/);
+    assert.match(await run("document.querySelector('.history-status').textContent"), /Interrupted by/);
     await run("document.querySelector('[data-page=history]').click()");
     await assertFits();
     // Profiles, channel routing controls, immutable full trial history and migration.
@@ -252,11 +252,11 @@ app.whenReady().then(async () => {
     await change('volume', '34', 'input');
     await change('latency-offset', '-125');
     await run("document.querySelector('[data-page=profiles]').click(); document.getElementById('profile-new').click()");
-    await change('profile-name', 'Il mio GW-6900');
+    await change('profile-name', 'My GW-6900');
     await change('profile-model', 'GW-6900');
     await change('profile-city', 'rom');
     await change('profile-system-volume', '45');
-    const placement = 'Lato ore 12 vicino all’altoparlante sinistro. '.repeat(6).slice(0,240);
+    const placement = '12 o’clock side near the left speaker. '.repeat(6).slice(0,240);
     await change('profile-position', placement);
     await run("document.getElementById('profile-save').click()");
     assert.equal(await run("document.querySelector('.page.active').id"), 'page-profiles');
@@ -268,7 +268,7 @@ app.whenReady().then(async () => {
     await capture('desktop-profiles.png');
     await run("document.querySelector('[data-page=settings]').click(); document.getElementById('test-output').click()");
     await until("!document.getElementById('test-output').disabled");
-    assert.match(await run("document.getElementById('toast').textContent"), /canale sinistro/);
+    assert.match(await run("document.getElementById('toast').textContent"), /Left channel test/);
     await run("document.querySelector('[data-page=sync]').click(); document.getElementById('start-button').click()");
     await until("document.getElementById('start-button').classList.contains('running')");
     for (const id of ['profile-select','profile-edit-select','profile-save','profile-delete','profile-new','audio-channel']) {
@@ -283,14 +283,14 @@ app.whenReady().then(async () => {
     const firstTrialId = await run("JSON.parse(localStorage.getItem('atomic.history'))[0].id");
     assert.deepEqual(await run("(() => {const t=JSON.parse(localStorage.getItem('atomic.history'))[0];return [t.snapshot.settings.channel,t.snapshot.settings.volume,t.endVolume,t.snapshot.watch.systemVolume,t.volumeChanges.length]})()"), ['left',34,40,'45',1]);
     await run("document.querySelector('[data-page=profiles]').click()");
-    await change('profile-name', 'GW-6900 rinominato');
+    await change('profile-name', 'Renamed GW-6900');
     await run("document.getElementById('profile-save').click(); document.getElementById('profile-restore-success').click()");
     assert.equal(await run("document.getElementById('volume').value"), '40');
     await change('audio-channel', 'right');
     await change('duration', '5');
     await change('wave-type', 'sine');
     await run("document.querySelector('[data-page=profiles]').click();document.getElementById('profile-new').click()");
-    await change('profile-name', 'Secondo orologio');
+    await change('profile-name', 'Second watch');
     await change('profile-model', 'GW-M5610');
     await run("document.getElementById('profile-save').click()");
     const secondProfileId = await run("JSON.parse(localStorage.getItem('atomic.profiles'))[1].id");
@@ -317,7 +317,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.history'))[0].outcome"), 'err');
     await assertFits();
     await run("document.querySelector('[data-goto=history]').click();document.querySelectorAll('.history-row button')[1].click()");
-    assert.match(await run("document.getElementById('trial-facts').textContent"), /Il mio GW-6900/);
+    assert.match(await run("document.getElementById('trial-facts').textContent"), /My GW-6900/);
     assert.match(await run("document.getElementById('trial-facts').textContent"), /34% → 40%/);
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.history'))[1].id"), firstTrialId);
     await assertFits();
@@ -326,7 +326,7 @@ app.whenReady().then(async () => {
     await capture('desktop-trial.png');
     await change('trial-outcome', 'unverified');
     await run("document.getElementById('trial-save-outcome').click()");
-    assert.doesNotMatch(await run("document.querySelectorAll('.history-status')[1].textContent"), /confermata/);
+    assert.doesNotMatch(await run("document.querySelectorAll('.history-status')[1].textContent"), /confirmed/);
     await change('trial-outcome', 'err');
     await run("document.getElementById('trial-save-outcome').click()");
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].lastSuccess"), null);
@@ -337,7 +337,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.getElementById('volume').value"), '40');
     await run("document.querySelector('[data-page=profiles]').click(); document.getElementById('profile-delete').click()");
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.profiles')).length"), 1);
-    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.history'))[1].snapshot.watch.name"), 'Il mio GW-6900');
+    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.history'))[1].snapshot.watch.name"), 'My GW-6900');
     await run("document.querySelector('#toast button').click()");
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.profiles')).length"), 2);
     await run(`(() => {
@@ -364,7 +364,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.getElementById('history-next').disabled"), true);
     await assertFits();
     await run("[...document.querySelectorAll('.history-row button')].at(-1).click()");
-    assert.match(await run("document.getElementById('trial-position').textContent"), /precedente alla versione/);
+    assert.match(await run("document.getElementById('trial-position').textContent"), /before version/);
     assert.equal(await run("document.getElementById('trial-restore').disabled"), true);
     await assertFits();
     await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");
@@ -373,7 +373,7 @@ app.whenReady().then(async () => {
     await new Promise(resolve => window.webContents.once('did-finish-load', resolve));
     await until("!document.getElementById('start-button').disabled");
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.history')).length"), fullCount + 1);
-    assert.match(await run("JSON.parse(localStorage.getItem('atomic.history'))[0].reason"), /Finestra chiusa/);
+    assert.match(await run("JSON.parse(localStorage.getItem('atomic.history'))[0].reason"), /Window closed/);
     await run(`(() => {
       const profiles=JSON.parse(localStorage.getItem('atomic.profiles'));
       profiles[0].settings.deviceId='unavailable-test-output';
@@ -385,7 +385,7 @@ app.whenReady().then(async () => {
     await change('profile-select', '');
     await change('profile-select', firstProfileId);
     assert.equal(await run("document.getElementById('audio-output').value"), 'default');
-    assert.match(await run("document.getElementById('toast').textContent"), /Uscita salvata non disponibile/);
+    assert.match(await run("document.getElementById('toast').textContent"), /Saved output unavailable/);
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].settings.deviceId"), 'unavailable-test-output');
     if (errors.length) throw new Error(errors.join('\n'));
     console.log('PASS: nine themes, text contrast >=4.5, theme persistence/fallback/isolation/live change, Electron, five station codecs, fixed 1100x740 window, all views without overflow, profiles CRUD and restore, channel routing, immutable paginated history, migration, NTP fallback, real worklet and interruptions. Audio muted.');

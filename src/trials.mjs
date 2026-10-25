@@ -1,7 +1,7 @@
 import { STATIONS } from './stations.mjs';
 
-export const CHANNEL_LABELS = Object.freeze({ both: 'Entrambi', left: 'Sinistro', right: 'Destro' });
-export const WAVE_LABELS = Object.freeze({ sine: 'Sinusoidale', 'sine-gated': 'Pause complete', square: 'Quadra' });
+export const CHANNEL_LABELS = Object.freeze({ both: 'Both', left: 'Left', right: 'Right' });
+export const WAVE_LABELS = Object.freeze({ sine: 'Sine', 'sine-gated': 'Full pauses', square: 'Square' });
 export const DEFAULTS = Object.freeze({ volume: 30, duration: 10, wave: 'sine', channel: 'both', deviceId: 'default', advanceMs: 0, stationId: 'dcf77' });
 const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
 const text = (value, length) => typeof value === 'string' ? value.trim().slice(0, length) : '';
@@ -28,7 +28,7 @@ export function watchMetadata(value) {
 export function normalizeProfiles(value) {
   const ids = new Set();
   return (Array.isArray(value) ? value : []).filter(p => p && typeof p.id === 'string' && p.id && !ids.has(p.id) && ids.add(p.id))
-    .map(p => ({ id: p.id, ...watchMetadata(p), name: text(p.name, 60) || 'Orologio', settings: normalizePreferences(p.settings),
+    .map(p => ({ id: p.id, ...watchMetadata(p), name: text(p.name, 60) || 'Watch', settings: normalizePreferences(p.settings),
       lastSuccess: p.lastSuccess?.settings ? { ...p.lastSuccess, settings: normalizePreferences(p.lastSuccess.settings) } : null }));
 }
 
@@ -55,7 +55,7 @@ export function createSnapshot(preferences, profile, deviceLabel, reference) {
 export function createTrial(session, status, endedAt, reason = '') {
   return { id: crypto.randomUUID(), at: session.createdAt, endedAt, status, outcome: status === 'confirmed' ? 'get' : 'unverified',
     seconds: Math.max(0, Math.round((Math.min(endedAt, session.endEpoch) - session.startEpoch) / 1000)),
-    stationId: session.stationId, source: session.snapshot.reference?.host || 'Computer',
+    stationId: session.stationId, source: session.snapshot.reference?.host || 'System clock',
     snapshot: structuredClone(session.snapshot), sampleRate: session.sampleRate, latencyMs: session.latencyMs,
     endVolume: session.endVolume ?? session.snapshot.settings.volume,
     volumeChanges: structuredClone(session.volumeChanges || []), reason: text(reason, 300) };

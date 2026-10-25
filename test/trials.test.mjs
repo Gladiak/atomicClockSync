@@ -15,9 +15,9 @@ test('old preferences migrate to both channels and keep their existing settings'
 
 test('profile migration retains separate configurations and rejects duplicate IDs', () => {
   const profiles = normalizeProfiles([
-    { id: 'casio', name: ' G-Shock ', model: 'GW-6900', homeCity: 'rom', position: 'Altoparlante sinistro', systemVolume: 35,
+    { id: 'casio', name: ' G-Shock ', model: 'GW-6900', homeCity: 'rom', position: 'Left speaker', systemVolume: 35,
       settings: { channel: 'left', wave: 'sine-gated' } },
-    { id: 'other', name: 'Altro Casio', settings: { stationId: 'jjy', channel: 'right', duration: 15 } },
+    { id: 'other', name: 'Other Casio', settings: { stationId: 'jjy', channel: 'right', duration: 15 } },
     { id: 'casio', name: 'Duplicato' }, null,
   ]);
   assert.equal(profiles.length, 2);
@@ -42,10 +42,10 @@ test('full history migration preserves more than eight trials and marks legacy c
 
 test('a trial snapshots the starting configuration, live volume changes and NTP reference independently of later edits', () => {
   const settings = normalizePreferences({ channel: 'right', volume: 31, duration: 15 });
-  const profile = { id: 'watch-1', name: 'Casio', model: 'GW-6900', homeCity: 'ROM', position: 'Ore 12 a sinistra', systemVolume: '45' };
+  const profile = { id: 'watch-1', name: 'Casio', model: 'GW-6900', homeCity: 'ROM', position: 'Hours 12 a sinistra', systemVolume: '45' };
   const reference = { host: 'ptb.example', offsetMs: 2.5, uncertaintyMs: 4, synchronizedAt: 1000 };
-  const snapshot = createSnapshot(settings, profile, 'Altoparlanti Mac', reference);
-  settings.volume = 50; profile.position = 'Nuova posizione'; reference.host = 'other.example';
+  const snapshot = createSnapshot(settings, profile, 'Mac speakers', reference);
+  settings.volume = 50; profile.position = 'New placement'; reference.host = 'other.example';
   const session = { snapshot, createdAt: 2000, startEpoch: 3000, endEpoch: 903000, stationId: 'dcf77', sampleRate: 48000,
     latencyMs: 12, endVolume: 25, volumeChanges: [{ elapsedMs: 10000, value: 25 }] };
   const trial = createTrial(session, 'confirmed', 123000);
@@ -54,7 +54,7 @@ test('a trial snapshots the starting configuration, live volume changes and NTP 
   assert.equal(trial.outcome, 'get');
   assert.equal(trial.snapshot.settings.channel, 'right');
   assert.equal(trial.snapshot.settings.volume, 31);
-  assert.equal(trial.snapshot.watch.position, 'Ore 12 a sinistra');
+  assert.equal(trial.snapshot.watch.position, 'Hours 12 a sinistra');
   assert.equal(trial.snapshot.reference.host, 'ptb.example');
   assert.equal(trial.volumeChanges[0].value, 25);
   const success = successfulConfiguration(trial);
@@ -65,7 +65,7 @@ test('a trial snapshots the starting configuration, live volume changes and NTP 
 });
 
 test('completing the timer does not claim reception and duration excludes initial alignment', () => {
-  const snapshot = createSnapshot(DEFAULTS, null, 'Predefinita', null);
+  const snapshot = createSnapshot(DEFAULTS, null, 'Default', null);
   const session = { snapshot, createdAt: 1000, startEpoch: 5000, endEpoch: 65000, stationId: 'dcf77' };
   const early = createTrial(session, 'stopped', 2000);
   const complete = createTrial(session, 'complete', 70000);
@@ -73,6 +73,6 @@ test('completing the timer does not claim reception and duration excludes initia
   assert.equal(complete.seconds, 60);
   assert.equal(complete.outcome, 'unverified');
   assert.equal(successfulConfiguration(complete), null);
-  assert.equal(complete.source, 'Computer');
+  assert.equal(complete.source, 'System clock');
   assert.equal(complete.snapshot.profileId, null);
 });

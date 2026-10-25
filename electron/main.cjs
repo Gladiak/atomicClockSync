@@ -47,7 +47,7 @@ function createWindow() {
 }
 
 ipcMain.handle('clock:sync', async () => {
-  if (blocker !== null) return { ok: false, error: 'Interrompi la trasmissione prima di aggiornare l’ora.' };
+  if (blocker !== null) return { ok: false, error: 'Stop transmission before checking the time.' };
   if (!syncing) syncing = synchronize().finally(() => { syncing = null; });
   try {
     const result = await syncing;
@@ -69,14 +69,14 @@ else {
   app.on('second-instance', () => { if (mainWindow) { mainWindow.restore(); mainWindow.focus(); } });
   app.whenReady().then(() => {
     Menu.setApplicationMenu(Menu.buildFromTemplate([
-      ...(process.platform === 'darwin' ? [{ label: app.name, submenu: [{ role: 'about' }, { type: 'separator' }, { role: 'hide' }, { role: 'hideOthers' }, { type: 'separator' }, { role: 'quit' }] }] : []),
-      { label: 'Modifica', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
-      { label: 'Finestra', submenu: [{ role: 'minimize' }] },
+      ...(process.platform === 'darwin' ? [{ label: app.name, submenu: [{ role: 'about', label: 'About Atomic Clock Sync' }, { type: 'separator' }, { role: 'hide', label: 'Hide Atomic Clock Sync' }, { role: 'hideOthers', label: 'Hide Others' }, { type: 'separator' }, { role: 'quit', label: 'Quit Atomic Clock Sync' }] }] : []),
+      { label: 'Edit', submenu: [{ role: 'undo', label: 'Undo' }, { role: 'redo', label: 'Redo' }, { type: 'separator' }, { role: 'cut', label: 'Cut' }, { role: 'copy', label: 'Copy' }, { role: 'paste', label: 'Paste' }, { role: 'selectAll', label: 'Select All' }] },
+      { label: 'Window', submenu: [{ role: 'minimize', label: 'Minimize' }] },
     ]));
     createWindow();
-    powerMonitor.on('suspend', () => interrupt('Computer in sospensione. Riavvia la trasmissione.'));
-    powerMonitor.on('resume', () => interrupt('Computer riattivato. Verifica nuovamente l’ora.'));
-    powerMonitor.on('lock-screen', () => interrupt('Schermo bloccato. Trasmissione interrotta.'));
+    powerMonitor.on('suspend', () => interrupt('Computer going to sleep. Restart transmission.'));
+    powerMonitor.on('resume', () => interrupt('Computer resumed. Check the time again.'));
+    powerMonitor.on('lock-screen', () => interrupt('Screen locked. Transmission stopped.'));
     app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
   });
   app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });

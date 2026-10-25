@@ -14,17 +14,17 @@ function readTimestamp(packet, offset, reference = Date.now()) {
 }
 
 function parseReply(packet, nonce, t1, t4) {
-  if (packet.length < 48) throw new Error('Risposta NTP incompleta');
+  if (packet.length < 48) throw new Error('Incomplete NTP response');
   const mode = packet[0] & 7;
   const version = (packet[0] >> 3) & 7;
-  if (mode !== 4 || version < 3 || version > 4 || packet[0] >> 6 === 3) throw new Error('Server NTP non sincronizzato');
-  if (packet[1] < 1 || packet[1] > 15) throw new Error('Strato NTP non valido');
-  if (!packet.subarray(24, 32).equals(nonce)) throw new Error('Risposta NTP non corrispondente');
+  if (mode !== 4 || version < 3 || version > 4 || packet[0] >> 6 === 3) throw new Error('NTP server is not synchronized');
+  if (packet[1] < 1 || packet[1] > 15) throw new Error('Invalid NTP stratum');
+  if (!packet.subarray(24, 32).equals(nonce)) throw new Error('NTP response does not match the request');
   const t2 = readTimestamp(packet, 32, t1);
   const t3 = readTimestamp(packet, 40, t1);
-  if (packet.subarray(32, 40).every(b => b === 0) || packet.subarray(40, 48).every(b => b === 0)) throw new Error('Timestamp NTP nullo');
+  if (packet.subarray(32, 40).every(b => b === 0) || packet.subarray(40, 48).every(b => b === 0)) throw new Error('Empty NTP timestamp');
   const delay = (t4 - t1) - (t3 - t2);
-  if (t3 < t2 || delay < -5 || delay > 2500) throw new Error('Latenza NTP eccessiva');
+  if (t3 < t2 || delay < -5 || delay > 2500) throw new Error('NTP latency is too high');
   const dispersion = packet.readUInt32BE(8) / 65536 * 1000;
   const offsetMs = ((t2 - t1) + (t3 - t4)) / 2;
   return { offsetMs, rttMs: Math.max(0, delay), uncertaintyMs: Math.max(1, delay / 2 + dispersion), stratum: packet[1] };
@@ -49,7 +49,7 @@ async function queryNtp(host, timeoutMs = 3000) {
       socket.close();
       error ? reject(error) : resolve(value);
     };
-    const timer = setTimeout(() => finish(new Error('Timeout NTP')), timeoutMs);
+    const timer = setTimeout(() => finish(new Error('NTP timeout')), timeoutMs);
     socket.on('error', error => finish(error));
     socket.on('message', (reply, peer) => {
       if (peer.address !== address || peer.port !== 123) return;
@@ -65,13 +65,13 @@ async function queryNtp(host, timeoutMs = 3000) {
 async function synchronize() {
   // Bound DNS resolution as well as UDP, so unavailable networks never stall the UI.
   const results = await Promise.allSettled(SERVERS.map(host => Promise.race([
-    queryNtp(host), new Promise((_, reject) => { const t = setTimeout(() => reject(new Error('Timeout DNS/NTP')), 4500); t.unref(); }),
+    queryNtp(host), new Promise((_, reject) => { const t = setTimeout(() => reject(new Error('DNS/NTP timeout')), 4500); t.unref(); }),
   ])));
   const valid = results.filter(r => r.status === 'fulfilled').map(r => r.value);
-  if (!valid.length) throw new Error('Server NTP non raggiungibili. Controlla la connessione o usa l’ora del computer.');
+  if (!valid.length) throw new Error('NTP servers are unreachable. Check your connection or use the system clock.');
   // Multiple disagreeing servers must not silently produce an authoritative time.
   const agreeing = valid.length === 1 ? valid : valid.filter(a => valid.some(b => a !== b && Math.abs(a.offsetMs - b.offsetMs) < 1000));
-  if (!agreeing.length) throw new Error('I server orari non concordano. Riprova tra poco.');
+  if (!agreeing.length) throw new Error('Time servers disagree. Try again shortly.');
   const best = agreeing.sort((a, b) => a.uncertaintyMs - b.uncertaintyMs)[0];
   return { ...best, synchronizedAt: Date.now(), checkedServers: valid.length };
 }

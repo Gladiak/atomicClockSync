@@ -1,5 +1,20 @@
+# Dependencies and generated build/test output
 node_modules/
 release/
 artifacts/
+coverage/
+__pycache__/
+*.py[cod]
+
+# Local OS/editor state and logs
 .DS_Store
 *.log
+.vscode/
+.idea/
+
+# Local environment and signing credentials
+.env
+.env.*
+!.env.example
+*.p12
+*.pfx

@@ -1,7 +1,7 @@
 {
   "name": "atomic-clock-sync",
-  "version": "1.3.0",
-  "description": "Sincronizzatore desktop multistazione per orologi Casio Multiband 6",
+  "version": "1.4.0",
+  "description": "Sync Casio Multiband 6 watches with simulated time signals through your speakers. A JavaScript and Electron desktop app for macOS and Windows.",
   "main": "electron/main.cjs",
   "private": true,
   "scripts": {
@@ -11,9 +11,20 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder --mac zip",
     "dist:win": "electron-builder --win portable --x64",
-    "dist:linux": "electron-builder --linux AppImage"
+    "dist:linux": "electron-builder --linux AppImage",
+    "bundle": "python3 scripts/bundle-releases.py"
   },
-  "keywords": [],
+  "keywords": [
+    "casio",
+    "multiband6",
+    "dcf77",
+    "wwvb",
+    "jjy",
+    "msf",
+    "bpc",
+    "electron",
+    "time-synchronization"
+  ],
   "author": "Atomic Clock Sync",
   "license": "MIT",
   "type": "commonjs",

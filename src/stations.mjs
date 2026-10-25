@@ -1,16 +1,16 @@
 import { frameAt as dcfFrame, FIELDS as DCF_FIELDS, parity, envelope as dcfEnvelope } from './dcf77.mjs';
 
 export const STATIONS = Object.freeze([
-  { id: 'bpc', name: 'BPC', location: 'Shangqiu, Henan, Cina', country: 'Cina', flag: '🇨🇳', coordinates: '34°27′ N · 115°50′ E', frequency: 68500, harmonic: 5, timeZone: 'Asia/Shanghai', cycle: 20, cities: 'BJS / HKG', zone: 'CST', experimental: true },
-  { id: 'jjy', name: 'JJY', location: 'Haganeyama, area di Fukuoka, Giappone', country: 'Giappone', flag: '🇯🇵', coordinates: '33°28′ N · 130°11′ E', frequency: 60000, harmonic: 3, timeZone: 'Asia/Tokyo', cycle: 60, cities: 'TYO', zone: 'JST' },
-  { id: 'wwvb', name: 'WWVB', location: 'Fort Collins, Colorado, USA', country: 'Stati Uniti', flag: '🇺🇸', coordinates: '40°41′ N · 105°03′ W', frequency: 60000, harmonic: 3, timeZone: 'UTC', cycle: 60, cities: 'NYC / CHI / DEN / LAX', zone: 'UTC' },
-  { id: 'dcf77', name: 'DCF77', location: 'Mainflingen, Germania', country: 'Germania', flag: '🇩🇪', coordinates: '50°01′ N · 09°00′ E', frequency: 77500, harmonic: 5, timeZone: 'Europe/Berlin', cycle: 60, cities: 'ROM / BER / PAR', zone: 'CET / CEST' },
-  { id: 'msf', name: 'MSF', location: 'Anthorn, Cumbria, Regno Unito', country: 'Regno Unito', flag: '🇬🇧', coordinates: '54°55′ N · 03°15′ W', frequency: 60000, harmonic: 3, timeZone: 'Europe/London', cycle: 60, cities: 'LON', zone: 'GMT / BST' },
+  { id: 'bpc', name: 'BPC', location: 'Shangqiu, Henan, China', country: 'China', flag: '🇨🇳', coordinates: '34°27′ N · 115°50′ E', frequency: 68500, harmonic: 5, timeZone: 'Asia/Shanghai', cycle: 20, cities: 'BJS / HKG', zone: 'CST', experimental: true },
+  { id: 'jjy', name: 'JJY', location: 'Haganeyama, Fukuoka area, Japan', country: 'Japan', flag: '🇯🇵', coordinates: '33°28′ N · 130°11′ E', frequency: 60000, harmonic: 3, timeZone: 'Asia/Tokyo', cycle: 60, cities: 'TYO', zone: 'JST' },
+  { id: 'wwvb', name: 'WWVB', location: 'Fort Collins, Colorado, USA', country: 'United States', flag: '🇺🇸', coordinates: '40°41′ N · 105°03′ W', frequency: 60000, harmonic: 3, timeZone: 'UTC', cycle: 60, cities: 'NYC / CHI / DEN / LAX', zone: 'UTC' },
+  { id: 'dcf77', name: 'DCF77', location: 'Mainflingen, Germany', country: 'Germany', flag: '🇩🇪', coordinates: '50°01′ N · 09°00′ E', frequency: 77500, harmonic: 5, timeZone: 'Europe/Berlin', cycle: 60, cities: 'ROM / BER / PAR', zone: 'CET / CEST' },
+  { id: 'msf', name: 'MSF', location: 'Anthorn, Cumbria, United Kingdom', country: 'United Kingdom', flag: '🇬🇧', coordinates: '54°55′ N · 03°15′ W', frequency: 60000, harmonic: 3, timeZone: 'Europe/London', cycle: 60, cities: 'LON', zone: 'GMT / BST' },
 ].map(station => Object.freeze({ ...station, audioFrequency: station.frequency / station.harmonic })));
 
 export function getStation(id = 'dcf77') {
   const station = STATIONS.find(item => item.id === id);
-  if (!station) throw new Error(`Stazione sconosciuta: ${id}`);
+  if (!station) throw new Error(`Unknown station: ${id}`);
   return station;
 }
 
@@ -71,7 +71,7 @@ export function stationFrameAt(id, epoch) {
     const result = dcfFrame(epoch);
     return { ...result, stationId: id, duration: 60, time: stationTime(id, result.target), fields: DCF_FIELDS,
       checks: [check(result.bits, range(21, 28), 'P1'), check(result.bits, range(29, 35), 'P2'), check(result.bits, range(36, 58), 'P3')],
-      description: 'Ora del minuto successivo · marcatore al secondo 59' };
+      description: 'Next minute time · marker at second 59' };
   }
   const start = Math.floor(epoch / (station.cycle * 1000)) * station.cycle * 1000;
   const target = id === 'msf' ? start + 60000 : start;
@@ -83,8 +83,8 @@ export function stationFrameAt(id, epoch) {
     putBCD(bits, time.minute, MINUTE_POS, MINUTE_WEIGHTS);
     putBCD(bits, time.hour, HOUR_POS, HOUR_WEIGHTS);
     putBCD(bits, time.dayOfYear, DAY_POS, [200, 100, 80, 40, 20, 10, 8, 4, 2, 1]);
-    frame.fields = [field(0, 9, 'Minuti', 'minute'), field(10, 19, 'Ore', 'hour'), field(20, 33, 'Giorno dell’anno'), field(34, 40, 'Stato', 'zone'), field(41, 59, 'Anno e stato')];
-    frame.description = 'Ora all’inizio del minuto · marcatori 0, 9, 19, 29, 39, 49, 59';
+    frame.fields = [field(0, 9, 'Minutes', 'minute'), field(10, 19, 'Hours', 'hour'), field(20, 33, 'Day of year'), field(34, 40, 'Status', 'zone'), field(41, 59, 'Year and status')];
+    frame.description = 'Time at minute start · markers 0, 9, 19, 29, 39, 49, 59';
     if (id === 'jjy') {
       bits[36] = parity(HOUR_POS.map(p => bits[p]));
       bits[37] = parity(MINUTE_POS.map(p => bits[p]));
@@ -119,8 +119,8 @@ export function stationFrameAt(id, epoch) {
       secondary[p] = 1 - parity(bits.slice(a, b + 1));
       frame.checks.push({ label: `P${p - 53}`, ok: (parity(bits.slice(a, b + 1)) + secondary[p]) % 2 === 1 });
     });
-    frame.fields = [field(0, 16, 'Marcatore / DUT1', 'reserved'), field(17, 38, 'Data'), field(39, 44, 'Ore', 'hour'), field(45, 51, 'Minuti', 'minute'), field(52, 59, 'Identificatore / parità', 'zone')];
-    frame.description = 'Ora del minuto successivo · due bit A/B · quattro parità dispari';
+    frame.fields = [field(0, 16, 'Marker / DUT1', 'reserved'), field(17, 38, 'Date'), field(39, 44, 'Hours', 'hour'), field(45, 51, 'Minutes', 'minute'), field(52, 59, 'Identifier / parity', 'zone')];
+    frame.description = 'Next minute time · two A/B bits · four odd parity groups';
     return frame;
   }
   // BPC: 19 quaternary symbols after an unmodulated marker. Fields are binary, not BCD.
@@ -140,8 +140,8 @@ export function stationFrameAt(id, epoch) {
   for (let i = 0; i < 19; i++) bits[i + 1] = raw[i * 2] * 2 + raw[i * 2 + 1];
   frame.raw = raw;
   frame.checks = [{ label: 'P3', ok: parity([...raw.slice(0, 18), raw[19]]) === 0 }, { label: 'P4', ok: parity([...raw.slice(20, 36), raw[37]]) === 0 }];
-  frame.fields = [field(0, 2, 'Marcatore / indice', 'reserved'), field(3, 4, 'Ore', 'hour'), field(5, 7, 'Minuti', 'minute'), field(8, 10, 'Giorno / P3', 'zone'), field(11, 19, 'Data / P4')];
-  frame.description = 'Ora all’inizio del ciclo · simboli 0–3 · ciclo di 20 secondi';
+  frame.fields = [field(0, 2, 'Marker / index', 'reserved'), field(3, 4, 'Hours', 'hour'), field(5, 7, 'Minutes', 'minute'), field(8, 10, 'Day / P3', 'zone'), field(11, 19, 'Date / P4')];
+  frame.description = 'Time at cycle start · symbols 0–3 · 20-second cycle';
   return frame;
 }
 
@@ -156,7 +156,7 @@ export function stationEnvelope(frame, second, fraction) {
       if (second === 0) return fraction < 0.5 ? 0 : 1;
       if (fraction < 0.1 || (fraction < 0.2 && value) || (fraction >= 0.2 && fraction < 0.3 && frame.secondary[second])) return 0;
       return 1;
-    default: throw new Error('Inviluppo sconosciuto');
+    default: throw new Error('Unknown envelope');
   }
 }
 
@@ -173,10 +173,10 @@ export function symbolLabel(frame, second) {
 }
 
 export function symbolDescription(frame, second) {
-  if (frame.stationId === 'msf') return second === 0 ? 'marcatore 500 ms' : `A=${frame.bits[second]} · B=${frame.secondary[second]}`;
+  if (frame.stationId === 'msf') return second === 0 ? '500 ms marker' : `A=${frame.bits[second]} · B=${frame.secondary[second]}`;
   const value = frame.bits[second];
-  if (frame.stationId === 'bpc') return value === -1 ? 'marcatore senza riduzione' : `simbolo ${value} · ${(value + 1) * 100} ms`;
-  if (frame.stationId === 'jjy') return `${value === -1 ? 200 : value === 1 ? 500 : 800} ms alto`;
-  if (frame.stationId === 'wwvb') return `${value === -1 ? 800 : value === 1 ? 500 : 200} ms ridotto`;
-  return value === -1 ? 'marcatore senza riduzione' : `${value === 1 ? 200 : 100} ms ridotto`;
+  if (frame.stationId === 'bpc') return value === -1 ? 'marker without reduction' : `symbol ${value} · ${(value + 1) * 100} ms`;
+  if (frame.stationId === 'jjy') return `${value === -1 ? 200 : value === 1 ? 500 : 800} ms high`;
+  if (frame.stationId === 'wwvb') return `${value === -1 ? 800 : value === 1 ? 500 : 200} ms reduced`;
+  return value === -1 ? 'marker without reduction' : `${value === 1 ? 200 : 100} ms reduced`;
 }

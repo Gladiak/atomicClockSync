@@ -8,13 +8,13 @@ export class SignalEngine {
     this.context = context;
     try {
       if (deviceId !== 'default') {
-        if (!context.setSinkId) throw new Error('Questa versione non supporta la scelta dell’uscita audio. Usa l’uscita di sistema.');
+        if (!context.setSinkId) throw new Error('Audio output selection is not supported. Use the system default.');
         await context.setSinkId(deviceId);
       }
       await context.audioWorklet.addModule(new URL('./signal-worklet.mjs', import.meta.url));
       await context.resume();
-      if (context.state !== 'running') throw new Error('L’uscita audio non è disponibile.');
-      if (context.sampleRate <= getStation(stationId).audioFrequency * 2) throw new Error('La frequenza di campionamento dell’uscita è insufficiente per questa stazione.');
+      if (context.state !== 'running') throw new Error('Audio output is unavailable.');
+      if (context.sampleRate <= getStation(stationId).audioFrequency * 2) throw new Error('The output sample rate is too low for this station.');
       // Let the output clock become available; compensate the reported device latency.
       await new Promise(resolve => setTimeout(resolve, 100));
       const stamp = context.getOutputTimestamp?.();
@@ -31,12 +31,12 @@ export class SignalEngine {
         numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2],
         processorOptions: { epochAtZero, startEpoch, endEpoch, volume, wave, channel, stationId },
       });
-      this.node.onprocessorerror = () => { if (this.active) onInterrupt('Il motore audio si è interrotto. Riavvia la sessione.'); };
+      this.node.onprocessorerror = () => { if (this.active) onInterrupt('The audio engine stopped. Restart the session.'); };
       this.node.port.onmessage = ({ data }) => { if (data.type === 'complete' && this.active) onComplete(); };
       this.node.connect(context.destination);
       this.active = true;
       context.onstatechange = () => {
-        if (this.active && context.state !== 'running') onInterrupt('L’uscita audio è stata sospesa. Riavvia la sessione.');
+        if (this.active && context.state !== 'running') onInterrupt('Audio output was suspended. Restart the session.');
       };
       return { startEpoch, endEpoch, firstFullMinute, sampleRate: context.sampleRate, latencyMs: Math.round(latency * 1000) };
     } catch (error) { await this.stop(); throw error; }
@@ -59,7 +59,7 @@ export async function testOutput(deviceId = 'default', channel = 'both') {
   const context = new AudioContext({ sampleRate: 48000 });
   try {
     if (deviceId !== 'default') {
-      if (!context.setSinkId) throw new Error('Scelta uscita non supportata.');
+      if (!context.setSinkId) throw new Error('Audio output selection is not supported.');
       await context.setSinkId(deviceId);
     }
     await context.resume();

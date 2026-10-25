@@ -51,10 +51,10 @@ export function envelope(bit, fraction) {
 }
 
 export const FIELDS = [
-  { start: 0, end: 14, name: 'Riservati', kind: 'reserved' },
-  { start: 15, end: 20, name: 'Stato e fuso', kind: 'zone' },
-  { start: 21, end: 28, name: 'Minuti · P1', kind: 'minute' },
-  { start: 29, end: 35, name: 'Ore · P2', kind: 'hour' },
-  { start: 36, end: 58, name: 'Data · P3', kind: 'date' },
-  { start: 59, end: 59, name: 'Marcatore', kind: 'marker' },
+  { start: 0, end: 14, name: 'Reserved', kind: 'reserved' },
+  { start: 15, end: 20, name: 'Status and zone', kind: 'zone' },
+  { start: 21, end: 28, name: 'Minutes · P1', kind: 'minute' },
+  { start: 29, end: 35, name: 'Hours · P2', kind: 'hour' },
+  { start: 36, end: 58, name: 'Date · P3', kind: 'date' },
+  { start: 59, end: 59, name: 'Marker', kind: 'marker' },
 ];
