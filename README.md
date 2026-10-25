@@ -12,9 +12,10 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 
 ## Features
 
+- **Reception Lab:** per-watch GET/ERR statistics, recorded-configuration groups, A/B comparison and preparation of a trial changing one audio setting.
 - **Light Travel:** a cinematic offline Solar System, nine light sources, date-dependent travel times, departure/reception clocks and a controllable photon journey.
 - **Moon Observatory:** offline lunar phases, illumination, distance, local moonrise/moonset, upcoming quarters and an independent timeline shared with your World View city.
-- **Time Machine:** 32 sourced historical journeys, precision-aware elapsed counters, personal memories, countdowns and locally stored time capsules.
+- **Time Machine:** 96 sourced historical journeys, precision-aware elapsed counters, personal memories, countdowns and locally stored time capsules.
 - **Back in Time:** a playful time-circuit dashboard inspired by Back to the Future, with five movie destinations, live elapsed-time counters and an animated 88 mph trip.
 - **ISS Orbital Observatory:** live orbital estimates, offline prediction cache, local sighting passes, a sky plot and an educational time-dilation explorer.
 - **World View:** an offline vector Earth with astronomical day/night, amber city lights, five stations, nominal coverage rings, 171,637 searchable cities and a seasonal timeline.
@@ -42,6 +43,18 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 | BPC | Shangqiu, Henan, China | 68.5 kHz | 13,700 Hz | BJS / HKG |
 
 Station availability depends on the watch module and its home city. JJY currently supports the **60 kHz** station. BPC physical compatibility is experimental.
+
+## Reception Lab
+
+![Reception Lab — illustrative sample trials](docs/images/reception-lab.png)
+
+Open **Reception Lab** to learn from the trials already stored on this device. Filter by watch or station. The observed GET rate uses only outcomes explicitly entered as GET or ERR; unverified trials are counted separately. Configuration groups keep profile IDs and recorded settings/placement notes separate, with the largest verified samples first and a small-sample label below three verified outcomes. Unlinked watches are never pooled together.
+
+**Compare A/B** highlights differences in two historical snapshots, including station, output, volume, waveform, channel, selected duration, manual advance and handwritten watch/placement/system-volume notes. It also shows actual transmission durations and explains missing data or changed conditions. Open either trial to update its result in History.
+
+**Next trial** starts from a stable historical snapshot and changes one audio setting: app volume, channel, waveform or selected duration. Preparing applies the proposed audio settings and opens Synchronize without starting transmission or overwriting saved profile settings. Check the physical watch, placement and system volume against the reference. Unavailable outputs and removed profiles cannot silently fall back to a different configuration.
+
+Legacy trials without snapshots, interrupted sessions and sessions with live volume changes are excluded from configuration groups and baseline selection; their manually entered outcomes remain in the overall rate. These are local observations, not signal-strength measurements or proof that a setting caused a result. The default output can resolve to different physical hardware, and the app cannot verify manual notes. The laboratory works offline in all six languages and nine themes.
 
 ## World View
 
@@ -94,9 +107,9 @@ Calculations run offline using Astronomy Engine. The original procedural lunar t
 
 ## Time Machine
 
-![Time Machine — a journey to the Apollo 11 landing](docs/images/time-machine.png)
+![Time Machine — relativity and an archive of 96 journeys](docs/images/time-machine.png)
 
-Open **Time Machine → Historical journeys** to explore 32 moments from the Gregorian calendar reform in 1582 to Webb’s first full science image set in 2022. Filter space exploration, discovery/invention, or clocks/calendars; search titles, places, mission names and stories. Each moment has an original illustrated scene and an external primary-source reference. Dates without a documented time show only UTC calendar days; approximate and minute-resolution records do not invent elapsed seconds.
+Open **Time Machine → Historical journeys** to explore 96 moments from the Gregorian calendar reform in 1582 to optical-clock research in 2024. Filter space exploration, astronomy, time science, discovery/invention, or clocks/calendars; search titles, places, mission names and stories. Each moment has an original illustrated scene and an external primary-source reference. Dates without a documented time show only UTC calendar days; approximate and minute-resolution records do not invent elapsed seconds.
 
 **My moments & capsules** stores up to 100 local memories and countdowns. Create a time capsule with a future UTC opening date: its message remains hidden in the interface until that date. Capsules are stored locally without encryption; this is a keepsake feature, not secure storage. Memories can be edited, and deletion requires an explicit confirmation. **Back in Time** opens the existing film dashboard from the same section. All previews leave NTP, transmitted time and watch settings unchanged.
 
@@ -118,15 +131,15 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **1.9.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
+Current version: **1.10.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `AtomicClockSync-1.9.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
-| `AtomicClockSync-1.9.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
-| `AtomicClockSync-1.9.0-linux-x86_64.AppImage` | Portable Linux x64 application | Built on Ubuntu 22.04 in Docker; packaged UI and muted audio tested on a virtual display |
-| `AtomicClockSync-1.9.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Package metadata and contents verified against the tested application |
-| `AtomicClockSync-1.9.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Package metadata and contents verified against the tested application |
+| `AtomicClockSync-1.10.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
+| `AtomicClockSync-1.10.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
+| `AtomicClockSync-1.10.0-linux-x86_64.AppImage` | Portable Linux x64 application | Built on Ubuntu 22.04 in Docker; packaged UI and muted audio tested on a virtual display |
+| `AtomicClockSync-1.10.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Package metadata and contents verified against the tested application |
+| `AtomicClockSync-1.10.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Package metadata and contents verified against the tested application |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include their runtime; **Node.js is not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
@@ -134,14 +147,14 @@ Prebuilt apps include their runtime; **Node.js is not required to use them**. On
 On Linux x64, choose the AppImage for portable use, the DEB on Debian-based distributions, or the RPM on Fedora/openSUSE. The names `x86_64` and `amd64` both mean 64-bit Intel/AMD PCs. These builds do not target ARM64. From your download directory:
 
 ```sh
-chmod +x 'AtomicClockSync-1.9.0-linux-x86_64.AppImage'
-./'AtomicClockSync-1.9.0-linux-x86_64.AppImage'
+chmod +x 'AtomicClockSync-1.10.0-linux-x86_64.AppImage'
+./'AtomicClockSync-1.10.0-linux-x86_64.AppImage'
 # Alternatively, on Debian/Ubuntu/Mint:
-sudo apt install './AtomicClockSync-1.9.0-linux-amd64.deb'
+sudo apt install './AtomicClockSync-1.10.0-linux-amd64.deb'
 # Alternatively, on Fedora:
-sudo dnf install './AtomicClockSync-1.9.0-linux-x86_64.rpm'
+sudo dnf install './AtomicClockSync-1.10.0-linux-x86_64.rpm'
 # Or on openSUSE:
-sudo zypper install './AtomicClockSync-1.9.0-linux-x86_64.rpm'
+sudo zypper install './AtomicClockSync-1.10.0-linux-x86_64.rpm'
 ```
 
 Linux validation uses Ubuntu 22.04 x64 in Docker with a virtual display, muted audio and `--no-sandbox` for the container-only test. Normal launch commands retain Chromium's sandbox. Audio output and physical watch reception still need a real Linux desktop/hardware test. Release binaries are excluded from Git and are intended for GitHub Releases. Each platform package is distributed individually.
@@ -185,6 +198,7 @@ The explicit runtime download is needed for the Electron version used here. No w
 npm test                 # Protocol, PCM, stereo routing, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:navigation  # App identity, motion, rapid clicks, focus and live audio isolation
+npm run test:reception-lab # Statistics, A/B comparison, preparation, locales and audio isolation
 npm run test:languages   # Six locales, all views, Japanese glyphs, persistence and live audio
 npm run test:world       # Offline atlas, city worker, timeline and audio isolation
 npm run test:iss         # ISS states, passes, sky plot, themes and audio isolation
@@ -204,7 +218,7 @@ npm run checksums -- --github # Use GitHub download filenames in the published m
 
 The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run checksums` generates `SHA256SUMS.txt` for the current-version individual packages available in `release/`; use `-- --github` before uploading that manifest because GitHub replaces filename spaces with dots. Electron Builder additionally supports Snap, Flatpak, Pacman and archive targets; AppImage, DEB and RPM are configured here. The DEB/RPM payloads match the application tested on Ubuntu; installation and desktop integration on other distributions remain untested.
 
-The 65 unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
+The 74 unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 

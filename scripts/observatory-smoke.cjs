@@ -60,7 +60,7 @@ app.whenReady().then(async()=>{
     await capture('moon-atlantic.png'); await change('theme-select','cyan'); await capture('moon-observatory.png');
     await run("document.querySelector('[data-page=time-machine]').click();document.querySelector('[data-event=apollo]').click()");
     await capture('time-machine-history.png');
-    assert.equal(await run("document.querySelectorAll('.tm-event').length"),32);
+    assert.equal(await run("document.querySelectorAll('.tm-event').length"),96);
     const ids=await run("[...document.querySelectorAll('.tm-event')].map(button=>button.dataset.event)");
     for(const id of ids){
       await run(`document.querySelector('[data-event="${id}"]').click()`);await fits();
@@ -78,8 +78,9 @@ app.whenReady().then(async()=>{
     assert.equal(await run("document.getElementById('tm-subday').hidden"),true);
     await change('tm-search','zzzz','input');assert.equal(await run("document.getElementById('tm-empty').hidden"),false);
     await change('tm-search','','input');await change('tm-category','Discovery');assert.equal(await run("document.querySelectorAll('.tm-event').length"),10);
-    await change('tm-category','Timekeeping');assert.equal(await run("document.querySelectorAll('.tm-event').length"),3);
-    await change('tm-category','all');await change('tm-search','gravitational','input');assert.equal(await run("document.querySelectorAll('.tm-event').length"),1);
+    await change('tm-category','Timekeeping');assert.equal(await run("document.querySelectorAll('.tm-event').length"),11);
+    for(const category of ['Time science','Astronomy']){await change('tm-category',category);assert.equal(await run("document.querySelectorAll('.tm-event').length"),12);}
+    await change('tm-category','all');await change('tm-search','gravitational','input');assert.ok(await run("document.querySelectorAll('.tm-event').length > 1 && document.querySelector('[data-event=ligo]') !== null"));
     await change('tm-search','','input');
     await change('tm-category','all');
     await run("document.querySelector('[data-page=back-in-time]').click()");
@@ -121,6 +122,6 @@ app.whenReady().then(async()=>{
     assert.equal(await run("localStorage.getItem('atomic.preferences')"),preferences);
     await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");
     assert.deepEqual(errors,[]);
-    console.log('PASS: offline Moon phases, local rise/set, UTC preview and shared observer; 32 sourced historical events, three categories, illustrated scenes and precision-aware counters; personal CRUD, capsule reveal and persistence; nine themes, fixed layout, expanded sidebar space and live muted AudioWorklet isolation.');app.exit(0);
+    console.log('PASS: offline Moon phases, local rise/set, UTC preview and shared observer; 96 sourced historical events, five categories, illustrated scenes and precision-aware counters; personal CRUD, capsule reveal and persistence; nine themes, fixed layout, expanded sidebar space and live muted AudioWorklet isolation.');app.exit(0);
   }catch(error){console.error(error.stack);console.error(errors);await capture('observatory-failure.png');app.exit(1);}
 });

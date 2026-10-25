@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { HISTORICAL_EVENTS, HISTORICAL_SOURCES, historicalElapsed, normalizeMoments, parseMomentDate, capsuleIsOpen } from '../src/time-machine-data.mjs';
 
 test('historical records have primary-source keys, explicit precision and UTC instants', () => {
-  assert.equal(HISTORICAL_EVENTS.length,32);
-  assert.equal(new Set(HISTORICAL_EVENTS.map(event=>event.id)).size,32);
+  assert.equal(HISTORICAL_EVENTS.length,96);
+  assert.equal(new Set(HISTORICAL_EVENTS.map(event=>event.id)).size,96);
   assert.deepEqual(HISTORICAL_EVENTS.map(event=>event.epoch),HISTORICAL_EVENTS.map(event=>event.epoch).sort((a,b)=>a-b));
   for (const event of HISTORICAL_EVENTS) {
     assert.ok(event.source.startsWith('tm'));
@@ -36,4 +36,15 @@ test('capsules open exactly at their date while ordinary moments remain readable
   const capsule = {kind:'capsule',epoch:1000};
   assert.equal(capsuleIsOpen(capsule,999),false); assert.equal(capsuleIsOpen(capsule,1000),true);
   assert.equal(capsuleIsOpen({kind:'moment',epoch:1000},0),true);
+});
+
+test('expanded science archive preserves documented event types and UTC date boundaries', () => {
+  const find = id => HISTORICAL_EVENTS.find(event => event.id === id);
+  assert.equal(find('einstein-special').date,'1905-06-30');
+  assert.equal(find('einstein-special').factLabel,'PAPER RECEIVED BY THE JOURNAL');
+  assert.equal(find('cesium-paper').date,'1955-08-13');
+  assert.equal(find('hayabusa-return').date,'2020-12-05');
+  assert.equal(find('kepler-launch').date,'2009-03-07');
+  assert.equal(find('first-leap-second').precision,'day');
+  for (const category of ['Time science','Astronomy']) assert.equal(HISTORICAL_EVENTS.filter(event=>event.category===category).length,12);
 });

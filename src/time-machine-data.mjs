@@ -1,3 +1,4 @@
+import { ADDITIONAL_JOURNEYS } from './time-machine-expansion.mjs';
 import sources from '../assets/time-machine/sources.json' with { type:'json' };
 export const HISTORICAL_SOURCES = Object.freeze(sources);
 const dateLabel = new Intl.DateTimeFormat('en-GB',{timeZone:'UTC',day:'2-digit',month:'short',year:'numeric'});
@@ -39,6 +40,7 @@ export const HISTORICAL_EVENTS = Object.freeze([
   record('ingenuity','2021-04-19','The Wright moment on Mars','Space','helicopter','Jezero Crater, Mars','tmIngenuity','FLIGHT FINDS ANOTHER PLANET','Ingenuity rises into the thin Martian atmosphere. The small helicopter achieves the first powered, controlled aircraft flight on a world beyond Earth.','Ingenuity','FIRST POWERED, CONTROLLED FLIGHT ON ANOTHER PLANET'),
   record('webb','2021-12-25','A golden eye leaves Earth','Space','telescope','Kourou, French Guiana','tmWebb','A JOURNEY TOWARD ANCIENT LIGHT','An Ariane 5 launches the James Webb Space Telescope. Its folded mirror and sunshield begin their journey toward an observing location near the Sun–Earth L2 point.','James Webb','AN INFRARED OBSERVATORY LAUNCHES','12:20'),
   record('webb-images','2022-07-12','Ancient light, a new view','Space','telescope','NASA / ESA / CSA Webb collaboration','tmWebbImages','THE FIRST FULL SCIENCE IMAGE SET','Webb’s first full set of scientific images and spectra is released. Galaxies, stellar nurseries and an exoplanet atmosphere introduce the observatory’s scientific capabilities.','Webb’s first image set','FULL SCIENCE RELEASE AFTER THE DEEP-FIELD PREVIEW'),
+  ...ADDITIONAL_JOURNEYS.map(event => record(event.id,event.date,event.title,event.category,event.scene,event.place,event.source,event.era,event.detail,event.fact,event.factLabel)),
 ].sort((a,b) => a.epoch-b.epoch));
 const DAY = 86400000;
 export function historicalElapsed(event, now) {

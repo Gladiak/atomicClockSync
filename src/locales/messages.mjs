@@ -1,3 +1,5 @@
+import { expandedJourneyMessages } from './time-machine-expansion.mjs';
+import { receptionLabMessages } from './reception-lab.mjs';
 import { lightTravelMessages } from './light-travel.mjs';
 // Offline interface messages. English source text is the stable lookup key.
 const coreMessages = {
@@ -6289,4 +6291,4 @@ const coreMessages = {
   }
 };
 
-export const messages = { ...coreMessages, ...lightTravelMessages };
+export const messages = { ...coreMessages, ...lightTravelMessages, ...receptionLabMessages, ...expandedJourneyMessages };

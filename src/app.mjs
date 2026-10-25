@@ -6,6 +6,7 @@ import { createIssView } from './iss-view.mjs';
 import { createBackInTimeView } from './back-in-time.mjs';
 import { createMoonView } from './moon-view.mjs';
 import { createTimeMachineView } from './time-machine.mjs';
+import { createReceptionLab } from './reception-lab.mjs';
 import { createLightTravelView } from './light-travel.mjs';
 import { createSectionTransitions } from './section-transitions.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, getLanguage, setLanguage, onLanguageChange, localizeDocument, localizeStoredMessage } from './i18n.mjs';
@@ -65,6 +66,20 @@ const timeMachineView = createTimeMachineView({ getNow: now, persist, notify });
 const lightTravelView = createLightTravelView({ getNow:now, notify, getReference:() => reference
   ? (now()-reference.nowMs < 30*60000 ? t('NTP verified') : t('NTP check needed')) : t('System clock · unverified') });
 
+const receptionLab = createReceptionLab({
+  getData: () => ({history,profiles,locked:Boolean(session)||busy}),openTrial,goTo:navigate,
+  prepare: (trial,settings) => {
+    if(session||busy)return;
+    if(trial.snapshot.profileId&&!profiles.some(profile=>profile.id===trial.snapshot.profileId))return;
+    if(![...$('audio-output').options].some(option=>option.value===settings.deviceId)){
+      notify(t('The baseline output is unavailable. Choose a trial using an available output.'),true);return;
+    }
+    applyConfiguration(settings,trial.snapshot.profileId);
+    navigate('sync');
+    notify(t('Audio settings prepared. Check the watch, placement and system volume before starting.'));
+  }
+});
+
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 function persist(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); return true; }
@@ -93,6 +108,7 @@ function navigate(page) {
     'time-machine': [t("Time Machine"), t("Some moments change the world. Others change your world.")],
     iss: [t("An observatory in orbit"), t("Track our orbital outpost. Discover your next encounter with the ISS.")],
     'back-in-time': [t("Back in Time"), t("A little less precision. A lot more temporal displacement.")],
+    'reception-lab': [t('Learn from every reception'),t('Compare your GET and ERR results. Change one audio setting and try again.')],
     history: [t("Your synchronization history"), t("Your trials, stored only on this device.")],
     profiles: [t("A profile for every watch"), t("Save the settings and placement that work.")],
     trial: [t("Trial details"), t("The settings used and the result observed on your Casio.")],
@@ -118,6 +134,7 @@ function navigate(page) {
   moonView.setVisible(page === 'moon');
   timeMachineView.setVisible(page === 'time-machine');
   lightTravelView.setVisible(page === 'light-travel');
+  receptionLab.setVisible(page === 'reception-lab');
   transitionSection(previousPage, $(`page-${page}`));
   window.scrollTo(0, 0);
 }
@@ -148,6 +165,7 @@ function setControls() {
   $('confirmed-button').hidden = !session;
   $('transmit-dot').className = `signal-dot ${session ? 'active' : 'muted'}`;
   $('session-dot').classList.toggle('signal-dot', Boolean(session));
+  receptionLab.refresh();
   $('status-badge').classList.toggle('transmitting', Boolean(session));
 }
 
@@ -232,6 +250,7 @@ async function stop(status = 'stopped', reason = '') {
 }
 
 function renderHistory() {
+  receptionLab.refresh();
   $('history-list').replaceChildren();
   $('clear-history').hidden = !history.length;
   historyPage = Math.max(0, Math.min(historyPage, Math.ceil(history.length / 8) - 1));
@@ -276,6 +295,7 @@ function fillFacts(container, entries) {
 }
 
 function renderProfileOptions() {
+  receptionLab.refresh();
   for (const id of ['profile-select', 'profile-edit-select']) {
     const select = $(id);
     select.replaceChildren(new Option(id === 'profile-select' ? t("Custom settings") : t("New profile"), ''));

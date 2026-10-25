@@ -8,20 +8,20 @@ AtomicClockSync is a **JavaScript and Electron desktop app** that helps synchron
 
 ## Ready-to-use applications
 
-Current version: **1.9.0**.
+Current version: **1.10.0**.
 
-- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.9.0-arm64-mac.zip`.
-- Windows x64 portable: `release/AtomicClockSync-1.9.0-windows-x64-portable.exe`.
-- Linux x64 portable: `release/AtomicClockSync-1.9.0-linux-x86_64.AppImage`.
-- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-1.9.0-linux-amd64.deb`.
-- Fedora/openSUSE x64: `release/AtomicClockSync-1.9.0-linux-x86_64.rpm`.
+- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.10.0-arm64-mac.zip`.
+- Windows x64 portable: `release/AtomicClockSync-1.10.0-windows-x64-portable.exe`.
+- Linux x64 portable: `release/AtomicClockSync-1.10.0-linux-x86_64.AppImage`.
+- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-1.10.0-linux-amd64.deb`.
+- Fedora/openSUSE x64: `release/AtomicClockSync-1.10.0-linux-x86_64.rpm`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
 
 The Windows build was produced on macOS. Its x64 architecture, embedded sources and archive integrity were checked, but it has not been run on Windows. It has no Windows digital signature. The portable executable requires no installation; profiles and history are stored in the local user profile rather than inside the executable.
 
-On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-1.9.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-1.9.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-1.9.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
+On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-1.10.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-1.10.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-1.10.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
 
 ## Stations
 
@@ -65,6 +65,16 @@ Select a watch from the toolbar in **Synchronize** to restore its profile. Furth
 A trial marked **GET** also saves the last successful configuration for its associated profile. Restore it from the profile card. If volume changed during the trial, restoration uses its final value; history retains the initial value, final value and changes.
 
 If a saved output device is unavailable, the app selects the system output and shows a notice. The saved profile is not overwritten automatically.
+
+## Reception Lab
+
+Use **Reception Lab → Overview** to filter saved trials by watch or station. GET percentage is GET divided by GET + ERR, using only the outcomes you entered. Unverified trials never count as failures. Configuration groups require a recorded snapshot, uninterrupted audio and constant app volume; different watches and unlinked attempts are kept separate. The list prioritizes verified sample size, not an automatic recommendation. Fewer than three verified outcomes are marked as a small sample.
+
+**Compare A/B** highlights recorded differences and shows the actual transmission duration. Missing placement/system-volume notes, different watches, changing volume or interrupted audio prevent a clean interpretation. Open either trial's details to edit GET/ERR; returning to the laboratory recomputes the results.
+
+In **Next trial**, choose a stable baseline and change volume, channel, waveform or selected duration. The proposed value must differ from the original and remain valid for the station. **Prepare audio settings** restores the baseline audio configuration with that single change and opens Synchronize. It does not start transmission or overwrite saved profile settings. Check the watch, physical output, placement and system volume manually before starting. A removed profile or unavailable output blocks preparation. After the attempt, record its outcome in History and compare it with the baseline.
+
+The feature uses the existing local archive and adds no tracking or network requests. Default-output identity, manually noted conditions and differing actual durations limit what can be inferred from a group or comparison.
 
 ## Complete trial history
 
@@ -179,7 +189,7 @@ Click an upcoming phase to preview its instant, use the UTC date and time-of-day
 
 ## Time Machine
 
-Select **Time Machine → Historical journeys** to browse 32 documented events. Search titles, dates or places, or filter by Space / Discovery / Clocks & calendars. Each event has an original illustration, a story, a documented date and a button that opens its primary source externally. **Explore this moment** previews the historical clock; **Return to now** restores the real reference. Leaving the section ends this reconstruction. The elapsed counter always uses the real present.
+Select **Time Machine → Historical journeys** to browse 96 documented events. Search titles, dates or places, or filter by Space / Astronomy / Time science / Discovery / Clocks & calendars. Each event has an original illustration, a story, a documented date and a button that opens its primary source externally. **Explore this moment** previews the historical clock; **Return to now** restores the real reference. Leaving the section ends this reconstruction. The elapsed counter always uses the real present.
 
 Records carry an explicit precision. Date-only records count UTC calendar-day boundaries and do not show hours or seconds. Approximate times are marked and rounded to elapsed minutes; minute-resolution records omit seconds. Second-resolution events retain seconds. Counters follow JavaScript UTC time with 86,400-second days and do not model leap seconds.
 
@@ -222,6 +232,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **Synchronize:** watch and station selection, clock, envelope, start/stop, volume, channel and duration.
 - **My watches:** profiles, notes and restoration of the last successful settings.
 - **Inside the signal:** complete time code, current symbol, fields and parity. BPC displays 20 symbols; MSF displays A/B pairs.
+- **Reception Lab:** per-watch results, configuration groups, A/B comparison and preparation with one audio-setting change.
 - **History:** all trials, pagination and separate details, editable outcomes and undoable clearing.
 - **World View:** day/night atlas, offline city search, station range rings and seasonal timeline.
 - **ISS Observatory:** tracking, local passes and sky diagram, station background and educational time in orbit.
@@ -279,8 +290,9 @@ Electron `localStorage` is kept in `Local Storage/leveldb` inside that directory
 ## Tests and builds
 
 ```sh
-npm test                 # 65 protocol, PCM, profile, orbit, movie-time, light-time and translation checks
+npm test                 # 74 protocol, PCM, profile, orbit, light-time, reception statistics and translation checks
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
+npm run test:reception-lab # Honest rates, filtering, A/B, preparation, languages and themes
 npm run test:languages   # Six languages, layout, Japanese font, persistence and live audio
 npm run test:world       # Offline atlas, search worker, timeline and audio isolation
 npm run test:iss         # ISS network states, passes, nine themes and audio isolation

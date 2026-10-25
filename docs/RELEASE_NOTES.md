@@ -1,5 +1,16 @@
 # Release notes
 
+## 1.10.0 — Reception Lab and 96 historical journeys
+
+- Tripled Time Machine from 32 to 96 journeys, adding 64 dated records across relativity, quantum timescales, atomic clocks, UTC/GPS, astronomy and space exploration. Added Time science and Astronomy filters, seven new vector illustrations and a capsule scene using the existing artwork.
+- Added five-language translations for every new narrative and caption, plus a chronological catalogue of all 96 events and their 87 institutional/publication references. New records deliberately use day precision; receipt/publication/announcement dates and UTC/local-date differences are identified explicitly.
+- Added offline per-watch/station statistics from explicitly entered GET/ERR outcomes, with separate unverified counts. Groups preserve watch identity and recorded conditions, prioritize verified sample size and mark small samples; missing snapshots, interrupted audio and live volume changes are excluded from groups.
+- Added A/B snapshot comparison, highlighted setting differences, actual transmission duration and links to edit historical outcomes. Missing manual notes and inconsistent conditions are identified without implying a controlled experiment.
+- Added baseline preparation changing exactly one supported audio setting. Saved profile settings remain intact; preparation does not start transmission, cannot run during a session and blocks removed profiles or unavailable outputs.
+- Added six-language/nine-theme UI, a dedicated sidebar icon and a compact explanation panel. Added eight unit tests and a native laboratory suite for statistics, edge cases, preparation, history updates, persistence and audio isolation.
+
+Validation: 74 unit tests, native desktop checks for Reception Lab and Time Machine, six languages and nine themes. Individual macOS Apple Silicon, Windows x64 portable and Linux x64 AppImage, DEB and RPM downloads are provided with SHA-256 checksums. macOS is ad-hoc signed without notarization; Windows is unsigned. Linux packaged UI and muted audio are tested in Docker; native Windows execution, RPM installation and physical watch reception remain untested.
+
 ## 1.9.0 — Light Travel, languages and fluid navigation
 
 - Added Light Travel: an original cinematic Solar System with nine selectable light sources, an animated photon trail, arrival ripples and source departure/reflection versus Earth reception clocks. Date-dependent light times are calculated offline, with UTC previews from 1900–2100 and a six-month jump.

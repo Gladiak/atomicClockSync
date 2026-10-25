@@ -60,7 +60,7 @@ app.whenReady().then(async () => {
       assert.equal(await run("JSON.parse(localStorage.getItem('atomic.language'))"),language);
       assert.equal(await run("document.getElementById('profile-name').value"),'History');
       assert.equal(await run("document.getElementById('tm-note').value"),'Private untranslated message');
-      for(const page of ['settings','sync','profiles','signal','world','moon','iss','time-machine','back-in-time','light-travel','history','guide']) {
+      for(const page of ['settings','sync','profiles','signal','world','moon','iss','time-machine','back-in-time','light-travel','reception-lab','history','guide']) {
         await click(page);
         if(page==='world') await until("document.getElementById('world-loading').hidden");
         if(page==='iss') await run("document.querySelector('[data-iss-tab=tracking]').click()");
@@ -80,7 +80,7 @@ app.whenReady().then(async () => {
       await click('time-machine');
       await run("document.querySelector('[data-tm-tab=personal]').click()"); await fits(language,'personal');
       await run("document.querySelector('[data-tm-tab=history]').click()");
-      assert.equal(await run("document.querySelectorAll('.tm-event').length"),32);
+      assert.equal(await run("document.querySelectorAll('.tm-event').length"),96);
       const search = {it:'Aquila',fr:'Aigle',de:'Adler',es:'Águila',ja:'イーグル'}[language];
       if(search) {
         await run(`document.getElementById('tm-search').value=${JSON.stringify(search)};document.getElementById('tm-search').dispatchEvent(new Event('input'))`);
@@ -90,6 +90,7 @@ app.whenReady().then(async () => {
       for(const id of await run("[...document.querySelectorAll('.tm-event')].map(node=>node.dataset.event)")) {
         await run(`document.querySelector('[data-event="${id}"]').click()`); await fits(language,'journey-'+id);
       }
+      await capture(`${language}-time-machine-expanded`);
       assert.equal(await run("localStorage.getItem('atomic.preferences')"),prefs);
     }
     await click('settings');
@@ -108,6 +109,6 @@ app.whenReady().then(async () => {
     fs.writeFileSync('artifacts/languages/layout.json',JSON.stringify(layout,null,2));
     fs.writeFileSync('artifacts/languages/untranslated.json',JSON.stringify(untranslated,null,2));
     assert.deepEqual(layout,[],'Localized layout overflow'); assert.deepEqual(untranslated,[],'Untranslated interface messages'); assert.deepEqual(errors,[]);
-    console.log('PASS: six languages, all sections, 32 journeys, long translations, Japanese glyphs, nine themes, local persistence, native menu, unsaved personal text and continuous muted transmission.'); app.exit(0);
+    console.log('PASS: six languages, all sections, 96 journeys, long translations, Japanese glyphs, nine themes, local persistence, native menu, unsaved personal text and continuous muted transmission.'); app.exit(0);
   } catch(error) { fs.mkdirSync('artifacts/languages',{recursive:true}); fs.writeFileSync('artifacts/languages/layout.json',JSON.stringify(layout,null,2)); console.error(error.stack);console.error(errors); await capture('failure'); app.exit(1); }
 });

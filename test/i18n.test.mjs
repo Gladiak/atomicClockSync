@@ -14,7 +14,7 @@ test('all localized messages preserve interpolation fields in all five translati
   assert.equal(t('Unknown personal text <b>kept as text</b>'), 'Unknown personal text <b>kept as text</b>');
   assert.equal(t('Value {0}', '$&'), 'Value $&');
 });
-test('all 32 historical journey titles, stories and exhibit captions are translated', () => {
+test('all 96 historical journey titles, stories and exhibit captions are translated', () => {
   for (const event of HISTORICAL_EVENTS) for (const field of ['title','detail','era','factLabel']) {
     assert.ok(Object.hasOwn(messages, event[field]), `${event.id}: ${field}`);
   }

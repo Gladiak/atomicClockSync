@@ -122,5 +122,229 @@
   "tmWebbImages": {
     "label": "NASA",
     "url": "https://svs.gsfc.nasa.gov/14180/"
+  },
+  "tmPlanckQuantum": {
+    "label": "Max Planck Society",
+    "url": "https://www.max-planck.mpg.de/seite11/english.html"
+  },
+  "tmEinstein1905": {
+    "label": "American Institute of Physics",
+    "url": "https://history.aip.org/exhibits/einstein/chron-1905.htm"
+  },
+  "tmEinsteinGravity": {
+    "label": "Max Planck Institute",
+    "url": "https://einstein-virtuell.mpiwg-berlin.mpg.de/VEA/SC854034901_MOD1479463207_SEQ923184502_SL2034834684_en.html"
+  },
+  "tmEddington": {
+    "label": "ESA",
+    "url": "https://www.esa.int/Science_Exploration/Space_Science/29_May"
+  },
+  "tmPoundRebka": {
+    "label": "Physical Review Letters",
+    "url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.4.337"
+  },
+  "tmFlyingClocks": {
+    "label": "Science · Hafele & Keating",
+    "url": "https://doi.org/10.1126/science.177.4044.168"
+  },
+  "tmRelativityStairs": {
+    "label": "NIST",
+    "url": "https://www.nist.gov/news-events/news/2010/09/nist-pair-aluminum-atomic-clocks-reveal-einsteins-relativity-personal-scale"
+  },
+  "tmStrontiumClock": {
+    "label": "NIST / JILA",
+    "url": "https://www.nist.gov/news-events/news/2015/04/getting-better-all-time-jila-strontium-atomic-clock-sets-new-records"
+  },
+  "tmMillimetreTime": {
+    "label": "NIST / JILA",
+    "url": "https://www.nist.gov/news-events/news/2022/02/jila-atomic-clocks-measure-einsteins-general-relativity-millimeter-scale"
+  },
+  "tmAttosecond": {
+    "label": "Nobel Foundation",
+    "url": "https://www.nobelprize.org/prizes/physics/2023/press-release/"
+  },
+  "tmOpticalClock2024": {
+    "label": "NIST / JILA",
+    "url": "https://www.nist.gov/news-events/news/2024/07/worlds-most-accurate-and-precise-atomic-clock-pushes-new-frontiers-physics"
+  },
+  "tmAmmoniaClock": {
+    "label": "NIST",
+    "url": "https://www.nist.gov/timelinelist"
+  },
+  "tmCesiumPaper": {
+    "label": "Nature · Essen & Parry",
+    "url": "https://www.nature.com/articles/176280a0"
+  },
+  "tmQuartzAstron": {
+    "label": "Seiko Museum",
+    "url": "https://museum.seiko.co.jp/en/knowledge/Quartz01/"
+  },
+  "tmUtc1972": {
+    "label": "NIST",
+    "url": "https://www.nist.gov/pml/time-and-frequency-division/popular-links/walk-through-time/walk-through-time-world-time-scales"
+  },
+  "tmLeapSecond": {
+    "label": "NIST",
+    "url": "https://www.nist.gov/pml/time-and-frequency-division/time-realization/leap-seconds"
+  },
+  "tmNistF1": {
+    "label": "NIST",
+    "url": "https://www.nist.gov/news-events/news/1999/12/nist-f1-cesium-fountain-clock"
+  },
+  "tmGpsSa": {
+    "label": "GPS.gov / USAF",
+    "url": "https://archive.gps.gov/systems/gps/modernization/sa/data/"
+  },
+  "tmSiVote": {
+    "label": "BIPM",
+    "url": "https://www.bipm.org/documents/20126/35655029/CGPM26.pdf/f1d8d7e6-2570-9479-9ee9-bb8d86138fe9"
+  },
+  "tmNeptuneDiscovery": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/history/175-years-ago-astronomers-discover-neptune-the-eighth-planet/"
+  },
+  "tmPlutoDiscovery": {
+    "label": "Lowell Observatory",
+    "url": "https://lowell.edu/this-week-in-astronomy-history-feb-15-21/"
+  },
+  "tmPulsar": {
+    "label": "University of Cambridge",
+    "url": "https://www.cam.ac.uk/stories/journeysofdiscovery-pulsars"
+  },
+  "tmPegasi": {
+    "label": "University of Geneva",
+    "url": "https://www.unige.ch/medias/en/2025/la-premiere-exoplanete-etait-decouverte-il-y-30-ans-lunige"
+  },
+  "tmGw170817": {
+    "label": "LIGO / Caltech",
+    "url": "https://www.ligo.caltech.edu/news/ligo20171016"
+  },
+  "tmSagittarius": {
+    "label": "ESO / EHT",
+    "url": "https://www.eso.org/public/news/eso2208-eht-mw/"
+  },
+  "tmCobe": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/cobe/"
+  },
+  "tmWmap": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/wmap/"
+  },
+  "tmKepler": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/kepler/in-depth/"
+  },
+  "tmPlanckLaunch": {
+    "label": "ESA",
+    "url": "https://www.esa.int/Enabling_Support/Operations/Planck_operations"
+  },
+  "tmCheops": {
+    "label": "ESA",
+    "url": "https://www.esa.int/Newsroom/Press_Releases/Liftoff_for_Cheops_ESA_s_exoplanet_mission"
+  },
+  "tmEuclid": {
+    "label": "ESA",
+    "url": "https://www.esa.int/Newsroom/Press_Releases/ESA_s_Euclid_lifts_off_on_quest_to_unravel_the_cosmic_mystery_of_dark_matter_and_dark_energy"
+  },
+  "tmExplorerOne": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/explorer-1/"
+  },
+  "tmLunaOne": {
+    "label": "NASA / NSSDC",
+    "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunarussr.html"
+  },
+  "tmMarinerTwo": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/mariner-2/"
+  },
+  "tmMarinerFour": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/mariner-4/"
+  },
+  "tmLunaNine": {
+    "label": "NASA / NSSDC",
+    "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunarussr.html"
+  },
+  "tmApolloThirteen": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/mission/apollo-13/"
+  },
+  "tmVeneraSeven": {
+    "label": "NASA / HEASARC",
+    "url": "https://heasarc.gsfc.nasa.gov/docs/heasarc/headates/1970.html"
+  },
+  "tmMarinerNine": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/mariner-9/"
+  },
+  "tmApolloSeventeen": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/mission/apollo-17/"
+  },
+  "tmPioneerJupiter": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/pioneer-10/"
+  },
+  "tmApolloSoyuz": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/missions/apollo-soyuz/the-apollo-soyuz-mission/"
+  },
+  "tmVikingOne": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/viking-1/"
+  },
+  "tmGiotto": {
+    "label": "ESA",
+    "url": "https://www.esa.int/Science_Exploration/Space_Science/Giotto_overview"
+  },
+  "tmGalileoJupiter": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/galileo/"
+  },
+  "tmCassiniSaturn": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/cassini/quick-facts/"
+  },
+  "tmHuygensTitan": {
+    "label": "ESA",
+    "url": "https://www.esa.int/Newsroom/Press_Releases/Europe_reaches_new_frontier_Huygens_lands_on_Titan"
+  },
+  "tmMessengerOrbit": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/messenger/"
+  },
+  "tmCuriosityLanding": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/msl-curiosity/"
+  },
+  "tmOrionFlight": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/specials/orionfirstflight/"
+  },
+  "tmRosettaFinale": {
+    "label": "ESA",
+    "url": "https://rosetta.esa.int/"
+  },
+  "tmParkerLaunch": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/parker-solar-probe/"
+  },
+  "tmDartImpact": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/dart/"
+  },
+  "tmArtemisOne": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/mission/artemis-i/"
+  },
+  "tmBennuReturn": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/osiris-rex/"
+  },
+  "tmHayabusaReturn": {
+    "label": "JAXA",
+    "url": "https://www.hayabusa2.jaxa.jp/en/news/schedule/"
   }
 }

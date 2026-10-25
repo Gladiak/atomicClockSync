@@ -43,6 +43,7 @@ export function createTimeMachineView({ getNow, persist, notify }) {
     const now = getNow(), elapsed = historicalElapsed(selected, now);
     for (const [id, row] of rows) row.setAttribute('aria-pressed', String(id === selected.id));
     $('stage').dataset.scene = selected.scene;
+    $('stage').dataset.event = selected.id;
     $('era').textContent = t(selected.era);
     $('title').textContent = t(selected.title);
     $('place').textContent = t(selected.place);

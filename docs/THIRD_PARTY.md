@@ -31,42 +31,112 @@ Stories are original short summaries and historical scenes are original SVG illu
 
 ### Full historical catalogue
 
-The 32 journeys are ordered chronologically. Early date-only records are displayed as recorded, with UTC calendar-day counting used as the app convention; this does not assert that UTC existed in those eras. Sources are shared between the UI labels and Electron’s external-link allowlist in `assets/time-machine/sources.json`.
+The 96 journeys are ordered chronologically across Space, Astronomy, Time science, Discovery and Timekeeping. Their 87 institutional and publication references are shared between the UI and Electron’s external-link allowlist in `assets/time-machine/sources.json`. Original added narratives and metadata are in `src/time-machine-expansion.mjs`; their five translations are in `src/locales/time-machine-expansion.mjs`.
+
+Day-only dates use UTC calendar-day counting without asserting that UTC existed in those eras. The 1905 Einstein records identify journal receipt dates, not publication dates. Pound–Rebka and Hafele–Keating use publication dates; modern NIST records use the announcement date. The 1955 caesium record is the Nature paper's publication date. The 1972 leap-second record uses calendar days, not a JavaScript representation of 23:59:60.
+
+Explorer 1 (1 February 1958), Mariner 4 (15 July 1965), Kepler (7 March 2009), Cassini (1 July 2004), MESSENGER (18 March 2011), Curiosity (6 August 2012) and Hayabusa2's capsule return (5 December 2020) follow the UTC date rather than a locally reported date. JAXA records Hayabusa2 capsule landing around 02:54 JST on 6 December: the previous date in UTC. Voyager 1's heliopause crossing is the retrospectively identified 25 August 2012 boundary event; it does not mean the spacecraft left the entire Solar System or the Oort Cloud.
+
+New illustrations of curved spacetime, quantum transitions, eclipse geometry, planetary encounters, radio astronomy, the microwave sky and landers are schematic SVG art, not observational images or instrument readings.
 
 | Date | Journey | Precision | Primary source |
 | --- | --- | --- | --- |
 | 1582-10-15 | The calendar skips ten days | day | [Vatican Observatory](https://www.vaticanobservatory.va/en/history/astronomy-calendars-and-religion) |
 | 1610-01-07 | Small lights around Jupiter | day | [NASA](https://www.nasa.gov/history/410-years-ago-galileo-discovers-jupiters-moons/) |
 | 1783-11-21 | The sky becomes a destination | day | [Smithsonian](https://airandspace.si.edu/stories/editorial/presidential-writings-reveal-early-interest-ballooning) |
+| 1846-09-23 | A calculation finds a planet | day | [NASA](https://www.nasa.gov/history/175-years-ago-astronomers-discover-neptune-the-eighth-planet/) |
 | 1883-11-18 | The day the clocks agreed | day | [Library of Congress](https://www.loc.gov/item/today-in-history/november-18) |
+| 1900-12-14 | Energy comes in small packets | day | [Max Planck Society](https://www.max-planck.mpg.de/seite11/english.html) |
 | 1903-12-17 | Twelve seconds that changed flight | approximate | [NPS](https://www.nps.gov/articles/wrightflyer.htm) |
+| 1905-06-30 | Distant clocks need a new agreement | day | [American Institute of Physics](https://history.aip.org/exhibits/einstein/chron-1905.htm) |
+| 1905-09-27 | Mass and energy share a secret | day | [American Institute of Physics](https://history.aip.org/exhibits/einstein/chron-1905.htm) |
+| 1915-11-25 | Gravity becomes geometry | day | [Max Planck Institute](https://einstein-virtuell.mpiwg-berlin.mpg.de/VEA/SC854034901_MOD1479463207_SEQ923184502_SL2034834684_en.html) |
+| 1919-05-29 | An eclipse puts gravity to the test | day | [ESA](https://www.esa.int/Science_Exploration/Space_Science/29_May) |
+| 1930-02-18 | A moving speck reveals Pluto | day | [Lowell Observatory](https://lowell.edu/this-week-in-astronomy-history-feb-15-21/) |
+| 1949-01-06 | An atom-inspired clock begins to tick | day | [NIST](https://www.nist.gov/timelinelist) |
+| 1955-08-13 | Caesium offers a steadier reference | day | [Nature · Essen & Parry](https://www.nature.com/articles/176280a0) |
 | 1957-10-04 | Earth gets a new companion | day | [NASA](https://www.nasa.gov/history/monograph10/sputnite.html) |
+| 1958-02-01 | A small satellite finds a radiation belt | day | [NASA](https://science.nasa.gov/mission/explorer-1/) |
+| 1959-01-02 | A missed Moon opens a new path | day | [NASA / NSSDC](https://nssdc.gsfc.nasa.gov/planetary/lunar/lunarussr.html) |
+| 1960-04-01 | Gravity changes the colour of light | day | [Physical Review Letters](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.4.337) |
 | 1961-04-12 | One human. One orbit. | minute | [ESA](https://www.esa.int/About_Us/50_years_of_ESA/50_years_of_humans_in_space/The_flight_of_Vostok_1) |
+| 1962-12-14 | Venus meets a visitor from Earth | day | [NASA](https://science.nasa.gov/mission/mariner-2/) |
 | 1963-06-16 | Seagull reaches the stars | day | [NASA](https://www.nasa.gov/history/sally-ride-first-american-woman-in-space/) |
 | 1965-03-18 | Outside the spacecraft | day | [NASA](https://www.nasa.gov/history/space-station-20th-spacewalking-history/) |
+| 1965-07-15 | Mars comes into close-up | day | [NASA](https://science.nasa.gov/mission/mariner-4/) |
+| 1966-02-03 | A camera survives the lunar landing | day | [NASA / NSSDC](https://nssdc.gsfc.nasa.gov/planetary/lunar/lunarussr.html) |
+| 1967-11-28 | The sky sends a remarkably regular beat | day | [University of Cambridge](https://www.cam.ac.uk/stories/journeysofdiscovery-pulsars) |
 | 1968-12-21 | Round the Moon and back | minute | [NASA](https://www.nasa.gov/missions/apollo/apollo-8-mission-details/) |
 | 1969-07-20 | The Eagle has landed | second | [NASA](https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm) |
 | 1969-07-21 | A footprint beyond Earth | second | [NASA](https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm) |
 | 1969-10-29 | Two letters connect two worlds | day | [UCLA](https://www.lk.cs.ucla.edu/internet_first_words.html) |
+| 1969-12-25 | A quartz crystal reaches the wrist | day | [Seiko Museum](https://museum.seiko.co.jp/en/knowledge/Quartz01/) |
+| 1970-04-17 | A damaged spacecraft brings its crew home | day | [NASA](https://www.nasa.gov/mission/apollo-13/) |
+| 1970-12-15 | A signal rises from the Venusian furnace | day | [NASA / HEASARC](https://heasarc.gsfc.nasa.gov/docs/heasarc/headates/1970.html) |
+| 1971-11-14 | Another planet gains an orbiter | day | [NASA](https://science.nasa.gov/mission/mariner-9/) |
+| 1972-01-01 | Atomic seconds meet Earth’s rotation | day | [NIST](https://www.nist.gov/pml/time-and-frequency-division/popular-links/walk-through-time/walk-through-time-world-time-scales) |
+| 1972-06-30 | A minute receives an extra second | day | [NIST](https://www.nist.gov/pml/time-and-frequency-division/time-realization/leap-seconds) |
+| 1972-07-14 | Clocks return with different times | day | [Science · Hafele & Keating](https://doi.org/10.1126/science.177.4044.168) |
+| 1972-12-07 | Apollo leaves Earth one last time | day | [NASA](https://www.nasa.gov/mission/apollo-17/) |
+| 1973-12-04 | The giant planet receives its first visitor | day | [NASA](https://science.nasa.gov/mission/pioneer-10/) |
+| 1975-07-17 | Two spacecraft share a doorway | day | [NASA](https://www.nasa.gov/missions/apollo-soyuz/the-apollo-soyuz-mission/) |
+| 1976-07-20 | A laboratory opens on Mars | day | [NASA](https://science.nasa.gov/mission/viking-1/) |
 | 1977-08-20 | A grand tour begins | second | [NASA](https://science.nasa.gov/mission/voyager/voyager-2/) |
 | 1977-09-05 | A message to the stars | second | [NASA](https://science.nasa.gov/mission/voyager/voyager-1/) |
+| 1979-03-05 | Jupiter’s moons become active worlds | day | [NASA](https://science.nasa.gov/mission/voyager/voyager-1/) |
+| 1980-11-12 | A spacecraft reads Saturn’s rings | day | [NASA](https://science.nasa.gov/mission/voyager/voyager-1/) |
 | 1981-04-12 | A spacecraft with wings | second | [NASA](https://www.nasa.gov/mission/sts-1/) |
+| 1986-01-24 | A sideways world fills the instruments | day | [NASA](https://science.nasa.gov/mission/voyager/voyager-2/) |
+| 1986-03-14 | Halley reveals its dark nucleus | day | [ESA](https://www.esa.int/Science_Exploration/Space_Science/Giotto_overview) |
+| 1989-08-25 | The grand tour reaches Neptune | day | [NASA](https://science.nasa.gov/mission/voyager/voyager-2/) |
+| 1989-11-18 | A satellite listens to the Big Bang’s echo | day | [NASA](https://science.nasa.gov/mission/cobe/) |
 | 1990-04-24 | An observatory above the air | second | [NASA](https://science.nasa.gov/mission/hubble/observatory/missions-to-hubble/deployment/) |
 | 1993-04-30 | A world of connections | day | [CERN](https://home.cern/science/computing/the-birth-of-the-web) |
+| 1995-10-06 | Another Sun has a planet | day | [University of Geneva](https://www.unige.ch/medias/en/2025/la-premiere-exoplanete-etait-decouverte-il-y-30-ans-lunige) |
+| 1995-12-07 | A probe dives as an orbiter arrives | day | [NASA](https://science.nasa.gov/mission/galileo/) |
 | 1997-07-04 | Small wheels on a red world | day | [NASA](https://science.nasa.gov/mission/mars-pathfinder/) |
+| 1999-12-29 | A fountain helps define the second | day | [NIST](https://www.nist.gov/news-events/news/1999/12/nist-f1-cesium-fountain-clock) |
+| 2000-05-02 | Civilian GPS gains a clearer signal | day | [GPS.gov / USAF](https://archive.gps.gov/systems/gps/modernization/sa/data/) |
 | 2000-11-02 | A home above the world | day | [NASA](https://www.nasa.gov/humans-in-space/expedition-1-kicks-off-science-aboard-international-space-station/) |
+| 2001-06-30 | A map begins at the dawn of time | day | [NASA](https://science.nasa.gov/mission/wmap/) |
+| 2004-07-01 | Saturn becomes a long-term destination | day | [NASA](https://science.nasa.gov/mission/cassini/quick-facts/) |
+| 2005-01-14 | A parachute opens beneath alien clouds | day | [ESA](https://www.esa.int/Newsroom/Press_Releases/Europe_reaches_new_frontier_Huygens_lands_on_Titan) |
+| 2006-01-19 | A long road to Pluto begins | day | [NASA](https://science.nasa.gov/mission/new-horizons/) |
 | 2007-01-09 | A computer in your pocket | day | [Apple](https://www.apple.com/newsroom/2007/01/09Apple-Reinvents-the-Phone-with-iPhone/) |
 | 2008-09-10 | A first lap beneath the border | minute | [CERN](https://home.cern/first-beam-in-the-lhc-accelerating-science/) |
+| 2009-03-07 | A patient eye searches for other worlds | day | [NASA](https://science.nasa.gov/mission/kepler/in-depth/) |
+| 2009-05-14 | Two observatories chase ancient light | day | [ESA](https://www.esa.int/Enabling_Support/Operations/Planck_operations) |
+| 2010-09-23 | Time changes over a single step | day | [NIST](https://www.nist.gov/news-events/news/2010/09/nist-pair-aluminum-atomic-clocks-reveal-einsteins-relativity-personal-scale) |
+| 2011-03-18 | Mercury gains its first orbiter | day | [NASA](https://science.nasa.gov/mission/messenger/) |
 | 2012-07-04 | A particle steps out of theory | day | [CERN](https://home.cern/cern-experiments-observe-particle-consistent-with-long-sought-higgs-boson/) |
+| 2012-08-06 | A sky crane lowers a laboratory | day | [NASA](https://science.nasa.gov/mission/msl-curiosity/) |
+| 2012-08-25 | A spacecraft crosses the Sun’s bubble | day | [NASA](https://science.nasa.gov/mission/voyager/voyager-1/) |
 | 2014-11-12 | Touchdown on a comet | day | [ESA](https://www.esa.int/Newsroom/Press_Releases/Touchdown%21_Rosetta_s_Philae_probe_lands_on_comet) |
+| 2014-12-05 | A new capsule tests the way home | day | [NASA](https://www.nasa.gov/specials/orionfirstflight/) |
+| 2015-04-21 | A colder clock sees finer time | day | [NIST / JILA](https://www.nist.gov/news-events/news/2015/04/getting-better-all-time-jila-strontium-atomic-clock-sets-new-records) |
 | 2015-07-14 | A distant point becomes a world | minute | [NASA](https://science.nasa.gov/mission/new-horizons/) |
 | 2015-09-14 | Listening to space-time | day | [LIGO / Caltech](https://www.ligo.caltech.edu/detection) |
+| 2016-09-30 | A comet escort ends on the surface | day | [ESA](https://rosetta.esa.int/) |
+| 2017-08-17 | One collision, many messengers | day | [LIGO / Caltech](https://www.ligo.caltech.edu/news/ligo20171016) |
+| 2018-08-12 | A heat shield heads toward the Sun | day | [NASA](https://science.nasa.gov/mission/parker-solar-probe/) |
+| 2018-11-16 | The world votes for natural constants | day | [BIPM](https://www.bipm.org/documents/20126/35655029/CGPM26.pdf/f1d8d7e6-2570-9479-9ee9-bb8d86138fe9) |
+| 2019-01-01 | A quiet relic meets a fast visitor | day | [NASA](https://science.nasa.gov/mission/new-horizons/) |
 | 2019-04-10 | The shadow becomes visible | day | [EHT Collaboration](https://eventhorizontelescope.org/press-release-april-10-2019-astronomers-capture-first-image-black-hole) |
 | 2019-05-20 | Nature becomes the ruler | day | [NIST](https://www.nist.gov/si-redefinition) |
+| 2019-12-18 | Known planets get a closer look | day | [ESA](https://www.esa.int/Newsroom/Press_Releases/Liftoff_for_Cheops_ESA_s_exoplanet_mission) |
+| 2020-12-05 | Ryugu sends a parcel to Earth | day | [JAXA](https://www.hayabusa2.jaxa.jp/en/news/schedule/) |
 | 2021-02-18 | A laboratory reaches Jezero | day | [NASA](https://spaceplace.nasa.gov/mars-2020/en/) |
 | 2021-04-19 | The Wright moment on Mars | day | [NASA](https://www.nasa.gov/news-release/nasas-ingenuity-mars-helicopter-succeeds-in-historic-first-flight/) |
 | 2021-12-25 | A golden eye leaves Earth | minute | [NASA](https://science.nasa.gov/mission/webb/faqs-full/) |
+| 2022-02-16 | A millimetre separates two times | day | [NIST / JILA](https://www.nist.gov/news-events/news/2022/02/jila-atomic-clocks-measure-einsteins-general-relativity-millimeter-scale) |
+| 2022-05-12 | Our galaxy’s dark heart takes shape | day | [ESO / EHT](https://www.eso.org/public/news/eso2208-eht-mw/) |
 | 2022-07-12 | Ancient light, a new view | day | [NASA](https://svs.gsfc.nasa.gov/14180/) |
+| 2022-09-26 | A deliberate impact changes an orbit | day | [NASA](https://science.nasa.gov/mission/dart/) |
+| 2022-11-16 | Orion begins a lunar rehearsal | day | [NASA](https://www.nasa.gov/mission/artemis-i/) |
+| 2023-07-01 | A new map explores the dark Universe | day | [ESA](https://www.esa.int/Newsroom/Press_Releases/ESA_s_Euclid_lifts_off_on_quest_to_unravel_the_cosmic_mystery_of_dark_matter_and_dark_energy) |
+| 2023-09-24 | A piece of an asteroid comes home | day | [NASA](https://science.nasa.gov/mission/osiris-rex/) |
+| 2023-10-03 | Light captures an electron’s moment | day | [Nobel Foundation](https://www.nobelprize.org/prizes/physics/2023/press-release/) |
+| 2024-07-01 | A lattice of light sharpens the second | day | [NIST / JILA](https://www.nist.gov/news-events/news/2024/07/worlds-most-accurate-and-precise-atomic-clock-pushes-new-frontiers-physics) |
 
 ## Back in Time film references
 
