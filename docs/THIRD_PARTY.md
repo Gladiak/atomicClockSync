@@ -1,4 +1,4 @@
-# World View data and software
+# Geographic, astronomy and ISS data and software
 
 World View is an offline vector visualization. Geographic and city data are bundled with the app. City lights are an illustrative rendering of population-weighted settlement locations, not measured light emissions or live satellite imagery.
 
@@ -44,3 +44,21 @@ python3 scripts/prepare-cities.py /path/to/cities1000.zip /path/to/admin1CodesAS
 ```
 
 Review changed data, metadata, tests, documentation counts and attribution before distributing refreshed assets.
+
+## ISS sources and orbit software
+
+- **CelesTrak GP data**, NORAD 25544, OMM-compatible JSON: <https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=JSON>. Requests are limited to at most one per two hours, with a persistent cache and provider Retry-After support. [Usage policy](https://celestrak.org/usage-policy.php).
+- **Where the ISS at**: position reports and an ISS TLE fallback, using <https://api.wheretheiss.at/v1/satellites/25544> and its `/tles` endpoint. The app requests reports at most every ten seconds while ISS Observatory is visible and backs off on failure. [Provider documentation](https://wheretheiss.at/w/developer).
+- **satellite.js 7.1.0**, Shashwat Kandadai and UCSC Jack Baskin School of Engineering — MIT. Its pure JavaScript SGP4, coordinate transforms, solar-position and shadow routines are bundled locally. The optional WASM modules are not included. Full license notice: `assets/iss/LICENSE.txt`. [Source](https://github.com/shashwatak/satellite-js).
+- Station background: [NASA facts](https://www.nasa.gov/international-space-station/space-station-facts-and-figures/), [NASA orbit tutorial](https://eol.jsc.nasa.gov/Tools/orbitTutorial.htm), [NASA sighting guidance](https://spotthestation.nasa.gov/faq.cfm), [NASA station overview](https://www.nasa.gov/international-space-station/space-station-overview/).
+- Official live-view link: [Canadian Space Agency / NASA](https://www.asc-csa.gc.ca/eng/iss/watch-live.asp). Video opens externally and can be interrupted or unavailable.
+- ACES background: [ESA mission](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/ACES_Atomic_Clock_Ensemble_in_Space), [installation on 25 April 2025](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/ACES_finds_its_home_in_orbit).
+
+The ISS is represented by an original vector schematic, not an official engineering drawing or a depiction of its current visiting-vehicle/array configuration. No NASA/ESA images, onboard telemetry, crew feed, live video or ACES clock measurements are bundled or claimed as live data. Orbital estimates, educational relativity calculations and curated mission facts are identified separately.
+
+The reproducible orbit fixture in `test/fixtures/iss-omm.json` is a CelesTrak ISS element set with epoch 24 October 2026, used only for tests. A timestamped WTIA position retrieved on 25 October 2026 is retained as a numeric reference vector in `test/iss.test.mjs`. Test fixtures are not packaged as a live-data fallback.
+
+```sh
+npm run build:iss
+npm run test:iss
+```

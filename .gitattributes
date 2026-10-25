@@ -11,3 +11,4 @@
 *.png binary
 assets/world/vendor.mjs linguist-generated=true
 assets/world/*.json linguist-generated=true
+assets/iss/vendor.mjs linguist-generated=true

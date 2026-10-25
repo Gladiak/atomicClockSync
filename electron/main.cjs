@@ -2,16 +2,23 @@ const { app, BrowserWindow, ipcMain, Menu, powerSaveBlocker, powerMonitor, shell
 const path = require('node:path');
 const { performance } = require('node:perf_hooks');
 const { synchronize } = require('./ntp.cjs');
+const { createIssDataService } = require('./iss-data.cjs');
 
 app.setName('Atomic Clock Sync');
 let mainWindow;
 let blocker = null;
 let syncing = null;
+let issData;
 const references = {
   ptb: 'https://www.ptb.de/cms/en/ptb/fachabteilungen/abt4/fb-44/ag-442/dissemination-of-legal-time/dcf77/dcf77-time-code.html',
   casio: 'https://support.casio.com/en/manual/manuallist.php?cid=009',
   inspiration: 'https://cw.rzapps.com/',
   geonames: 'https://www.geonames.org/',
+  iss: 'https://www.nasa.gov/international-space-station/',
+  issCrew: 'https://www.nasa.gov/international-space-station/space-station-overview/',
+  issVideo: 'https://www.asc-csa.gc.ca/eng/iss/watch-live.asp',
+  aces: 'https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/ACES_Atomic_Clock_Ensemble_in_Space',
+  issSources: 'https://wheretheiss.at/w/developer',
   jjy: 'https://jjy.nict.go.jp/jjy/trans/index-e.html',
   wwvb: 'https://www.nist.gov/pml/time-and-frequency-division/time-distribution/radio-station-wwvb/wwvb-time-code-format',
   msf: 'https://www.npl.co.uk/getattachment/2afd4c3b-fc8d-486c-b2b9-fc9a5a66394c/msf-time-date-code-2019.pdf',
@@ -60,6 +67,11 @@ ipcMain.handle('signal:active', (_event, active) => {
   releasePower();
   if (active) blocker = powerSaveBlocker.start('prevent-display-sleep');
   return true;
+});
+ipcMain.handle('iss:refresh', async event => {
+  if(event.sender!==mainWindow?.webContents)throw Error('Unknown ISS client');
+  issData ||= createIssDataService({storagePath:path.join(app.getPath('userData'),'iss-cache.json')});
+  return issData.refresh();
 });
 ipcMain.handle('reference:open', async (_event, key) => {
   if (Object.hasOwn(references, key)) await shell.openExternal(references[key]);

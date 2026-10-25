@@ -10,6 +10,7 @@ The interface, source files and documentation are in English. Read the [full use
 
 ## Features
 
+- **ISS Orbital Observatory:** live orbital estimates, offline prediction cache, local sighting passes, a sky plot and an educational time-dilation explorer.
 - **World View:** an offline vector Earth with astronomical day/night, amber city lights, five stations, nominal coverage rings, 171,637 searchable cities and a seasonal timeline.
 
 - **Five station protocols:** individual time-code encoders, markers and modulation envelopes.
@@ -46,6 +47,25 @@ Explore all five station markers. **Coverage → Off / Selected / All stations**
 
 Map: Natural Earth. Cities: GeoNames, CC BY 4.0. See [data sources, licenses and asset rebuild instructions](docs/THIRD_PARTY.md).
 
+## ISS Orbital Observatory
+
+![ISS Orbital Observatory — tracking](docs/images/iss-tracking.png)
+
+Track the International Space Station over the day/night Earth, with a predicted ground track, geometric horizon footprint, altitude, orbital speed, illumination, inclination and orbit period. Select **ISS Observatory** in the sidebar, then explore four views:
+
+- **Tracking:** online-updated orbital estimates, current country/ocean, position, distance and direction from your observing city, next potentially visible encounter and a short independent orbit preview.
+- **Passes:** predicted encounters above 10° for up to 48 hours, filtered by potential naked-eye visibility, with local times, a countdown, maximum elevation and an interactive sky diagram. Preview a pass on the map.
+- **Station:** a vector station schematic, mission facts and links to official crew/visiting-vehicle information and live video.
+- **Time in Orbit:** an educational weak-field model of gravitational and velocity clock shifts, plus an introduction to ESA's ACES atomic clocks aboard the ISS. It does not receive ACES measurements.
+
+The observer is your World View city; click its name to choose another location. Your coordinates stay local. Public HTTPS requests retrieve ISS data only while the observatory is visible. CelesTrak orbital elements are cached for at least two hours; Where the ISS at position reports are requested at most every ten seconds, with failure backoff and Retry-After handling. No API key is required.
+
+Tracking uses SGP4 orbital calculations, **not onboard telemetry**. The interface distinguishes online prediction, offline cached prediction, position-only reports and unavailable/stale data. Offline propagation is limited to an explicitly displayed orbital age; elements older than 72 hours do not drive current tracking or new forecasts. Passes are clipped to that validity window. Estimated visibility requires a sunlit ISS and a dark local sky; weather, terrain, buildings and apparent brightness are not modeled.
+
+![ISS — pass predictions and sky diagram](docs/images/iss-passes.png)
+
+See the [ISS user guide](docs/USAGE.en.md#iss-orbital-observatory) and [source/licensing notes](docs/THIRD_PARTY.md#iss-sources-and-orbit-software).
+
 ## How audio synchronization works
 
 A normal audio output cannot directly generate the longwave radio carrier expected by the watch. The app produces a lower-frequency audio tone and relies on harmonics and electromagnetic coupling from the speaker or earphone electronics.
@@ -54,13 +74,13 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **1.5.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
+Current version: **1.6.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `Atomic Clock Sync-1.5.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
-| `Atomic Clock Sync-1.5.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
-| `Atomic Clock Sync-1.5.0-macOS-Windows.zip` | Both packages, instructions and checksums | Combined distribution |
+| `Atomic Clock Sync-1.6.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
+| `Atomic Clock Sync-1.6.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
+| `Atomic Clock Sync-1.6.0-macOS-Windows.zip` | Both packages, instructions and checksums | Combined distribution |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include their runtime; **Node.js is not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
@@ -106,6 +126,8 @@ The explicit runtime download is needed for the Electron version used here. No w
 npm test                 # Protocol, PCM, stereo routing, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:world       # Offline atlas, city worker, timeline and audio isolation
+npm run test:iss         # ISS states, passes, sky plot, themes and audio isolation
+npm run build:iss        # Rebuild the bundled SGP4 library
 npm run build:world      # Rebuild the bundled cartography/astronomy dependencies
 npm run pack             # Unpacked application
 npm run dist             # macOS ZIP for the host architecture
@@ -114,7 +136,7 @@ npm run dist:linux       # Linux AppImage configuration; not validated
 npm run bundle           # Combine existing Mac/Windows packages; requires Python 3
 ```
 
-The 38 unit tests include independent decoding of generated PCM across the autumn DST transition. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
+The 48 unit tests include independent decoding of generated PCM across the autumn DST transition. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 
@@ -131,6 +153,8 @@ Preferences, themes, watch profiles and trial history are stored locally using E
 Close the app before backing up that entire directory. Replacing the app or cleaning the build directory does not delete it.
 
 World View remembers its selected city, coverage mode and twilight-line preference separately from watch profiles. City queries stay offline.
+
+ISS source data are cached separately in `iss-cache.json` inside the same app data directory. Opening ISS Observatory contacts CelesTrak and Where the ISS at over HTTPS, with no city coordinates sent to either service.
 
 NTP checks contact `ptbtime1.ptb.de`, `ptbtime2.ptb.de` and `time.cloudflare.com`. They adjust the time reference inside the app, not the operating system clock. NTP uses UDP/123 without NTS authentication. Offline use is available with the system clock.
 

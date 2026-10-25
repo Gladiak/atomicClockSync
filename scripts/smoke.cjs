@@ -7,6 +7,8 @@ const assert = require('node:assert/strict');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'atomic-desktop-test-'));
 app.setPath('userData', temporary);
 require('../electron/main.cjs');
+ipcMain.removeHandler('iss:refresh');
+ipcMain.handle('iss:refresh',()=>({orbit:null,fix:null,connectivity:'unreachable',lastSuccess:0,error:'Offline desktop test'}));
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const errors = [];
 const artifactPath = path.join(__dirname, '../artifacts');
@@ -61,7 +63,7 @@ app.whenReady().then(async () => {
       assert.equal(await run('document.documentElement.scrollHeight <= window.innerHeight'), true);
     };
     await assertFits();
-    for (const page of ['profiles', 'signal', 'world', 'settings', 'guide', 'history', 'sync']) {
+    for (const page of ['profiles', 'signal', 'world', 'iss', 'settings', 'guide', 'history', 'sync']) {
       await run(`document.querySelector('[data-page=${page}]').click()`);
       await assertFits();
       if (page === 'guide') {
@@ -80,7 +82,7 @@ app.whenReady().then(async () => {
     for (const theme of themes) {
       await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);
       assert.equal(await run('document.documentElement.dataset.theme'), theme);
-      for (const page of ['sync','profiles','signal','world','history','guide','settings']) {
+      for (const page of ['sync','profiles','signal','world','iss','history','guide','settings']) {
         await run(`document.querySelector('[data-page=${page}]').click()`);
         await assertFits();
       }

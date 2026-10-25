@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 240" fill="none">
+  <defs><linearGradient id="p" x2="1" y2="1"><stop stop-color="#74c9df"/><stop offset="1" stop-color="#235b85"/></linearGradient><linearGradient id="m" x2="1" y2="1"><stop stop-color="#f2f7fa"/><stop offset="1" stop-color="#7c9cad"/></linearGradient><pattern id="g" width="7" height="9" patternUnits="userSpaceOnUse"><path d="M0 0H7V9" stroke="#193d5a" stroke-width=".6"/></pattern></defs>
+  <g transform="translate(240 120) rotate(-18) translate(-240 -120)">
+    <path d="M48 119H432" stroke="#bacfd8" stroke-width="8"/><path d="M50 115L72 123L94 115L116 123L138 115L160 123L182 115L204 123L226 115L248 123L270 115L292 123L314 115L336 123L358 115L380 123L402 115L424 123" stroke="#eef6f8" stroke-width="1"/>
+    <g fill="url(#p)" stroke="#a0e5f6" stroke-width="1">
+      <path d="M35 26H83V108H35zM91 26H139V108H91zM35 132H83V214H35zM91 132H139V214H91zM341 26H389V108H341zM397 26H445V108H397zM341 132H389V214H341zM397 132H445V214H397z"/>
+    </g><g fill="url(#g)"><path d="M35 26H83V108H35zM91 26H139V108H91zM35 132H83V214H35zM91 132H139V214H91zM341 26H389V108H341zM397 26H445V108H397zM341 132H389V214H341zM397 132H445V214H397z"/></g>
+    <g fill="url(#m)" stroke="#244d67" stroke-width="1.5"><rect x="226" y="64" width="28" height="105" rx="10"/><rect x="189" y="104" width="103" height="26" rx="9"/><rect x="222" y="149" width="36" height="48" rx="10"/><rect x="211" y="85" width="19" height="20" rx="5"/><rect x="254" y="84" width="23" height="20" rx="5"/></g>
+    <path d="M235 64V48H247V64M230 190V208H250V190M189 111H169V125H189M292 111H311V125H292" stroke="#d9edf5" stroke-width="3"/>
+    <g stroke="#a3c2cf" fill="#dce8ed"><path d="M152 72H182V103H152zM300 72H330V103H300zM149 137H183V163H149zM299 137H333V163H299z"/></g>
+    <g stroke="#6e8c9c" stroke-width=".6"><path d="M156 75V100M162 75V100M168 75V100M174 75V100M304 75V100M310 75V100M316 75V100M322 75V100M154 140V160M161 140V160M168 140V160M175 140V160M304 140V160M311 140V160M318 140V160M325 140V160"/></g>
+    <circle cx="240" cy="116" r="7" fill="#234b66" stroke="#a7dcee" stroke-width="2"/>
+  </g>
+</svg>

@@ -2,6 +2,7 @@ import { STATIONS, getStation, stationTime, stationFrameAt, audioEnvelope, symbo
 import { SignalEngine, testOutput } from './audio-engine.mjs';
 import { THEMES, applyTheme } from './themes.mjs';
 import { createWorldView } from './world-view.mjs';
+import { createIssView } from './iss-view.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
 
 const $ = id => document.getElementById(id);
@@ -45,6 +46,8 @@ const worldView = createWorldView({ getNow: now, getStationId: () => preferences
     $('station-select').dispatchEvent(new Event('change'));
     navigate('sync');
   } });
+const issView = createIssView({ getNow: now, getObserver: () => worldView.getCity(), desktop, notify,
+  chooseCity: () => { navigate('world'); $('world-city-search').focus(); } });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 function persist(key, value) {
@@ -69,6 +72,7 @@ function navigate(page) {
   const titles = { sync: ['Sync your watch', 'Choose a station, place your Casio nearby and transmit.'],
     signal: ['Inside the signal', 'The selected station time code, live.'],
     world: ['A world between light and time', 'Follow the Sun. Find your city. Explore the signals that keep us in sync.'],
+    iss: ['An observatory in orbit', 'Track our orbital outpost. Discover your next encounter with the ISS.'],
     history: ['Your synchronization history', 'Your trials, stored only on this device.'],
     profiles: ['A profile for every watch', 'Save the settings and placement that work.'],
     trial: ['Trial details', 'The settings used and the result observed on your Casio.'],
@@ -88,6 +92,7 @@ function navigate(page) {
   $('page-title').replaceChildren(document.createTextNode(titles[page][0]), Object.assign(document.createElement('span'), { textContent: '.' }));
   $('page-subtitle').textContent = titles[page][1];
   worldView.setVisible(page === 'world');
+  issView.setVisible(page === 'iss');
   window.scrollTo(0, 0);
 }
 

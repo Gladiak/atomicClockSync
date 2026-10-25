@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('desktop', {
   platform: process.platform,
   synchronize: () => ipcRenderer.invoke('clock:sync'),
+  refreshIss: () => ipcRenderer.invoke('iss:refresh'),
   setTransmitting: active => ipcRenderer.invoke('signal:active', Boolean(active)),
   openReference: key => ipcRenderer.invoke('reference:open', key),
   onInterrupt: callback => {

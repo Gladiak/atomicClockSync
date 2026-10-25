@@ -268,7 +268,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   }
   document.addEventListener('visibilitychange',()=>{lastTick=performance.now();if(!document.hidden&&visible)render(true);});
   window.addEventListener('beforeunload',()=>{clearInterval(timer);worker?.terminate();});
-  return { setVisible(value) {
+  return { getCity: () => ({...city}), setVisible(value) {
     if(value&&!visible){stationId=getStationId();renderCoverage();}
     visible=value;closeResults();
     if(value){lastTick=performance.now();load();render(true);if(!timer)timer=setInterval(tick,250);}

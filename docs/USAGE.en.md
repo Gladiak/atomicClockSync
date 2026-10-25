@@ -8,11 +8,11 @@ Atomic Clock Sync is a **JavaScript and Electron desktop app** that helps synchr
 
 ## Ready-to-use applications
 
-Current version: **1.5.0**.
+Current version: **1.6.0**.
 
-- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.5.0-arm64-mac.zip`.
-- Windows x64 portable: `release/Atomic Clock Sync-1.5.0-windows-x64-portable.exe`.
-- Combined package: `release/Atomic Clock Sync-1.5.0-macOS-Windows.zip`.
+- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.6.0-arm64-mac.zip`.
+- Windows x64 portable: `release/Atomic Clock Sync-1.6.0-windows-x64-portable.exe`.
+- Combined package: `release/Atomic Clock Sync-1.6.0-macOS-Windows.zip`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
@@ -112,6 +112,49 @@ Click a station marker, use its keyboard focus and Enter/Space, or use the stati
 
 The map, search and astronomical calculations work offline. Rendering stops when World View is not visible. Data sources, license notices, modifications and rebuild instructions are documented in [Third-party data and software](THIRD_PARTY.md).
 
+## ISS Orbital Observatory
+
+Open **ISS Observatory** in the sidebar. Its four tabs share your observing city with World View; click the city name to change it. The city coordinates and pass calculations stay local.
+
+### Tracking
+
+The map shows a schematic ISS marker, a previous 45-minute and next 90-minute **modeled** ground track, day/night shading and an optional geometric horizon footprint. The footprint is the area where the station is above a flat local horizon, not a radio-service area or a guarantee of optical visibility. The craft drawing is illustrative, not a measurement of attitude or solar-panel orientation.
+
+The side panel shows altitude, orbital speed (km/h and km/s), mean orbit period, inclination, modeled sunlight/shadow, orbits per day and northbound/southbound ground-track motion. Orbital speed is not ground speed. Country labels use the bundled Natural Earth map; an ocean position is reported as "the ocean" rather than assigned a nearby city.
+
+The lower cards show the observer's local time, geometric slant distance, distance along Earth's surface, azimuth/cardinal direction, elevation and the next potentially visible pass. Negative elevation means the ISS is below your horizon, even if it is sunlit.
+
+**Explore orbit** previews −45 to +90 minutes relative to the app time; a selected future pass can also be previewed at its peak. **Live** returns to the present. Preview does not change NTP, the operating system clock, watch profiles or audio transmission. Controls requiring orbital elements are unavailable in report-only or stale-data mode.
+
+### Connectivity, caching and accuracy
+
+- **Online · predicted:** a public HTTPS source has responded; the moving position is calculated from orbital elements with SGP4.
+- **Offline · predicted:** the services are unreachable, but cached elements remain within the propagation limit. This can also mean a provider outage, not necessarily a disconnected computer.
+- **Online · report / Last report:** an API position is available without a usable orbit. The marker is a timestamped report, not a continuously propagated position. Reports older than 30 seconds are not displayed as current tracking.
+- **Stale orbit / Unavailable:** no usable current state. The app does not invent an ISS position or continue predictions indefinitely.
+
+The source bar shows the orbit epoch separately from the latest successful HTTPS check. Elements more than 24 hours old are marked aging; older than **72 hours**, or over two hours in the future relative to the app reference, they do not drive current tracking. Predictions also stop at epoch +72 hours. These are conservative product limits, not a guarantee of positional accuracy. Reboosts and drag can reduce forecast accuracy.
+
+The main process retrieves only allowlisted HTTPS endpoints with a response-size limit, schema/spacecraft validation and a timeout. It coalesces concurrent requests and caches GP downloads for at least two hours, including across app restarts. A checksummed ISS TLE is the fallback when the CelesTrak GP endpoint fails. Position reports are requested at most every ten seconds while the section is visible, with exponential backoff and server Retry-After handling. Rendering and polling pause when the section is hidden; no background monitoring or notifications are scheduled.
+
+The cache is `iss-cache.json` in the Electron app data directory. No API keys, accounts or automatic geolocation are needed. The app's NTP/system-clock reference still determines the time used for calculations; a wrong reference also affects orbital estimates.
+
+### Passes and sky diagram
+
+Predictions cover up to the next 48 hours, clipped by the orbit-validity limit. Passes begin and end at **10° elevation**, not at the geometric horizon. The **Potentially visible only** filter requires the ISS to be almost fully sunlit and the Sun to be at or below **−6°** at the observer. These simplified criteria do not include clouds, terrain, buildings or spacecraft brightness/attitude.
+
+Filtered rows start at the first estimated visible interval. The detail panel separately reports the complete above-10° interval, whole-pass peak and visible intervals. Switch off the filter to see geometric passes that may occur in daylight or Earth's shadow. Five rows per page keep the fixed window free of scrolling.
+
+Select a row to show the sky plot: north is up, east right, the outer circle is the horizon, and the centre is the zenith. The dashed line is the geometric pass; the cyan section meets the visibility criteria. The amber dot marks the start and the pale dot the whole-pass peak. **Preview on the map** shows its predicted orbital position at the peak. All pass times use the selected city's IANA time zone, including daylight-saving changes.
+
+### Station and Time in Orbit
+
+**Station** offers a vector schematic and dated/background facts, with explicit external links for current crew/visiting vehicles and official live video. Crew counts or video availability are not fabricated from orbital elements.
+
+**Time in Orbit** separates the first-order gravitational contribution from the special-relativistic velocity contribution for an ideal orbital clock compared with a non-rotating sea-level reference. The sum is shown in microseconds per Earth day, with a six-month constant-orbit illustration. When tracking is unavailable, the card explicitly uses an illustrative 420 km, 7.67 km/s orbit. Earth rotation, geoid variation, higher-order corrections and actual hardware clock behaviour are omitted. It does not measure clock offsets, adjust transmitted time or receive ACES data.
+
+The ACES introduction describes the PHARAO caesium clock and SHM hydrogen maser installed on Columbus, and links to the ESA mission page. Full sources and license notices are in [Third-party data and software](THIRD_PARTY.md#iss-sources-and-orbit-software).
+
 ## Themes and compact interface
 
 Choose a palette in **Settings → Theme**:
@@ -137,6 +180,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **Inside the signal:** complete time code, current symbol, fields and parity. BPC displays 20 symbols; MSF displays A/B pairs.
 - **History:** all trials, pagination and separate details, editable outcomes and undoable clearing.
 - **World View:** day/night atlas, offline city search, station range rings and seasonal timeline.
+- **ISS Observatory:** tracking, local passes and sky diagram, station background and educational time in orbit.
 - **Settings:** output device, test tone, waveform, manual timing correction, NTP diagnostics and theme selection.
 - **Quick guide:** station-specific instructions and FAQs, with one answer open at a time.
 
@@ -187,9 +231,11 @@ Electron `localStorage` is kept in `Local Storage/leveldb` inside that directory
 ## Tests and builds
 
 ```sh
-npm test                 # 38 protocol, PCM, stereo, profile, migration and NTP tests
+npm test                 # 48 protocol, PCM, stereo, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:world       # Offline atlas, search worker, timeline and audio isolation
+npm run test:iss         # ISS network states, passes, nine themes and audio isolation
+npm run build:iss        # Rebuild the bundled JavaScript SGP4 library
 npm run build:world      # Rebuild the local map and astronomy bundle
 npm run pack             # Unpacked application
 npm run dist             # macOS ZIP

@@ -1,0 +1,10 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url));
+await mkdir(root+'assets/iss',{recursive:true});
+await build({entryPoints:[root+'scripts/iss-vendor-entry.mjs'],outfile:root+'assets/iss/vendor.mjs',bundle:true,format:'esm',minify:true,target:'es2022',legalComments:'eof'});
+const file=root+'assets/iss/vendor.mjs';await writeFile(file,(await readFile(file,'utf8')).split('\n').map(s=>s.trimEnd()).join('\n').trimEnd()+'\n');
+const pkg=JSON.parse(await readFile(root+'node_modules/satellite.js/package.json','utf8'));
+await writeFile(root+'assets/iss/LICENSE.txt',`satellite.js ${pkg.version}\n\n`+(await readFile(root+'node_modules/satellite.js/LICENSE.md','utf8')).replaceAll('\r','').trimEnd()+'\n');
+console.log('Built offline ISS orbit library and license notice.');

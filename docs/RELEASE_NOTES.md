@@ -1,5 +1,18 @@
 # Release notes
 
+## 1.6.0 — ISS Orbital Observatory
+
+- Added a dedicated ISS section with Tracking, Passes, Station and Time in Orbit views.
+- Added online-updated orbital estimates, modeled ground tracks, horizon footprint, altitude, velocity, illumination, direction, orbit period and country/ocean labels.
+- Added a persistent orbit cache, GP/TLE fallback, response validation, request coalescing, provider-friendly refresh intervals, backoff and Retry-After support. Online, offline prediction, report-only, stale and unavailable states are explicit.
+- Added local pass prediction for the World View city, potential-visibility filtering, countdowns, pagination, a sky plot and independent pass/orbit previews.
+- Added an original vector station schematic, official mission/crew/video links, and an educational gravitational/kinematic clock-shift explorer linked to ACES.
+- Kept the fixed 1100 × 740 window, all nine themes and audio transmission isolated from ISS exploration. No geolocation or API key is required; observer coordinates stay local.
+
+Validation: 48 unit tests plus the desktop, World View and ISS suites. Tests exercise real muted AudioWorklet transmission, nine themes and layout, offline/cache/stale/report states, visibility calculations and orbital agreement with a separately retrieved position report. ISS UI tests use controlled fixtures and do not query external providers.
+
+Packages: `Atomic Clock Sync-1.6.0-arm64-mac.zip`, `Atomic Clock Sync-1.6.0-windows-x64-portable.exe`, `Atomic Clock Sync-1.6.0-macOS-Windows.zip`, and `SHA256SUMS.txt`. macOS arm64 is runtime-tested. Windows x64 is checked for package integrity and embedded sources but has not been run on Windows. Mac signing is ad-hoc and not notarized; Windows is unsigned.
+
 ## 1.5.0 — A world between light and time
 
 - Added World View: a fully offline vector Earth with country boundaries, astronomical day/night shading, gradual twilight and amber city lights.
