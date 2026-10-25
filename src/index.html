@@ -3,20 +3,21 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<meta name="color-scheme" content="dark light"><title>Atomic Clock Sync</title>
+<meta name="color-scheme" content="dark light"><title>AtomicClockSync</title>
 <script src="./theme-init.js"></script>
 <link rel="stylesheet" href="./styles.css"><script type="module" src="./app.mjs"></script>
 <link rel="stylesheet" href="./world-view.css">
 <link rel="stylesheet" href="./iss-view.css">
 <link rel="stylesheet" href="./back-in-time.css">
 <link rel="stylesheet" href="./moon-view.css">
+<link rel="stylesheet" href="./light-travel.css">
 <link rel="stylesheet" href="./time-machine.css">
 </head>
 <body>
-<div class="titlebar"><span>ATOMIC CLOCK SYNC</span><span>DESKTOP / <span id="platform">MAC</span></span></div>
+<div class="titlebar"><span>AtomicClockSync</span><span>DESKTOP / <span id="platform">MAC</span></span></div>
 <div class="app-shell">
 <aside class="sidebar">
-  <a class="brand" href="#sync" aria-label="Atomic Clock Sync"><span class="brand-mark">◉</span><span>atomic<span class="brand-sub">CLOCK SYNC</span></span></a>
+  <a class="brand" href="#sync" aria-label="AtomicClockSync"><span class="brand-mark">◉</span><span>atomic<span class="brand-sub">CLOCK SYNC</span></span></a>
   <div class="nav-label">YOUR TIME, PRECISELY.</div>
   <nav aria-label="Main navigation">
     <button class="nav-item selected" data-page="sync" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="1.5"/><path d="M12 9.5V21m-4 0h8M7.8 12.2a6 6 0 0 1 0-8.4m8.4 0a6 6 0 0 1 0 8.4M5 15a10 10 0 0 1 0-14m14 0a10 10 0 0 1 0 14"/></svg>Synchronize</button>
@@ -26,11 +27,12 @@
     <button class="nav-item" data-page="moon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A9 9 0 0 1 9.5 3.5a9 9 0 1 0 11 11zM17 3v4m-2-2h4"/></svg>Moon Observatory</button>
     <button class="nav-item" data-page="iss"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="8" width="6" height="8" rx="1"/><path d="M12 3v5m0 8v5m-7-9h4m6 0h4M1 5h4v14H1zm18 0h4v14h-4zM1 9h4m-4 6h4m14-6h4m-4 6h4M10 5h4"/></svg>ISS Observatory</button>
     <button class="nav-item" data-page="time-machine"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-8z"/></svg>Time Machine</button>
+    <button class="nav-item" data-page="light-travel"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="2"/><path d="M3 11c4-3 5 5 9 2s4-6 9-2M3 17h17m-3-3 3 3-3 3"/><path d="m10 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg>Light Travel</button>
     <button class="nav-item" data-page="history"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 1.7 7.4M3 4v6h6m3-3v5l3 2"/></svg>History</button>
     <button class="nav-item" data-page="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3m4 0h11M3 12h11m4 0h3M3 18h5m4 0h9"/><rect x="6" y="3" width="4" height="6" rx="1"/><rect x="14" y="9" width="4" height="6" rx="1"/><rect x="8" y="15" width="4" height="6" rx="1"/></svg>Settings</button>
     <button class="nav-item" data-page="guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v16m0-16C9 3 5 3 2 4v15c3-1 7-1 10 2 3-3 7-3 10-2V4c-3-1-7-1-10 1M5 8c1.5-.3 2.5 0 4 .5M5 12c1.5-.3 2.5 0 4 .5m6-4c1.5-.5 2.5-.8 4-.5m-4 4.5c1.5-.5 2.5-.8 4-.5"/></svg>Quick guide</button>
   </nav>
-  <div class="sidebar-bottom"><span class="chip">MULTIBAND 6</span><p>A small signal.<br>The right time.</p><span class="version">v1.8.0 <span>● LOCAL</span></span></div>
+  <div class="sidebar-bottom"><span class="chip">MULTIBAND 6</span><p>A small signal.<br>The right time.</p><span class="version">v1.9.0 <span>● LOCAL</span></span></div>
 </aside>
 <main>
   <header class="page-header"><div><div class="eyebrow">PRECISION, ONE SECOND AT A TIME</div><h1 id="page-title">Sync your watch<span>.</span></h1><p id="page-subtitle">Choose a station, place your Casio nearby and transmit.</p></div><button id="help-button" class="icon-button" aria-label="Open the guide">?</button></header>
@@ -56,6 +58,59 @@
       </aside>
     </div>
   </section>
+  <section id="page-light-travel" class="page lt-page" aria-label="Light Travel" hidden>
+    <div class="lt-toolbar">
+      <span id="lt-mode" class="lt-badge">LIVE</span><span id="lt-reference" class="lt-reference"></span>
+      <div class="lt-date-controls"><label for="lt-date">UTC</label><input id="lt-date" type="date" min="1900-01-01" max="2100-12-31" aria-label="Light reception date UTC"><input id="lt-time" type="time" step="1" aria-label="Light reception time UTC"><button id="lt-months" class="lt-small-button">+6 months</button><button id="lt-live" class="lt-small-button">↺ Live</button></div>
+    </div>
+    <div class="lt-main">
+      <section id="lt-scene" class="lt-scene" aria-label="Illustrative Solar System and light path">
+        <div class="lt-nebula" aria-hidden="true"></div>
+        <div class="lt-scene-heading"><span>THE SOLAR SYSTEM / LIGHT DELAY LAB</span><span>c = 299,792.458 km/s</span></div>
+        <svg id="lt-system" viewBox="0 0 600 300" role="img" aria-label="Compressed orbits with light travelling to Earth">
+          <defs>
+            <radialGradient id="lt-sun-halo"><stop stop-color="#ffbb5c" stop-opacity=".22"/><stop offset=".4" stop-color="#fc995b" stop-opacity=".06"/><stop offset="1" stop-color="#fc995b" stop-opacity="0"/></radialGradient>
+            <radialGradient id="lt-sun-core" cx="35%" cy="28%"><stop stop-color="#fff9d8"/><stop offset=".45" stop-color="#ffdd8c"/><stop offset="1" stop-color="#f49c49"/></radialGradient>
+            <radialGradient id="lt-earth-core" cx="30%" cy="30%"><stop stop-color="#b9f7fa"/><stop offset=".4" stop-color="#6bc5d6"/><stop offset="1" stop-color="#214969"/></radialGradient>
+            <linearGradient id="lt-beam-gradient"><stop stop-color="#ffd591"/><stop offset="1" stop-color="#9eeefa"/></linearGradient>
+            <filter id="lt-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
+          </defs>
+          <g id="lt-stars" class="lt-stars" aria-hidden="true"></g>
+          <g class="lt-grid" aria-hidden="true"><path d="M20 147H572M286 32V269"/><ellipse cx="286" cy="147" rx="277" ry="119"/><path d="M83 60 489 234M83 234 489 60"/></g>
+          <g id="lt-orbits" aria-hidden="true"></g>
+          <circle cx="286" cy="147" r="107" fill="url(#lt-sun-halo)" aria-hidden="true"/>
+          <g class="lt-solar-rays" aria-hidden="true"><circle cx="286" cy="147" r="19"/><circle cx="286" cy="147" r="26"/></g>
+          <path id="lt-route-glow" class="lt-route-glow"/>
+          <path id="lt-route" class="lt-route"/>
+          <path id="lt-flight-trail" class="lt-flight-trail"/>
+          <g id="lt-bodies"></g>
+          <g id="lt-earth"><circle r="16" class="lt-earth-orbit"/><circle class="lt-arrival-ring" r="10"/><circle class="lt-arrival-ring lt-arrival-ring-second" r="10"/><circle r="6" fill="url(#lt-earth-core)"/><path d="M-4-2 0-4 4-1 1 1 2 4-2 2Z" fill="#bbdfba" opacity=".65"/><text id="lt-earth-label" x="10" y="20">EARTH · RECEIVER</text></g>
+          <g id="lt-photon" class="lt-photon" hidden aria-hidden="true"><circle r="10" fill="#c2f7ff" opacity=".3" filter="url(#lt-glow)"/><circle r="3" fill="#ffffff"/><circle r="5" fill="none" stroke="#d7fbff" stroke-width=".5"/></g>
+        </svg>
+        <div class="lt-scene-bottom"><span id="lt-scene-note">Orbits compressed · sizes illustrative</span><span id="lt-arrival" role="status" hidden>The past has arrived.</span></div>
+      </section>
+      <section class="lt-telemetry panel">
+        <span class="lt-overline">AGE OF INCOMING LIGHT</span>
+        <div class="lt-source-heading"><h2 id="lt-source">Sun</h2><span class="lt-source-dot" id="lt-source-dot" aria-hidden="true"></span></div>
+        <div class="lt-delay"><strong id="lt-delay">—</strong><span id="lt-delay-unit">min : s</span></div>
+        <p id="lt-thought" class="lt-thought">The Sun you see already belongs to the past.</p>
+        <div class="lt-distance"><div><span>Distance to Earth</span><strong id="lt-distance">—</strong></div><div><span>Astronomical units</span><strong id="lt-au">—</strong></div></div>
+        <span class="lt-estimate">Calculated offline · Earth-centred estimate</span>
+      </section>
+    </div>
+    <div id="lt-targets" class="lt-targets" role="group" aria-label="Choose a light source"></div>
+    <div class="lt-clocks">
+      <section class="lt-clock lt-emission panel"><div><span class="lt-overline" id="lt-emission-label">EMITTED AT THE SUN</span><time id="lt-emitted">—</time><small id="lt-emitted-date">—</small></div><span class="lt-clock-symbol" aria-hidden="true">↗</span></section>
+      <section class="lt-clock lt-reception panel"><div><span class="lt-overline">RECEIVED ON EARTH</span><time id="lt-received">—</time><small id="lt-received-date">—</small></div><span class="lt-clock-symbol" aria-hidden="true">◎</span></section>
+    </div>
+    <section class="lt-transport panel" aria-label="Light journey playback">
+      <div class="lt-playback-controls"><button id="lt-play" class="lt-play"><span aria-hidden="true">▶</span><span id="lt-play-label">Follow this light</span></button><button id="lt-reset" class="lt-reset" aria-label="Reset light journey" disabled>↺</button><label for="lt-speed" class="sr-only">Playback speed</label><select id="lt-speed"><option value="auto">Overview · up to 12 s</option><option value="1">Real time · 1×</option><option value="10">10×</option><option value="100">100×</option><option value="1000">1000×</option></select><span id="lt-rate" class="lt-rate"></span></div>
+      <div class="lt-progress-row"><span id="lt-elapsed">00:00</span><div id="lt-progress" class="lt-progress" role="progressbar" aria-label="Reconstructed light journey progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="lt-progress-fill"></span></div><span id="lt-remaining"></span></div>
+    </section>
+    <div class="lt-footnote"><span id="lt-replay-note">A journey through time, not a visibility forecast.</span><button id="lt-info" class="text-button">Science & sources ↗</button></div>
+    <dialog id="lt-dialog" class="lt-dialog" aria-labelledby="lt-info-title"><form method="dialog"><button class="lt-dialog-close" aria-label="Close light travel explanation">×</button></form><span class="lt-overline">THE TIME BETWEEN WORLDS</span><h2 id="lt-info-title">A little distance. A different past.</h2><p>Light travels at 299,792.458 km/s in vacuum. Distances are calculated to the centre of Earth, accounting for the time light left the source.</p><p>Moonlight and planetary light are reflected sunlight. The delay shown starts at that reflection; the earlier journey from the Sun is not included.</p><p>The diagram compresses orbits and enlarges bodies. It does not predict sky visibility. Playback reconstructs a fixed observation and never changes your watch signal.</p><p>Body centres are used. Surface location and atmospheric effects are not modelled.</p><p>Offline estimates use Astronomy Engine. They are educational calculations, not live telescope measurements.</p><div class="lt-science-links"><button data-reference="lightScience" class="text-button">NASA · Looking back in time ↗</button><button data-reference="lightJpl" class="text-button">JPL · Light-time reference ↗</button></div></dialog>
+  </section>
+
   <section id="page-moon" class="page moon-page" aria-label="Moon Observatory" hidden>
     <div class="moon-toolbar"><span id="moon-mode" class="moon-badge">LIVE</span><time id="moon-clock">—</time><button id="moon-observer" class="text-button">⌖ Rome ↗</button></div>
     <div class="moon-main">
@@ -216,9 +271,10 @@
     </section>
   </section>
   <section id="page-settings" class="page" aria-label="Settings" hidden>
+    <div class="language-settings"><label for="language-select">Language</label><select id="language-select" aria-label="Interface language" translate="no"><option value="en">English</option><option value="it">Italiano</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="ja">日本語</option></select><span>Saved on this device · applies immediately</span></div>
     <div class="settings-grid"><section class="panel settings-panel"><div class="section-heading"><h2>Audio output</h2><span class="chip" id="settings-station">DCF77</span></div><label for="audio-output">Device</label><div class="device-row"><select id="audio-output"><option value="default">Default system output</option></select><button id="refresh-devices" class="icon-button" aria-label="Refresh devices">↻</button></div><p class="muted-text">Use a built-in speaker or wired earphone. Bluetooth and AirPlay can add latency and filter the signal.</p><label for="wave-type">Audio profile <span id="settings-frequency">15,500 Hz</span></label><select id="wave-type"><option value="sine">Sine · standard</option><option id="dcf-gated-option" value="sine-gated">DCF77 · full pauses (experimental)</option><option value="square">Square · experimental</option></select><p class="muted-text" id="profile-hint">If DCF77 shows L3 then ERR, try full pauses. Square waves can produce more audible tones.</p><button id="test-output" class="secondary-button">♫ Test output · 1 second</button><p class="muted-text">Low-volume 440 Hz tone on the selected channel.</p><label for="latency-offset">Manual output advance (ms)</label><input id="latency-offset" type="number" min="-1000" max="1000" step="1" value="0"><p class="muted-text">Positive values advance the signal. Leave at 0 unless measured; reported output latency is already compensated.</p></section>
     <section class="panel settings-panel"><div class="section-heading"><h2>Time reference</h2><span class="chip" id="ntp-chip">SYSTEM</span></div><div class="settings-facts"><div><span>Source</span><strong id="ntp-source">System clock</strong></div><div><span>Measured offset</span><strong id="ntp-offset">Unavailable</strong></div><div><span>Estimated network uncertainty</span><strong id="ntp-uncertainty">Unavailable</strong></div><div><span>Last checked</span><strong id="ntp-last">Never</strong></div></div><button id="settings-sync" class="secondary-button">Check time via NTP ↻</button><p class="muted-text">PTB and Cloudflare. Correction applies within the app and does not change your computer clock. Network uncertainty excludes audio latency.</p><div class="privacy-note"><span class="signal-dot"></span> No telemetry · local data only</div></section></div>
-    <section class="panel about-panel"><span class="brand-mark">◉</span><div><h2>Atomic Clock Sync <span class="muted-text">1.8.0</span></h2><p>JavaScript + Electron · BPC, JJY, WWVB, DCF77 and MSF · Independent app inspired by Clock Wave.</p></div><div class="theme-control"><div class="theme-label"><label for="theme-select">Theme</label><span class="theme-swatches" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div><select id="theme-select" aria-label="Interface theme"></select></div></section>
+    <section class="panel about-panel"><span class="brand-mark">◉</span><div><h2>AtomicClockSync <span class="muted-text">1.9.0</span></h2><p>JavaScript + Electron · BPC, JJY, WWVB, DCF77 and MSF · Independent app inspired by Clock Wave.</p></div><div class="theme-control"><div class="theme-label"><label for="theme-select">Theme</label><span class="theme-swatches" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div><select id="theme-select" aria-label="Interface theme"></select></div></section>
   </section>
   <section id="page-guide" class="page" aria-label="Quick guide" hidden>
     <div class="guide-steps"><article class="panel guide-step"><span class="step-number">01</span><h3>Prepare your Casio</h3><p id="guide-station">Select a home city compatible with DCF77, such as ROM / BER / PAR. Use DST AUTO if supported.</p></article><article class="panel guide-step"><span class="step-number">02</span><h3>Position your watch</h3><p>Place the antenna, often at 12 o’clock, 1–5 cm from the speaker. Take the watch off your wrist and try rotating it if reception is weak.</p></article><article class="panel guide-step"><span class="step-number">03</span><h3>Start reception</h3><p>Start manual reception following your Casio module manual. Check the time in the app and transmit at moderate volume.</p></article><article class="panel guide-step"><span class="step-number">04</span><h3>Wait and check</h3><p>Wait 5–10 minutes without moving the watch. Check its display and confirm reception in the app only after success.</p></article></div>

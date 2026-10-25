@@ -1,6 +1,18 @@
 # Data, software and creative references
 
+## Japanese interface font
+
+`assets/fonts/NotoSansJP.ttf` is the unmodified Noto Sans JP variable font from [Google Fonts](https://github.com/google/fonts/tree/e7db6ca603fd4862010383ff17ffd6cc4ffac1c0/ofl/notosansjp), revision `e7db6ca603fd4862010383ff17ffd6cc4ffac1c0`. It is distributed under **SIL Open Font License 1.1**, included in `assets/fonts/NotoSansJP-OFL.txt`. SHA-256: `c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f`. The font is bundled locally for Japanese glyph fallback; no external font service is contacted.
+
 World View is an offline vector visualization. Geographic and city data are bundled with the app. City lights are an illustrative rendering of population-weighted settlement locations, not measured light emissions or live satellite imagery.
+
+## Light Travel
+
+Light Travel uses the bundled **Astronomy Engine 2.1.19** `BackdatePosition` calculation for the Sun, Moon and seven planets relative to Earth's centre at reception. The earlier emission/reflection position determines geometric distance and vacuum light time. `HelioVector` and `Ecliptic` provide the directions in the schematic orbit diagram. The stars, shaded planets, rings and light effects are original SVG/CSS artwork; no external imagery is loaded.
+
+The fixture `test/fixtures/light-time-jpl.json` records independent [JPL Horizons](https://ssd.jpl.nasa.gov/horizons/) samples for the Sun, Moon, Mars and Neptune at **2026-10-25 12:00 UTC**, observer centre `500@399`, quantity **21: one-way down-leg light-time**. Each sample retains its exact query URL. Tests allow 0.002 seconds for the Moon, 0.05 seconds for the Sun/Mars and 0.5 seconds for Neptune; this validates the educational model at the sampled epoch, not precision over every supported date. See the [Horizons manual](https://ssd.jpl.nasa.gov/horizons/manual.html).
+
+Displayed times begin at the source's emission or reflection and end at Earth's centre. The Sun-to-planet leg, surface location, atmospheric effects and visibility are excluded. Orbit radii and body sizes are illustrative. The feature runs offline and is not an observing or navigation instrument. Its science links include NASA's explanation of [looking back in time with light](https://science.nasa.gov/mission/webb/science-overview/science-explainers/how-does-webb-see-back-in-time/).
 
 ## Moon Observatory and historical journeys
 

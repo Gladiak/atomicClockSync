@@ -1,8 +1,9 @@
+import { t, decimal, locale, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
 import { moonState, lunarEvents, moonSurfaceLight } from './moon-math.mjs';
 import { DAY, localDateKey } from './world-math.mjs';
 
 const pad = value => String(value).padStart(2, '0');
-const count = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 });
+const count = numberFormat({ maximumFractionDigits: 0 });
 const utcDay = epoch => new Date(epoch).toISOString().slice(0, 10);
 const validEpoch = epoch => Number.isFinite(epoch) && epoch >= Date.parse('1900-01-01T00:00Z') && epoch <= Date.parse('2100-12-31T23:59Z');
 function texture(canvas) {
@@ -40,7 +41,7 @@ export function createMoonView({ getNow, getObserver, chooseCity, getReference }
     return button;
   });
   $('quarters').append(...quarterButtons);
-  const localFormat = (epoch, city, options) => new Intl.DateTimeFormat('en-GB', { timeZone: city.timeZone, ...options }).format(epoch);
+  const localFormat = (epoch, city, options) => dateTimeFormat({ timeZone: city.timeZone, ...options }).format(epoch);
   function draw(phase) {
     if (drawnPhase !== null && Math.abs(phase - drawnPhase) < .01) return;
     drawnPhase = phase;
@@ -69,34 +70,34 @@ export function createMoonView({ getNow, getObserver, chooseCity, getReference }
         if (eventCache.size > 40) eventCache.delete(eventCache.keys().next().value);
       }
       draw(state.phase);
-      $('phase').textContent = state.name;
-      $('illumination').textContent = `${(state.fraction*100).toFixed(1)}%`;
+      $('phase').textContent = t(state.name);
+      $('illumination').textContent = `${decimal(state.fraction*100, 1)}%`;
       $('distance').textContent = `${count.format(state.distanceKm)} km`;
-      $('age').textContent = `${events.previousNew === null ? '—' : ((epoch-events.previousNew)/DAY).toFixed(1)} days`;
-      $('altitude').textContent = `${state.altitude.toFixed(1)}°`;
-      $('azimuth').textContent = `${state.azimuth.toFixed(1)}°`;
-      $('visibility').textContent = state.altitude > 0 ? 'ABOVE YOUR HORIZON' : 'BELOW YOUR HORIZON';
+      $('age').textContent = t("{0} days", events.previousNew === null ? '—' : decimal((epoch-events.previousNew)/DAY, 1));
+      $('altitude').textContent = `${decimal(state.altitude, 1)}°`;
+      $('azimuth').textContent = `${decimal(state.azimuth, 1)}°`;
+      $('visibility').textContent = state.altitude > 0 ? t("ABOVE YOUR HORIZON") : t("BELOW YOUR HORIZON");
       $('visibility').classList.toggle('above', state.altitude > 0);
-      $('direction').textContent = state.waxing ? 'WAXING / RIGHT SIDE LIT' : 'WANING / LEFT SIDE LIT';
-      for (const field of ['rise', 'set']) $(field).textContent = events[field] === null ? 'No event today' : localFormat(events[field], city, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+      $('direction').textContent = state.waxing ? t("WAXING / RIGHT SIDE LIT") : t("WANING / LEFT SIDE LIT");
+      for (const field of ['rise', 'set']) $(field).textContent = events[field] === null ? t("No event today") : localFormat(events[field], city, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
       $('local-day').textContent = localFormat(epoch, city, { weekday: 'short', day: '2-digit', month: 'short' });
       $('observer').textContent = `⌖ ${city.name} ↗`;
-      $('observer').title = `${city.name} · ${city.timeZone} · choose observing city in World View`;
+      $('observer').title = t("{0} · {1} · choose observing city in World View", city.name, city.timeZone);
       $('zone').textContent = city.timeZone;
       events.quarters.forEach((event,index) => {
         const button = quarterButtons[index];
         button.dataset.epoch = event.epoch;
         button.disabled = !validEpoch(event.epoch);
         button.children[0].dataset.quarter = event.quarter;
-        button.children[1].textContent = event.name;
+        button.children[1].textContent = t(event.name);
         button.children[2].textContent = localFormat(event.epoch, city, { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hourCycle:'h23' });
       });
     }
     $('clock').textContent = localFormat(epoch, city, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
     $('clock').dateTime = new Date(epoch).toISOString();
-    $('mode').textContent = preview === null ? 'LIVE' : 'PREVIEW';
+    $('mode').textContent = preview === null ? t("LIVE") : t("PREVIEW");
     $('mode').classList.toggle('preview', preview !== null);
-    $('reference').textContent = preview === null ? getReference() : 'Independent preview';
+    $('reference').textContent = preview === null ? getReference() : t("Independent preview");
     const seconds = Math.max(0, Math.floor((events.fullMoon-epoch)/1000));
     $('countdown').textContent = `${Math.floor(seconds/86400)}d ${pad(Math.floor(seconds/3600)%24)}h ${pad(Math.floor(seconds/60)%60)}m ${pad(seconds%60)}s`;
     if (document.activeElement !== $('date')) $('date').value = utcDay(epoch);
@@ -121,6 +122,7 @@ export function createMoonView({ getNow, getObserver, chooseCity, getReference }
   });
   for (const [id, days] of [['previous', -1], ['next', 1]]) $(id).addEventListener('click', () => setPreview((preview ?? getNow()) + days*DAY));
   $('live').addEventListener('click', () => { preview = null; cacheKey = ''; render(true); });
+  onLanguageChange(() => { if (visible) render(true); });
   return { setVisible(value) {
     if (visible === value) return;
     visible = value; clearInterval(timer);

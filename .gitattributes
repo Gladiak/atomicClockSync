@@ -9,6 +9,8 @@
 *.py text eol=lf
 *.svg text eol=lf
 *.png binary
+# Preserve the upstream font license text, including its original whitespace.
+assets/fonts/NotoSansJP-OFL.txt -whitespace
 assets/world/vendor.mjs linguist-generated=true
 assets/world/*.json linguist-generated=true
 assets/iss/vendor.mjs linguist-generated=true

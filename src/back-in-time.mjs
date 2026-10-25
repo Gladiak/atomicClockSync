@@ -1,3 +1,4 @@
+import { t, locale, dateTimeFormat, numberFormat, onLanguageChange, localizeStoredMessage } from './i18n.mjs';
 // Film wall times interpreted in Hill Valley's California time zone.
 // Sources and the Pacific-time convention are documented in docs/THIRD_PARTY.md.
 export const MOVIE_DATES = Object.freeze([
@@ -8,9 +9,9 @@ export const MOVIE_DATES = Object.freeze([
   { id: 'future', title: 'Welcome to the future', date: 'OCT 21 2015', epoch: Date.parse('2015-10-21T16:29:00-07:00'), part: 'PART II', icon: '↗', tagline: 'Where is my hoverboard?', detail: 'Marty, Doc and Jennifer arrive in 2015. Hoverboards were supposed to be a thing.' },
 ]);
 
-const pacific = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+const pacific = dateTimeFormat({ timeZone: 'America/Los_Angeles', month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }, 'en-US');
 const pad = value => String(value).padStart(2, '0');
-const number = new Intl.NumberFormat('en-US');
+const number = numberFormat();
 export function hillValleyTime(epoch) {
   return Object.fromEntries(pacific.formatToParts(epoch).filter(p => p.type !== 'literal').map(p => [p.type, p.value.toUpperCase()]));
 }
@@ -45,7 +46,9 @@ function createCircuit(id, label) {
     const field = document.createElement('div');
     field.className = 'bttf-field';
     const caption = document.createElement('span');
-    caption.textContent = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'MIN'][index];
+    const captionLabel = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'MIN'][index];
+    caption.textContent = t(captionLabel);
+    onLanguageChange(() => { caption.textContent = t(captionLabel); });
     const display = document.createElement('div');
     display.className = 'bttf-led';
     if (index) for (let i = 0; i < (index === 2 ? 4 : 2); i++) display.append(digit());
@@ -55,7 +58,8 @@ function createCircuit(id, label) {
   });
   const plate = document.createElement('strong');
   plate.className = 'bttf-circuit-label';
-  plate.textContent = label;
+  plate.textContent = t(label);
+  onLanguageChange(() => { plate.textContent = t(label); });
   root.append(plate);
   return epoch => {
     const time = hillValleyTime(epoch);
@@ -68,7 +72,7 @@ function createCircuit(id, label) {
         for (const shape of svg.children) shape.classList.toggle('lit', segments[Number(value[i])].has(shape.dataset.segment));
       });
     }
-    root.setAttribute('aria-label', `${label}: ${time.month} ${time.day}, ${time.year}, ${time.hour}:${time.minute} Pacific time`);
+    root.setAttribute('aria-label', t("{0}: {1} {2}, {3}, {4}:{5} Pacific time", label, time.month, time.day, time.year, time.hour, time.minute));
   };
 }
 
@@ -107,18 +111,23 @@ export function createBackInTimeView({ getNow, getReference }) {
     destination(selected.epoch);
     present(preview ? preview.epoch + now - preview.started : now);
     departed(departure ?? MOVIE_DATES.find(event => event.id === 'pines').epoch);
-    $('reference').textContent = preview ? 'CINEMATIC PREVIEW' : getReference();
+    $('reference').textContent = preview ? t("CINEMATIC PREVIEW") : getReference();
     $('days').textContent = number.format(elapsed.days);
     for (const field of ['hours', 'minutes', 'seconds']) $(field).textContent = pad(elapsed[field]);
-    $('elapsed-label').textContent = elapsed.past ? (selected.id === 'future' ? 'THE FUTURE IS ALREADY HISTORY' : 'TIME SINCE THIS MOVIE MOMENT') : 'TIME UNTIL THIS MOVIE MOMENT';
-    $('event-title').textContent = selected.title;
-    $('event-detail').textContent = selected.detail;
-    $('duration').setAttribute('aria-label', `${elapsed.days} days, ${elapsed.hours} hours, ${elapsed.minutes} minutes, ${elapsed.seconds} seconds ${elapsed.past ? 'since' : 'until'} ${selected.title}`);
+    $('elapsed-label').textContent = elapsed.past ? (selected.id === 'future' ? t("THE FUTURE IS ALREADY HISTORY") : t("TIME SINCE THIS MOVIE MOMENT")) : t("TIME UNTIL THIS MOVIE MOMENT");
+    $('event-title').textContent = t(selected.title);
+    $('event-detail').textContent = t(selected.detail);
+    $('duration').setAttribute('aria-label', t("{0} days, {1} hours, {2} minutes, {3} seconds {4} {5}", elapsed.days, elapsed.hours, elapsed.minutes, elapsed.seconds, elapsed.past ? t('since') : t('until'), t(selected.title)));
     cards.forEach((card, i) => {
+      const event = MOVIE_DATES[i];
+      card.querySelector('.bttf-card-part').textContent = `${event.icon}  ${t(event.part)}`;
+      card.querySelector('.bttf-card-title').textContent = t(event.title);
+      card.querySelector('.bttf-card-tagline').textContent = t(event.tagline);
+      card.querySelector('.bttf-card-date').textContent = locale() === 'en-GB' ? event.date : dateTimeFormat({timeZone:'America/Los_Angeles', day:'2-digit', month:'short', year:'numeric'}).format(event.epoch);
       card.setAttribute('aria-pressed', String(MOVIE_DATES[i] === selected));
       card.disabled = jumping || arrivalOpen;
       const age = elapsedTime(MOVIE_DATES[i].epoch, now);
-      card.lastElementChild.textContent = `${number.format(age.days)} DAYS ${age.past ? 'AGO' : 'AWAY'}`;
+      card.lastElementChild.textContent = t("{0} DAYS {1}", number.format(age.days), age.past ? t("AGO") : t("AWAY"));
     });
     $('reset').disabled = !preview || jumping || arrivalOpen;
   }
@@ -135,10 +144,10 @@ export function createBackInTimeView({ getNow, getReference }) {
     page.classList.remove('bttf-jumping');
     preview = { epoch: selected.epoch, started: getNow() };
     $('speed').textContent = '88';
-    $('circuit-status').textContent = '● DISPLACED';
-    $('reactor-note').textContent = 'Temporal displacement complete. Please account for your pine trees.';
+    $('circuit-status').textContent = t("● DISPLACED");
+    $('reactor-note').textContent = t("Temporal displacement complete. Please account for your pine trees.");
     $('jump').disabled = false;
-    $('arrival-note').textContent = `${selected.date} · ${selected.title}. You made it. The space-time continuum seems mostly fine.`;
+    $('arrival-note').textContent = t("{0} · {1}. You made it. The space-time continuum seems mostly fine.", selected.date, t(selected.title));
     arrivalOpen = true;
     $('arrival').hidden = false;
     page.querySelector('.bttf-rack').inert = true;
@@ -152,8 +161,8 @@ export function createBackInTimeView({ getNow, getReference }) {
     pendingDeparture = preview ? preview.epoch + now - preview.started : now;
     jumping = true;
     $('jump').disabled = true;
-    $('circuit-status').textContent = '● CHARGING';
-    $('reactor-note').textContent = 'Flux capacitor charging. Hold on to your almanac.';
+    $('circuit-status').textContent = t("● CHARGING");
+    $('reactor-note').textContent = t("Flux capacitor charging. Hold on to your almanac.");
     render();
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finishJump(); return; }
     page.classList.add('bttf-jumping');
@@ -168,15 +177,20 @@ export function createBackInTimeView({ getNow, getReference }) {
   });
   $('continue').addEventListener('click', () => { closeArrival(); $('reset').focus(); });
   $('arrival').setAttribute('role', 'region');
-  $('arrival').setAttribute('aria-label', 'Temporal displacement complete. Grande Giove!');
+  $('arrival').setAttribute('aria-label', t("Temporal displacement complete. Grande Giove!"));
   $('reset').addEventListener('click', () => {
     departure = preview ? preview.epoch + getNow() - preview.started : departure;
     preview = null;
     $('speed').textContent = '00';
-    $('circuit-status').textContent = '● ONLINE';
-    $('reactor-note').textContent = 'Back in the present. The future is still yours to make.';
+    $('circuit-status').textContent = t("● ONLINE");
+    $('reactor-note').textContent = t("Back in the present. The future is still yours to make.");
     render();
     $('jump').focus();
+  });
+  onLanguageChange(() => {
+    $('circuit-status').textContent = localizeStoredMessage($('circuit-status').textContent);
+    $('reactor-note').textContent = localizeStoredMessage($('reactor-note').textContent);
+    if (visible) render();
   });
   return {
     setVisible(value) {
@@ -191,8 +205,8 @@ export function createBackInTimeView({ getNow, getReference }) {
         closeArrival();
         $('jump').disabled = false;
         $('speed').textContent = preview ? '88' : '00';
-        $('circuit-status').textContent = preview ? '● DISPLACED' : '● ONLINE';
-        $('reactor-note').textContent = preview ? 'Temporal displacement complete.' : 'Flux dispersal: stable. One very questionable idea: ready.';
+        $('circuit-status').textContent = preview ? t("● DISPLACED") : t("● ONLINE");
+        $('reactor-note').textContent = preview ? t("Temporal displacement complete.") : t("Flux dispersal: stable. One very questionable idea: ready.");
       }
     },
   };

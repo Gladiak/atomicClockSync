@@ -1,3 +1,4 @@
+import { t, decimal, locale, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
 import { geoNaturalEarth1, geoPath, geoGraticule10, geoCircle, feature, mesh } from '../assets/world/vendor.mjs';
 import { solarPosition, solarAltitude, lightPhase, seasonEvents, sunEvents, localDateKey, validCity, distanceKm, DAY, wrapLongitude } from './world-math.mjs';
 import { STATIONS } from './stations.mjs';
@@ -24,12 +25,12 @@ const ROME = { id:3169070, name:'Rome', country:'Italy', region:'Lazio', latitud
 const clockFormats = new Map();
 function clock(epoch, zone, seconds = false) {
   const key = zone + seconds;
-  if (!clockFormats.has(key)) clockFormats.set(key,new Intl.DateTimeFormat('en-GB', {
+  if (!clockFormats.has(key)) clockFormats.set(key,dateTimeFormat({
     timeZone:zone, hour:'2-digit', minute:'2-digit', ...(seconds?{second:'2-digit'}:{}), hourCycle:'h23' }));
   return clockFormats.get(key).format(epoch);
 }
-const utcDate = new Intl.DateTimeFormat('en-GB',{timeZone:'UTC',weekday:'short',day:'2-digit',month:'long',year:'numeric'});
-const coord = (value, positive, negative) => `${Math.abs(value).toFixed(1)}° ${value>=0?positive:negative}`;
+const utcDate = dateTimeFormat({timeZone:'UTC',weekday:'short',day:'2-digit',month:'long',year:'numeric'});
+const coord = (value, positive, negative) => `${decimal(Math.abs(value), 1)}° ${value>=0?positive:negative}`;
 const hhmm = minutes => `${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
 const midnightUTC = epoch => Math.floor(epoch/DAY)*DAY;
 
@@ -48,11 +49,11 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   const markers = new Map(), coveragePaths = new Map(), shadePaths = [], lightMasks = [], twilightPaths = [];
   function save() { persist('atomic.world',{city,coverage,twilight}); }
   function epoch() { return preview ?? getNow(); }
-  function pause() { playing=false; $('world-play').textContent='▶'; $('world-play').setAttribute('aria-pressed','false'); $('world-play').setAttribute('aria-label','Play accelerated day'); }
+  function pause() { playing=false; $('world-play').textContent='▶'; $('world-play').setAttribute('aria-pressed','false'); $('world-play').setAttribute('aria-label',t("Play accelerated day")); }
   function closeResults() { $('world-city-results').hidden=true; $('world-city-search').setAttribute('aria-expanded','false'); $('world-city-search').removeAttribute('aria-activedescendant'); focusedResult=-1; }
   function setCity(value) {
     const checked=validCity(value);
-    if(!checked){notify('This city’s time zone is unavailable in this runtime. Choose another city.',true);return;}
+    if(!checked){notify(t("This city’s time zone is unavailable in this runtime. Choose another city."),true);return;}
     city = checked; lastCityDay=''; save(); closeResults(); $('world-city-search').value='';
     render(true);
   }
@@ -67,7 +68,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
       if(ring) { ring.style.display = coverage==='all'||(coverage==='selected'&&selected)?'':'none'; ring.setAttribute('stroke-opacity',selected?'.65':'.35'); }
     }
     $('world-station-tabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.station===stationId)));
-    $('world-coverage-note').textContent=coverage==='off'?'Radio coverage hidden':'Approximate radio coverage · Casio 3179';
+    $('world-coverage-note').textContent=coverage==='off'?t("Radio coverage hidden"):t("Approximate radio coverage · Casio 3179");
     $('world-twilight-lines').style.display=twilight?'':'none';
   }
   function buildMap(topology, lights) {
@@ -96,11 +97,11 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     for(const station of WORLD_STATIONS) {
       const ring = svg('path',{d:path(geoCircle().center([station.longitude,station.latitude]).radius(station.radius/6371.0088*180/Math.PI).precision(1)()),
         fill:station.color,'fill-opacity':'.055',stroke:station.color,'stroke-width':'.9','stroke-dasharray':'3 3'},$('world-coverage-paths'));
-      svg('title',{},ring).textContent=`${station.name} · approximately ${station.radius.toLocaleString('en-GB')} km. Casio 3179 reference range, not a reception guarantee.`;
+      svg('title',{},ring).textContent=t("{0} · approximately {1} km. Casio 3179 reference range, not a reception guarantee.", station.name, station.radius.toLocaleString(locale()));
       coveragePaths.set(station.id,ring);
       const [x,y]=projection([station.longitude,station.latitude]);
       const group=svg('g',{class:'world-station-marker',transform:`translate(${x},${y})`,role:'button',tabindex:0,
-        'aria-label':`${station.name}, ${station.location}, ${station.frequency/1000} kilohertz`},$('world-station-markers'));
+        'aria-label':t("{0}, {1}, {2} kilohertz", station.name, station.location, station.frequency/1000)},$('world-station-markers'));
       svg('circle',{r:13,class:'station-ring'},group); svg('circle',{r:7,class:'station-target'},group);
       svg('path',{d:'M-3 4L0-4L3 4M-2 1H2',stroke:station.color,'stroke-width':'1',fill:'none'},group);
       svg('circle',{r:1.2,cy:-4,class:'station-center'},group);
@@ -121,7 +122,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     twilightPaths.forEach(({alt,node})=>node.setAttribute('d',path(geoCircle().center(anti).radius(90+alt).precision(1)())));
     const [x,y]=projection([sun.longitude,sun.latitude]); $('world-sun').setAttribute('transform',`translate(${x},${y})`);
     $('world-subsolar').textContent=`${coord(sun.latitude,'N','S')} · ${coord(sun.longitude,'E','W')}`;
-    $('world-city-phase').textContent=events?.polar || lightPhase(solarAltitude(city,sun));
+    $('world-city-phase').textContent=t(events?.polar || lightPhase(solarAltitude(city,sun)));
     return sun;
   }
   function render(force=false) {
@@ -129,23 +130,23 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     const time=epoch(), date=new Date(time), station=selectedStation();
     $('world-utc').textContent=clock(time,'UTC',true); $('world-utc').dateTime=date.toISOString();
     $('world-date-label').textContent=utcDate.format(time);
-    $('world-mode').textContent=preview===null?'LIVE':'PREVIEW'; $('world-mode').classList.toggle('preview',preview!==null);
-    $('world-reference').textContent=preview!==null?'Exploration time · audio unchanged':getReference();
-    $('world-preview-note').textContent=preview===null?'Follow the Sun. Explore the night.':playing?'Playing one day per minute · UTC':'Preview only · transmission time unchanged';
+    $('world-mode').textContent=preview===null?t("LIVE"):t("PREVIEW"); $('world-mode').classList.toggle('preview',preview!==null);
+    $('world-reference').textContent=preview!==null?t("Exploration time · audio unchanged"):getReference();
+    $('world-preview-note').textContent=preview===null?t("Follow the Sun. Explore the night."):playing?t("Playing one day per minute · UTC"):t("Preview only · transmission time unchanged");
     if(document.activeElement!==$('world-date')) $('world-date').value=date.toISOString().slice(0,10);
     const seasons=seasonEvents(date.getUTCFullYear());
     document.querySelectorAll('[data-world-season]').forEach(button=>{button.title=new Date(seasons[Number(button.dataset.worldSeason)]).toISOString().replace('T',' ').slice(0,19)+' UTC';});
     const minutes=date.getUTCHours()*60+date.getUTCMinutes();
     $('world-time-slider').value=minutes; $('world-time-slider').setAttribute('aria-valuetext',hhmm(minutes)+' UTC');
     $('world-city-name').textContent=city.name; $('world-city-name').title=`${city.name}, ${city.region}, ${city.country}`;
-    $('world-city-country').textContent=city.country; $('world-city-time').textContent=clock(time,city.timeZone,true);
+    $('world-city-country').textContent=t(city.country); $('world-city-time').textContent=clock(time,city.timeZone,true);
     $('world-city-zone').textContent=`${localDateKey(time,city.timeZone)} · ${city.timeZone}`;
     $('world-city-zone').title=$('world-city-zone').textContent;
     const dayKey=city.id+':'+city.latitude+':'+localDateKey(time,city.timeZone);
     if(lastCityDay!==dayKey) {
       events=sunEvents(time,city); lastCityDay=dayKey;
-      $('world-sunrise').textContent=events.rise===null?'No sunrise':clock(events.rise,city.timeZone);
-      $('world-sunset').textContent=events.set===null?'No sunset':clock(events.set,city.timeZone);
+      $('world-sunrise').textContent=events.rise===null?t("No sunrise"):clock(events.rise,city.timeZone);
+      $('world-sunset').textContent=events.set===null?t("No sunset"):clock(events.set,city.timeZone);
       const length=Math.round(events.daylightMs/60000);
       $('world-daylength').textContent=`${Math.floor(length/60)}h ${String(length%60).padStart(2,'0')}m`;
     }
@@ -155,23 +156,23 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     // Keep labels inside the fixed viewport, including Pacific and polar selections.
     label.setAttribute('text-anchor',x<100?'start':x>900?'end':'middle'); label.setAttribute('y',y<65?'29':'-21');
     $('world-station-location').textContent=station.location.split(',')[0];
-    $('world-station-distance').textContent=`${station.frequency/1000} kHz · ${clock(time,station.localZone)} local · ${Math.round(distanceKm(city,station)).toLocaleString('en-GB')} km away`;
-    $('world-use-station').textContent=`Use ${station.name} ↗`; $('world-use-station').disabled=isTransmitting();
+    $('world-station-distance').textContent=t("{0} kHz · {1} local · {2} km away", station.frequency/1000, clock(time,station.localZone), Math.round(distanceKm(city,station)).toLocaleString(locale()));
+    $('world-use-station').textContent=t("Use {0} ↗", station.name); $('world-use-station').disabled=isTransmitting();
     for(const s of WORLD_STATIONS) markers.get(s.id)?.classList.toggle('transmitting',isTransmitting()&&getStationId()===s.id);
   }
   async function load() {
     if(loaded) return;
     if(loading) return loading;
     loading=Promise.all(['countries-50m.json','lights.json','catalog.json'].map(async name=>{
-      const r=await fetch(new URL(`../assets/world/${name}`,import.meta.url));if(!r.ok)throw Error('Atlas data unavailable');return r.json();
+      const r=await fetch(new URL(`../assets/world/${name}`,import.meta.url));if(!r.ok)throw Error(t("Atlas data unavailable"));return r.json();
     })).then(([topology,lights,manifest])=>{
       buildMap(topology,lights);catalogCount=manifest.cityCount;
-      $('world-catalog-status').textContent=`${catalogCount.toLocaleString('en-GB')} cities · offline`;
+      $('world-catalog-status').textContent=t("{0} cities · offline", catalogCount.toLocaleString(locale()));
       loaded=true;$('world-loading').hidden=true;render(true);
     }).catch(()=>{
-      $('world-loading').replaceChildren(document.createTextNode('The atlas could not be loaded. '));
-      const retry=document.createElement('button');retry.textContent='Retry';retry.className='text-button';
-      retry.onclick=()=>{loading=null;$('world-loading').textContent='Preparing your view of Earth…';load();};$('world-loading').append(retry);
+      $('world-loading').replaceChildren(document.createTextNode(t("The atlas could not be loaded. ")));
+      const retry=document.createElement('button');retry.textContent=t("Retry");retry.className='text-button';
+      retry.onclick=()=>{loading=null;$('world-loading').textContent=t("Preparing your view of Earth…");load();};$('world-loading').append(retry);
     });
     return loading;
   }
@@ -183,7 +184,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   function renderResults() {
     const box=$('world-city-results');box.replaceChildren();focusedResult=-1;
     $('world-city-search').removeAttribute('aria-activedescendant');
-    if(!results.length){searchMessage('No matching city. Try another spelling or add a country.');return;}
+    if(!results.length){searchMessage(t("No matching city. Try another spelling or add a country."));return;}
     results.forEach((value,i)=>{
       const button=document.createElement('button');button.type='button';button.className='world-result';button.id=`world-result-${i}`;
       button.role='option';button.setAttribute('aria-selected','false');button.tabIndex=-1;
@@ -194,11 +195,11 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   }
   function startWorker() {
     if(worker)return;
-    $('world-catalog-status').textContent='Preparing city search…';
+    $('world-catalog-status').textContent=t("Preparing city search…");
     try {
       worker=new Worker(new URL('./city-search-worker.mjs',import.meta.url),{type:'module'});
       worker.onmessage=({data})=>{
-        if(data.type==='ready') { workerReady=true;catalogCount=data.count;$('world-catalog-status').textContent=`${catalogCount.toLocaleString('en-GB')} cities · offline`;
+        if(data.type==='ready') { workerReady=true;catalogCount=data.count;$('world-catalog-status').textContent=t("{0} cities · offline", catalogCount.toLocaleString(locale()));
           if($('world-city-search').value.trim().length>=2)sendQuery(); }
         else if(data.type==='results'&&data.request===request&&visible&&document.activeElement===$('world-city-search')&&$('world-city-search').value.trim().length>=2) {
           results=data.cities;renderResults();
@@ -209,13 +210,13 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   }
   function workerError() {
     worker?.terminate();worker=null;workerReady=false;
-    $('world-catalog-status').textContent='City search unavailable';
-    if(document.activeElement===$('world-city-search'))searchMessage('City search could not load. Focus the search field to retry.');
+    $('world-catalog-status').textContent=t("City search unavailable");
+    if(document.activeElement===$('world-city-search'))searchMessage(t("City search could not load. Focus the search field to retry."));
   }
   function sendQuery() {
     const query=$('world-city-search').value.trim();request++;
     if(query.length<2){closeResults();return;}
-    startWorker();if(!workerReady){searchMessage('Loading the offline city catalog…');return;}
+    startWorker();if(!workerReady){searchMessage(t("Loading the offline city catalog…"));return;}
     worker.postMessage({query,request});
   }
   $('world-city-search').addEventListener('focus',startWorker);
@@ -238,7 +239,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     const button=document.createElement('button');button.textContent=station.name;button.dataset.station=station.id;
     button.onclick=()=>chooseStation(station.id);$('world-station-tabs').append(button);
   }
-  $('world-use-station').onclick=()=>{if(!isTransmitting()){useStation(stationId);notify(`${selectedStation().name} selected for transmission.`);}};
+  $('world-use-station').onclick=()=>{if(!isTransmitting()){useStation(stationId);notify(t("{0} selected for transmission.", selectedStation().name));}};
   function previewAt(time) {
     if(!Number.isFinite(time)||time<Date.UTC(1900,0,1)||time>=Date.UTC(2101,0,1))return;
     preview=time;document.querySelectorAll('[data-world-season]').forEach(b=>b.setAttribute('aria-pressed','false'));render(true);
@@ -252,7 +253,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   $('world-now').onclick=()=>{pause();preview=null;document.querySelectorAll('[data-world-season]').forEach(b=>b.setAttribute('aria-pressed','false'));render(true);};
   $('world-play').onclick=()=>{
     if(playing){pause();return;}
-    previewAt(epoch());playing=true;lastTick=performance.now();$('world-play').textContent='Ⅱ';$('world-play').setAttribute('aria-pressed','true');$('world-play').setAttribute('aria-label','Pause accelerated day');
+    previewAt(epoch());playing=true;lastTick=performance.now();$('world-play').textContent='Ⅱ';$('world-play').setAttribute('aria-pressed','true');$('world-play').setAttribute('aria-label',t("Pause accelerated day"));
   };
   document.querySelectorAll('[data-world-season]').forEach(button=>{
     button.setAttribute('aria-pressed','false');button.onclick=()=>{
@@ -268,6 +269,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   }
   document.addEventListener('visibilitychange',()=>{lastTick=performance.now();if(!document.hidden&&visible)render(true);});
   window.addEventListener('beforeunload',()=>{clearInterval(timer);worker?.terminate();});
+  onLanguageChange(() => { lastCityDay = null; renderCoverage(); if (visible) render(true); });
   return { getCity: () => ({...city}), setVisible(value) {
     if(value&&!visible){stationId=getStationId();renderCoverage();}
     visible=value;closeResults();

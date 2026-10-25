@@ -1,15 +1,18 @@
-# Atomic Clock Sync
+# AtomicClockSync
 
 Sync Casio Multiband 6 watches with simulated time signals through your speakers. Built with **JavaScript and Electron** for macOS, Windows and Linux.
 
 ![Atomic Clock Sync — synchronization screen](docs/images/synchronization.png)
 
-Atomic Clock Sync generates the time codes used by DCF77, MSF, WWVB, JJY and BPC. Choose a station, check the time, place your watch near a speaker or wired earphone, and start manual reception on the watch.
+AtomicClockSync generates the time codes used by DCF77, MSF, WWVB, JJY and BPC. Choose a station, check the time, place your watch near a speaker or wired earphone, and start manual reception on the watch.
 
-The interface, source files and documentation are in English. Read the [full user guide](docs/USAGE.en.md) for setup, troubleshooting and protocol details.
+Choose English, Italian, French, German, Spanish or Japanese in **Settings → Language**. Language changes apply immediately and are saved on this device. Source files and documentation are in English. Read the [full user guide](docs/USAGE.en.md) for setup, troubleshooting and protocol details.
+
+See [localization notes](docs/LOCALIZATION.md) for adding interface strings and running language checks.
 
 ## Features
 
+- **Light Travel:** a cinematic offline Solar System, nine light sources, date-dependent travel times, departure/reception clocks and a controllable photon journey.
 - **Moon Observatory:** offline lunar phases, illumination, distance, local moonrise/moonset, upcoming quarters and an independent timeline shared with your World View city.
 - **Time Machine:** 32 sourced historical journeys, precision-aware elapsed counters, personal memories, countdowns and locally stored time capsules.
 - **Back in Time:** a playful time-circuit dashboard inspired by Back to the Future, with five movie destinations, live elapsed-time counters and an animated 88 mph trip.
@@ -24,6 +27,8 @@ The interface, source files and documentation are in English. Read the [full use
 - **Live signal view:** inspect the time code, current symbol, fields and parity checks.
 - **Nine themes:** eight dark palettes and one light palette, saved independently of watch profiles.
 - **Compact desktop interface:** a fixed 1100 × 740 window with separate views.
+- **Fluid navigation:** directional section reveals, animated headings and a moving sidebar indicator, with instant reduced-motion navigation.
+- **Six interface languages:** offline translations of navigation, settings, notifications, astronomy, historical journeys and native menus, with a bundled Japanese font. Language changes preserve personal text and do not interrupt transmission.
 - **Local data:** no account, cloud storage or telemetry.
 
 ## Supported stations
@@ -69,6 +74,16 @@ Tracking uses SGP4 orbital calculations, **not onboard telemetry**. The interfac
 
 See the [ISS user guide](docs/USAGE.en.md#iss-orbital-observatory) and [source/licensing notes](docs/THIRD_PARTY.md#iss-sources-and-orbit-software).
 
+## Light Travel
+
+![Light Travel — following sunlight towards Earth](docs/images/light-travel.png)
+
+**The sky arrives late.** Choose the Sun, Moon or one of seven planets in a star-filled orbital scene. The dashboard calculates how old its arriving light is, its distance, and the UTC departure/reflection and Earth reception times. Original vector planets, a glowing photon trail and an expanding arrival pulse bring the journey to life.
+
+Follow a fixed observation at **1×, 10×, 100× or 1000×**, or choose an overview lasting at most twelve seconds. Pause, resume and change speed without losing progress. Select a UTC date from 1900 through 2100, jump six months or return to **Live** to explore changing distances. Leaving the section or hiding the window pauses playback.
+
+Astronomy Engine calculates the source's earlier position relative to Earth at reception, entirely offline. Distances use body centres; the diagram compresses orbits and illustrates planet sizes. For reflected light, the displayed journey begins at the Moon or planet and excludes the earlier Sun-to-object leg. This is an educational light-time reconstruction, not a visibility forecast. It supports all six languages, nine themes and reduced motion, independently of watch transmission.
+
 ## Moon Observatory
 
 ![Moon Observatory — calculated phases and local observing times](docs/images/moon-observatory.png)
@@ -103,15 +118,15 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **1.8.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
+Current version: **1.9.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `Atomic Clock Sync-1.8.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
-| `Atomic Clock Sync-1.8.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
-| `Atomic Clock Sync-1.8.0-linux-x86_64.AppImage` | Portable Linux x64 application | Built on Ubuntu 22.04 in Docker; packaged UI and muted audio tested on a virtual display |
-| `Atomic Clock Sync-1.8.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Package metadata and contents verified against the tested application |
-| `Atomic Clock Sync-1.8.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Package metadata and contents verified against the tested application |
+| `AtomicClockSync-1.9.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
+| `AtomicClockSync-1.9.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
+| `AtomicClockSync-1.9.0-linux-x86_64.AppImage` | Portable Linux x64 application | Built on Ubuntu 22.04 in Docker; packaged UI and muted audio tested on a virtual display |
+| `AtomicClockSync-1.9.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Package metadata and contents verified against the tested application |
+| `AtomicClockSync-1.9.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Package metadata and contents verified against the tested application |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include their runtime; **Node.js is not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
@@ -119,14 +134,14 @@ Prebuilt apps include their runtime; **Node.js is not required to use them**. On
 On Linux x64, choose the AppImage for portable use, the DEB on Debian-based distributions, or the RPM on Fedora/openSUSE. The names `x86_64` and `amd64` both mean 64-bit Intel/AMD PCs. These builds do not target ARM64. From your download directory:
 
 ```sh
-chmod +x 'Atomic Clock Sync-1.8.0-linux-x86_64.AppImage'
-./'Atomic Clock Sync-1.8.0-linux-x86_64.AppImage'
+chmod +x 'AtomicClockSync-1.9.0-linux-x86_64.AppImage'
+./'AtomicClockSync-1.9.0-linux-x86_64.AppImage'
 # Alternatively, on Debian/Ubuntu/Mint:
-sudo apt install './Atomic Clock Sync-1.8.0-linux-amd64.deb'
+sudo apt install './AtomicClockSync-1.9.0-linux-amd64.deb'
 # Alternatively, on Fedora:
-sudo dnf install './Atomic Clock Sync-1.8.0-linux-x86_64.rpm'
+sudo dnf install './AtomicClockSync-1.9.0-linux-x86_64.rpm'
 # Or on openSUSE:
-sudo zypper install './Atomic Clock Sync-1.8.0-linux-x86_64.rpm'
+sudo zypper install './AtomicClockSync-1.9.0-linux-x86_64.rpm'
 ```
 
 Linux validation uses Ubuntu 22.04 x64 in Docker with a virtual display, muted audio and `--no-sandbox` for the container-only test. Normal launch commands retain Chromium's sandbox. Audio output and physical watch reception still need a real Linux desktop/hardware test. Release binaries are excluded from Git and are intended for GitHub Releases. Each platform package is distributed individually.
@@ -169,8 +184,11 @@ The explicit runtime download is needed for the Electron version used here. No w
 ```sh
 npm test                 # Protocol, PCM, stereo routing, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
+npm run test:navigation  # App identity, motion, rapid clicks, focus and live audio isolation
+npm run test:languages   # Six locales, all views, Japanese glyphs, persistence and live audio
 npm run test:world       # Offline atlas, city worker, timeline and audio isolation
 npm run test:iss         # ISS states, passes, sky plot, themes and audio isolation
+npm run test:light-travel # Nine sources, fixed journeys, UTC previews, languages and themes
 npm run test:observatory  # Moon phases, historical journeys, capsules, themes and audio isolation
 npm run test:back-in-time # Movie circuits, time travel, layout and audio isolation
 npm run build:iss        # Rebuild the bundled SGP4 library
@@ -186,7 +204,7 @@ npm run checksums -- --github # Use GitHub download filenames in the published m
 
 The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run checksums` generates `SHA256SUMS.txt` for the current-version individual packages available in `release/`; use `-- --github` before uploading that manifest because GitHub replaces filename spaces with dots. Electron Builder additionally supports Snap, Flatpak, Pacman and archive targets; AppImage, DEB and RPM are configured here. The DEB/RPM payloads match the application tested on Ubuntu; installation and desktop integration on other distributions remain untested.
 
-The 58 unit tests include independent decoding of generated PCM across the autumn DST transition and movie-date duration calculations. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
+The 65 unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 
@@ -199,6 +217,8 @@ Preferences, themes, watch profiles and trial history are stored locally using E
 ```text
 ~/Library/Application Support/Atomic Clock Sync/
 ```
+
+The storage directory keeps its original name after the app is renamed to AtomicClockSync, preserving existing local data.
 
 Close the app before backing up that entire directory. Replacing the app or cleaning the build directory does not delete it.
 

@@ -6,17 +6,22 @@ import { createIssView } from './iss-view.mjs';
 import { createBackInTimeView } from './back-in-time.mjs';
 import { createMoonView } from './moon-view.mjs';
 import { createTimeMachineView } from './time-machine.mjs';
+import { createLightTravelView } from './light-travel.mjs';
+import { createSectionTransitions } from './section-transitions.mjs';
+import { t, decimal, locale, dateTimeFormat, numberFormat, getLanguage, setLanguage, onLanguageChange, localizeDocument, localizeStoredMessage } from './i18n.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
 
 const $ = id => document.getElementById(id);
 const desktop = window.desktop;
+localizeDocument();
 const engine = new SignalEngine();
+const transitionSection = createSectionTransitions();
 const pad = value => String(value).padStart(2, '0');
 let dateFormatter;
-const historyFormatter = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+const historyFormatter = dateTimeFormat({ day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 function readSaved(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
 const selectedTheme = applyTheme(readSaved('atomic.theme', 'lime'));
-for (const theme of THEMES) $('theme-select').append(new Option(theme.name, theme.id));
+for (const theme of THEMES) $('theme-select').append(new Option(t(theme.name), theme.id));
 $('theme-select').value = selectedTheme;
 $('theme-select').addEventListener('change', event => {
   const id = applyTheme(event.target.value);
@@ -42,7 +47,7 @@ let currentFrame;
 let lastWallCheck = { wall: Date.now(), mono: performance.now() };
 const worldView = createWorldView({ getNow: now, getStationId: () => preferences.stationId,
   isTransmitting: () => Boolean(session) || busy, persist, notify,
-  getReference: () => reference ? `${now()-reference.nowMs<30*60000?'NTP':'NTP check needed'} · ${reference.host}` : 'System clock · unverified',
+  getReference: () => reference ? `${now()-reference.nowMs<30*60000?'NTP':t("NTP check needed")} · ${reference.host}` : t("System clock · unverified"),
   useStation: id => {
     if (session || busy) return;
     $('station-select').value = id;
@@ -52,16 +57,18 @@ const worldView = createWorldView({ getNow: now, getStationId: () => preferences
 const issView = createIssView({ getNow: now, getObserver: () => worldView.getCity(), desktop, notify,
   chooseCity: () => { navigate('world'); $('world-city-search').focus(); } });
 const backInTimeView = createBackInTimeView({ getNow: now, getReference: () => reference
-  ? (now() - reference.nowMs < 30 * 60000 ? 'NTP VERIFIED' : 'NTP CHECK NEEDED') : 'SYSTEM CLOCK' });
+  ? (now() - reference.nowMs < 30 * 60000 ? t("NTP VERIFIED") : t("NTP CHECK NEEDED")) : t("SYSTEM CLOCK") });
 const moonView = createMoonView({ getNow: now, getObserver: () => worldView.getCity(),
   chooseCity: () => { navigate('world'); $('world-city-search').focus(); },
-  getReference: () => reference ? (now() - reference.nowMs < 30 * 60000 ? 'NTP verified' : 'NTP check needed') : 'System clock · unverified' });
+  getReference: () => reference ? (now() - reference.nowMs < 30 * 60000 ? t("NTP verified") : t("NTP check needed")) : t("System clock · unverified") });
 const timeMachineView = createTimeMachineView({ getNow: now, persist, notify });
+const lightTravelView = createLightTravelView({ getNow:now, notify, getReference:() => reference
+  ? (now()-reference.nowMs < 30*60000 ? t('NTP verified') : t('NTP check needed')) : t('System clock · unverified') });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 function persist(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-  catch { notify('Local storage is full or unavailable. The latest changes were not saved.', true); return false; }
+  catch { notify(t("Local storage is full or unavailable. The latest changes were not saved."), true); return false; }
 }
 function savePreferences() { persist('atomic.preferences', preferences); renderProfileSummary(); }
 function saveProfiles() {
@@ -71,26 +78,28 @@ function saveProfiles() {
 }
 function notify(message, error = false) {
   clearTimeout(toastTimer);
-  $('toast').textContent = message;
+  $('toast').textContent = t(message);
   $('toast').classList.toggle('error', error);
   $('toast').hidden = false;
   toastTimer = setTimeout(() => { $('toast').hidden = true; }, error ? 9000 : 6500);
 }
 
 function navigate(page) {
-  const titles = { sync: ['Sync your watch', 'Choose a station, place your Casio nearby and transmit.'],
-    signal: ['Inside the signal', 'The selected station time code, live.'],
-    world: ['A world between light and time', 'Follow the Sun. Find your city. Explore the signals that keep us in sync.'],
-    moon: ['A little closer to the Moon', 'Follow its phases. Find your moonrise. Explore a different kind of time.'],
-    'time-machine': ['Time Machine', 'Some moments change the world. Others change your world.'],
-    iss: ['An observatory in orbit', 'Track our orbital outpost. Discover your next encounter with the ISS.'],
-    'back-in-time': ['Back in Time', 'A little less precision. A lot more temporal displacement.'],
-    history: ['Your synchronization history', 'Your trials, stored only on this device.'],
-    profiles: ['A profile for every watch', 'Save the settings and placement that work.'],
-    trial: ['Trial details', 'The settings used and the result observed on your Casio.'],
-    settings: ['Set up your signal', 'Configure the signal for your device.'],
-    guide: ['Quick start guide', 'Prepare your Casio and start transmitting.'] };
+  const titles = { sync: [t("Sync your watch"), t("Choose a station, place your Casio nearby and transmit.")],
+    signal: [t("Inside the signal"), t("The selected station time code, live.")],
+    world: [t("A world between light and time"), t("Follow the Sun. Find your city. Explore the signals that keep us in sync.")],
+    moon: [t("A little closer to the Moon"), t("Follow its phases. Find your moonrise. Explore a different kind of time.")],
+    'light-travel': [t('The sky arrives late'), t('Light takes time to reach us. Choose a celestial body and discover how old the light you see is.')],
+    'time-machine': [t("Time Machine"), t("Some moments change the world. Others change your world.")],
+    iss: [t("An observatory in orbit"), t("Track our orbital outpost. Discover your next encounter with the ISS.")],
+    'back-in-time': [t("Back in Time"), t("A little less precision. A lot more temporal displacement.")],
+    history: [t("Your synchronization history"), t("Your trials, stored only on this device.")],
+    profiles: [t("A profile for every watch"), t("Save the settings and placement that work.")],
+    trial: [t("Trial details"), t("The settings used and the result observed on your Casio.")],
+    settings: [t("Set up your signal"), t("Configure the signal for your device.")],
+    guide: [t("Quick start guide"), t("Prepare your Casio and start transmitting.")] };
   if (!titles[page]) page = 'sync';
+  const previousPage = document.querySelector('.page.active');
   for (const name of Object.keys(titles)) {
     $(`page-${name}`).hidden = page !== name;
     $(`page-${name}`).classList.toggle('active', page === name);
@@ -108,6 +117,8 @@ function navigate(page) {
   backInTimeView.setVisible(page === 'back-in-time');
   moonView.setVisible(page === 'moon');
   timeMachineView.setVisible(page === 'time-machine');
+  lightTravelView.setVisible(page === 'light-travel');
+  transitionSection(previousPage, $(`page-${page}`));
   window.scrollTo(0, 0);
 }
 
@@ -133,7 +144,7 @@ function setControls() {
   $('start-button').disabled = busy || syncing;
   $('start-button').classList.toggle('running', Boolean(session));
   $('start-symbol').textContent = session ? '■' : '▶';
-  $('start-label').textContent = busy ? 'Preparing audio…' : session ? 'Stop' : 'Start transmission';
+  $('start-label').textContent = busy ? t("Preparing audio…") : session ? t("Stop") : t("Start transmission");
   $('confirmed-button').hidden = !session;
   $('transmit-dot').className = `signal-dot ${session ? 'active' : 'muted'}`;
   $('session-dot').classList.toggle('signal-dot', Boolean(session));
@@ -143,32 +154,32 @@ function setControls() {
 function renderReference() {
   const fresh = reference && now() - reference.nowMs < 30 * 60000;
   $('source-dot').style.backgroundColor = fresh ? 'var(--accent)' : 'var(--muted)';
-  $('source-label').textContent = reference ? `${fresh ? 'NTP verified' : 'NTP check needed'} · ${reference.host}` : 'System clock · not verified';
-  $('ntp-chip').textContent = reference ? (fresh ? 'NTP VERIFIED' : 'CHECK NEEDED') : 'SYSTEM';
-  $('ntp-source').textContent = reference?.host || 'System clock';
-  $('ntp-offset').textContent = reference ? `${reference.offsetMs >= 0 ? '+' : ''}${reference.offsetMs.toFixed(1)} ms` : 'Unavailable';
-  $('ntp-uncertainty').textContent = reference ? `± ${Math.ceil(reference.uncertaintyMs)} ms` : 'Unavailable';
-  $('ntp-last').textContent = reference ? historyFormatter.format(reference.synchronizedAt) : 'Never';
+  $('source-label').textContent = reference ? `${fresh ? t("NTP verified") : t("NTP check needed")} · ${reference.host}` : t("System clock · not verified");
+  $('ntp-chip').textContent = reference ? (fresh ? t("NTP VERIFIED") : t("CHECK NEEDED")) : t("SYSTEM");
+  $('ntp-source').textContent = reference?.host || t("System clock");
+  $('ntp-offset').textContent = reference ? `${reference.offsetMs >= 0 ? '+' : ''}${decimal(reference.offsetMs, 1)} ms` : t("Unavailable");
+  $('ntp-uncertainty').textContent = reference ? `± ${Math.ceil(reference.uncertaintyMs)} ms` : t("Unavailable");
+  $('ntp-last').textContent = reference ? historyFormatter.format(reference.synchronizedAt) : t("Never");
 }
 
 async function syncClock(quiet = false) {
   if (syncing || session || busy) return;
   syncing = true;
   setControls();
-  $('sync-button').textContent = 'Checking time…';
+  $('sync-button').textContent = t("Checking time…");
   try {
     const result = await desktop.synchronize();
     if (!result.ok) throw new Error(result.error);
     // IPC delivery is local; anchor immediately on receipt, without half of the NTP wait.
     anchor = { epoch: result.nowMs, mono: performance.now() };
     reference = result;
-    if (!quiet) notify(`Time checked with ${result.host}. Offset ${result.offsetMs >= 0 ? '+' : ''}${Math.round(result.offsetMs)} ms.`);
+    if (!quiet) notify(t("Time checked with {0}. Offset {1}{2} ms.", result.host, result.offsetMs >= 0 ? '+' : '', Math.round(result.offsetMs)));
   } catch (error) {
     if (!quiet || !reference) notify(error.message, true);
     if (!reference) anchor = { epoch: Date.now(), mono: performance.now() };
   } finally {
     syncing = false;
-    $('sync-button').textContent = 'Check time ↻';
+    $('sync-button').textContent = t("Check time ↻");
     renderReference();
     setControls();
     lastSecond = -1;
@@ -186,13 +197,13 @@ async function start() {
       onComplete: () => stop('complete'), onInterrupt: reason => stop('interrupted', reason) });
     session = { ...timing, createdAt: now(), minutes: preferences.duration, stationId: preferences.stationId, snapshot, volumeChanges: [] };
     await desktop.setTransmitting(true);
-    $('session-message').textContent = 'Check the reception indicator on your Casio.';
-    if (!reference) notify('Transmitting system time. Accuracy depends on the computer clock.');
+    $('session-message').textContent = t("Check the reception indicator on your Casio.");
+    if (!reference) notify(t("Transmitting system time. Accuracy depends on the computer clock."));
   } catch (error) {
     await engine.stop();
     session = null;
     await desktop.setTransmitting(false);
-    notify(`Audio could not start: ${error.message}`, true);
+    notify(t("Audio could not start: {0}", error.message), true);
   } finally { busy = false; setControls(); update(); }
 }
 
@@ -209,11 +220,11 @@ async function stop(status = 'stopped', reason = '') {
   await engine.stop();
   await desktop.setTransmitting(false);
   renderHistory();
-  const message = status === 'confirmed' ? 'Reception confirmed by you. Your Casio is ready.'
-    : status === 'complete' ? 'Transmission finished. Check reception on your Casio display.'
-      : status === 'interrupted' ? reason : 'Transmission stopped.';
-  $('session-message').textContent = message;
-  $('status-badge').textContent = status === 'confirmed' ? 'CONFIRMED BY YOU' : 'IDLE';
+  const message = status === 'confirmed' ? t("Reception confirmed by you. Your Casio is ready.")
+    : status === 'complete' ? t("Transmission finished. Check reception on your Casio display.")
+      : status === 'interrupted' ? reason : t("Transmission stopped.");
+  $('session-message').textContent = t(message);
+  $('status-badge').textContent = status === 'confirmed' ? t("CONFIRMED BY YOU") : t("IDLE");
   if (stored && profileStored) notify(message, status === 'interrupted');
   busy = false;
   setControls();
@@ -231,25 +242,25 @@ function renderHistory() {
   if (!history.length) {
     const p = document.createElement('p');
     p.className = 'empty-history';
-    p.textContent = 'No trials yet. Start your first transmission to build your history.';
+    p.textContent = t("No trials yet. Start your first transmission to build your history.");
     $('history-list').append(p);
   }
-  const statuses = { confirmed: 'Outcome not verified', complete: 'Finished · check reception', interrupted: 'Interrupted by audio or system', stopped: 'Stopped manually' };
+  const statuses = { confirmed: t("Outcome not verified"), complete: t("Finished · check reception"), interrupted: t("Interrupted by audio or system"), stopped: t("Stopped manually") };
   for (const item of history.slice(historyPage * 8, (historyPage + 1) * 8)) {
     const row = document.createElement('div');
     row.className = 'history-row';
     for (const [value, className] of [[historyFormatter.format(item.at), 'history-date'],
       [`${STATIONS.find(station => station.id === item.stationId)?.name || 'DCF77'} · ${Math.floor(item.seconds / 60)}m ${pad(item.seconds % 60)}s`, ''],
-      [item.snapshot?.watch.name || 'Custom settings', 'history-watch'],
-      [item.outcome === 'get' ? '✓ Reception confirmed by you' : item.outcome === 'err' ? 'ERR · reception failed' : statuses[item.status], `history-status ${item.outcome === 'get' ? 'confirmed' : item.status}`]]) {
+      [item.snapshot?.watch.name || t("Custom settings"), 'history-watch'],
+      [item.outcome === 'get' ? t("✓ Reception confirmed by you") : item.outcome === 'err' ? t("ERR · reception failed") : statuses[item.status], `history-status ${item.outcome === 'get' ? 'confirmed' : item.status}`]]) {
       const span = document.createElement('span');
       span.textContent = value;
       span.className = className;
       row.append(span);
     }
     const detail = document.createElement('button');
-    detail.className = 'text-button'; detail.textContent = 'Details';
-    detail.setAttribute('aria-label', `Details of trial on ${historyFormatter.format(item.at)}`);
+    detail.className = 'text-button'; detail.textContent = t("Details");
+    detail.setAttribute('aria-label', t("Details of trial on {0}", historyFormatter.format(item.at)));
     detail.onclick = () => openTrial(item.id);
     row.append(detail);
     $('history-list').append(row);
@@ -267,7 +278,7 @@ function fillFacts(container, entries) {
 function renderProfileOptions() {
   for (const id of ['profile-select', 'profile-edit-select']) {
     const select = $(id);
-    select.replaceChildren(new Option(id === 'profile-select' ? 'Custom settings' : 'New profile', ''));
+    select.replaceChildren(new Option(id === 'profile-select' ? t("Custom settings") : t("New profile"), ''));
     for (const profile of profiles) select.append(new Option(profile.name, profile.id));
     select.value = (id === 'profile-select' ? activeProfileId : editingProfileId) || '';
   }
@@ -278,7 +289,7 @@ function showProfile(id) {
   const profile = profiles.find(p => p.id === editingProfileId);
   const metadata = watchMetadata(profile);
   for (const [key, input] of Object.entries({ name: 'profile-name', model: 'profile-model', homeCity: 'profile-city', position: 'profile-position', systemVolume: 'profile-system-volume' })) $(input).value = metadata[key];
-  $('profile-form-title').textContent = profile ? 'Edit watch' : 'New watch';
+  $('profile-form-title').textContent = profile ? t("Edit watch") : t("New watch");
   $('profile-delete').hidden = !profile;
   renderProfileOptions(); renderProfileSummary(); setControls();
 }
@@ -286,17 +297,17 @@ function showProfile(id) {
 function renderProfileSummary() {
   const station = getStation(preferences.stationId);
   fillFacts($('profile-settings-summary'), [
-    ['Station', station.name], ['Channel', CHANNEL_LABELS[preferences.channel]],
-    ['Waveform', WAVE_LABELS[preferences.wave]], ['App volume', `${preferences.volume}%`],
-    ['Duration', `${preferences.duration} minutes`], ['Manual advance', `${preferences.advanceMs} ms`],
-    ['Output', $('audio-output').selectedOptions[0]?.textContent || 'System default'],
+    [t("Station"), station.name], [t("Channel"), t(CHANNEL_LABELS[preferences.channel])],
+    [t("Waveform"), t(WAVE_LABELS[preferences.wave])], [t("App volume"), `${preferences.volume}%`],
+    [t("Duration"), t("{0} minutes", preferences.duration)], [t("Manual advance"), `${preferences.advanceMs} ms`],
+    [t("Output"), $('audio-output').selectedOptions[0]?.textContent || t("System default")],
   ]);
   const profile = profiles.find(p => p.id === editingProfileId);
   const changed = profile && JSON.stringify(profile.settings) !== JSON.stringify(normalizePreferences(preferences));
-  $('profile-saved-state').textContent = profile ? changed ? 'UNSAVED' : 'SAVED' : 'NEW';
+  $('profile-saved-state').textContent = profile ? changed ? t("UNSAVED") : t("SAVED") : t("NEW");
   $('profile-last-success').textContent = profile?.lastSuccess
-    ? `${historyFormatter.format(profile.lastSuccess.at)} · ${getStation(profile.lastSuccess.settings.stationId).name} · ${CHANNEL_LABELS[profile.lastSuccess.settings.channel]} · ${WAVE_LABELS[profile.lastSuccess.settings.wave]} · ${profile.lastSuccess.settings.volume}%`
-    : 'No confirmed trial for this watch yet.';
+    ? `${historyFormatter.format(profile.lastSuccess.at)} · ${getStation(profile.lastSuccess.settings.stationId).name} · ${t(CHANNEL_LABELS[profile.lastSuccess.settings.channel])} · ${t(WAVE_LABELS[profile.lastSuccess.settings.wave])} · ${profile.lastSuccess.settings.volume}%`
+    : t("No confirmed trial for this watch yet.");
   $('profile-restore-success').disabled = Boolean(session) || busy || !profile?.lastSuccess;
 }
 
@@ -307,7 +318,7 @@ function syncPreferenceControls() {
   const available = [...$('audio-output').options].some(o => o.value === preferences.deviceId);
   if (!available) {
     preferences.deviceId = 'default';
-    notify('Saved output unavailable. Using the system output; the saved profile is unchanged.', true);
+    notify(t("Saved output unavailable. Using the system output; the saved profile is unchanged."), true);
   }
   $('audio-output').value = preferences.deviceId;
   return available;
@@ -340,22 +351,22 @@ function openTrial(id) {
   if (!trial) return;
   selectedTrialId = id;
   const snapshot = trial.snapshot, settings = snapshot?.settings;
-  const volume = settings ? `${settings.volume}%${trial.endVolume != null && trial.endVolume !== settings.volume ? ` → ${trial.endVolume}%` : ''}` : 'Not recorded';
-  $('trial-title').textContent = `Trial on ${historyFormatter.format(trial.at)}`;
+  const volume = settings ? `${settings.volume}%${trial.endVolume != null && trial.endVolume !== settings.volume ? ` → ${trial.endVolume}%` : ''}` : t("Not recorded");
+  $('trial-title').textContent = t("Trial on {0}", historyFormatter.format(trial.at));
   fillFacts($('trial-facts'), [
-    ['Watch', snapshot?.watch.name || 'Not linked'], ['Model / home city', [snapshot?.watch.model, snapshot?.watch.homeCity].filter(Boolean).join(' · ') || 'Not noted'],
-    ['Station', STATIONS.find(s => s.id === trial.stationId)?.name || 'DCF77'],
-    ['Channel', settings ? CHANNEL_LABELS[settings.channel] : 'Not recorded'], ['Waveform', settings ? WAVE_LABELS[settings.wave] : 'Not recorded'], ['App volume', volume],
-    ['Actual / selected duration', `${Math.floor(trial.seconds / 60)}m ${pad(trial.seconds % 60)}s${settings ? ` / ${settings.duration} min` : ''}`],
-    ['Device', snapshot?.deviceLabel || 'Not recorded'], ['System volume note', snapshot?.watch.systemVolume ? `${snapshot.watch.systemVolume}%` : 'Not noted'],
-    ['Audio / advance / reported latency', settings ? `${trial.sampleRate ? `${trial.sampleRate / 1000} kHz · ` : ''}${settings.advanceMs} ms / ${trial.latencyMs ?? '—'} ms` : 'Not recorded'],
-    ['Time source', trial.source || 'System clock'],
-    ['NTP offset / uncertainty', snapshot?.reference ? `${Number(snapshot.reference.offsetMs).toFixed(1)} ms / ±${Math.ceil(snapshot.reference.uncertaintyMs)} ms` : 'System clock · not verified'],
+    [t("Watch"), snapshot?.watch.name || t("Not linked")], [t("Model / home city"), [snapshot?.watch.model, snapshot?.watch.homeCity].filter(Boolean).join(' · ') || t("Not noted")],
+    [t("Station"), STATIONS.find(s => s.id === trial.stationId)?.name || 'DCF77'],
+    [t("Channel"), settings ? t(CHANNEL_LABELS[settings.channel]) : t("Not recorded")], [t("Waveform"), settings ? t(WAVE_LABELS[settings.wave]) : t("Not recorded")], [t("App volume"), volume],
+    [t("Actual / selected duration"), `${Math.floor(trial.seconds / 60)}m ${pad(trial.seconds % 60)}s${settings ? ` / ${settings.duration} min` : ''}`],
+    [t("Device"), localizeStoredMessage(snapshot?.deviceLabel) || t("Not recorded")], [t("System volume note"), snapshot?.watch.systemVolume ? `${snapshot.watch.systemVolume}%` : t("Not noted")],
+    [t("Audio / advance / reported latency"), settings ? `${trial.sampleRate ? `${trial.sampleRate / 1000} kHz · ` : ''}${settings.advanceMs} ms / ${trial.latencyMs ?? '—'} ms` : t("Not recorded")],
+    [t("Time source"), localizeStoredMessage(trial.source) || t("System clock")],
+    [t("NTP offset / uncertainty"), snapshot?.reference ? `${decimal(Number(snapshot.reference.offsetMs), 1)} ms / ±${Math.ceil(snapshot.reference.uncertaintyMs)} ms` : t("System clock · not verified")],
   ]);
-  $('trial-position').textContent = snapshot ? `Placement: ${snapshot.watch.position || 'not noted'}.` : 'Trial from before version 1.2: audio settings were not recorded.';
+  $('trial-position').textContent = snapshot ? t("Placement: {0}.", snapshot.watch.position || t("not noted")) : t("Trial from before version 1.2: audio settings were not recorded.");
   const changes = trial.volumeChanges || [];
-  const statuses = { confirmed: 'Stopped after GET confirmation', complete: 'Transmission completed', stopped: 'Manual stop', interrupted: 'Audio or system interruption' };
-  $('trial-events').textContent = `${statuses[trial.status]}. ${trial.reason || ''}${changes.length ? ` Volume changed ${changes.length} times (min ${Math.min(...changes.map(c => c.value), settings.volume)}%, max ${Math.max(...changes.map(c => c.value), settings.volume)}%).` : ''}`;
+  const statuses = { confirmed: t("Stopped after GET confirmation"), complete: t("Transmission completed"), stopped: t("Manual stop"), interrupted: t("Audio or system interruption") };
+  $('trial-events').textContent = `${statuses[trial.status]}. ${localizeStoredMessage(trial.reason) || ''}${changes.length ? t(" Volume changed {0} times (min {1}%, max {2}%).", changes.length, Math.min(...changes.map(c => c.value), settings.volume), Math.max(...changes.map(c => c.value), settings.volume)) : ''}`;
   $('trial-outcome').value = trial.outcome;
   setControls(); navigate('trial');
 }
@@ -370,38 +381,47 @@ function renderStation() {
   $('wave-type').value = preferences.wave;
   const gated = station.id === 'dcf77' && preferences.wave === 'sine-gated';
   $('profile-hint').textContent = gated
-    ? 'Fully silent intervals of 100/200 ms. Experimental profile for L3 followed by ERR; reception on your Casio must be checked.'
-    : 'If DCF77 shows L3 then ERR, try full pauses. Square waves can produce more audible tones.';
-  const number = value => new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1 }).format(value);
+    ? t("Fully silent intervals of 100/200 ms. Experimental profile for L3 followed by ERR; reception on your Casio must be checked.")
+    : t("If DCF77 shows L3 then ERR, try full pauses. Square waves can produce more audible tones.");
+  const number = value => numberFormat({ maximumFractionDigits: 1 }).format(value);
   const frequency = `${number(station.frequency / 1000)} kHz`;
   const tone = `${number(station.audioFrequency)} Hz`;
-  dateFormatter = new Intl.DateTimeFormat('en-GB', { timeZone: station.timeZone, day: '2-digit', month: 'long', year: 'numeric', weekday: 'short' });
+  dateFormatter = dateTimeFormat({ timeZone: station.timeZone, day: '2-digit', month: 'long', year: 'numeric', weekday: 'short' });
   $('station-select').value = station.id;
   $('station-card-flag').textContent = station.flag;
   $('station-card-frequency').textContent = frequency;
   $('station-card-name').textContent = $('settings-station').textContent = station.name;
-  $('station-location').textContent = station.location;
+  $('station-location').textContent = t(station.location);
   $('audio-frequency').textContent = $('settings-frequency').textContent = tone;
   $('harmonic').textContent = `${station.harmonic}× · ${number(station.frequency)} Hz`;
   $('station-hint').textContent = `Casio: ${station.cities} · ${station.id === 'jjy' || station.id === 'bpc' ? 'DST OFF' : 'DST AUTO'}`;
-  $('station-compatibility').textContent = station.experimental ? 'EXPERIMENTAL' : station.id === 'msf' ? 'AM · A/B' : 'AM / PWM';
-  $('volume-hint').textContent = `${number(station.audioFrequency / 1000)} kHz tone: start at low volume and keep it away from your ears.`;
-  $('wave-label').textContent = `ENVELOPE ${station.name} · ${gated ? 'FULL PAUSES' : 'SIMULATION'}`;
+  $('station-compatibility').textContent = station.experimental ? t("EXPERIMENTAL") : station.id === 'msf' ? 'AM · A/B' : 'AM / PWM';
+  $('volume-hint').textContent = t("{0} kHz tone: start at low volume and keep it away from your ears.", number(station.audioFrequency / 1000));
+  $('wave-label').textContent = t("ENVELOPE {0} · {1}", station.name, gated ? t("FULL PAUSES") : t("SIMULATION"));
   const explanations = {
-    dcf77: ['100 / 200 ms', `A 100 ms ${gated ? 'full pause' : 'reduction'} means 0; 200 ms means 1. Second 59 has no reduction and identifies the minute boundary. Three even parity bits protect minutes, hours and date.`],
-    jjy: ['200 / 500 / 800 ms', 'Each second begins at high amplitude for 800 ms (0), 500 ms (1) or 200 ms (marker). The code carries Japanese time (JST), day of year, and hour and minute parity.'],
-    wwvb: ['200 / 500 / 800 ms', 'The legacy AM code reduces amplitude for 200 ms (0), 500 ms (1) or 800 ms (marker). It transmits UTC; the Casio applies its home city time zone. Includes leap year and US DST flags.'],
-    msf: ['500 ms · bit A/B', 'The minute starts with 500 ms without a carrier. Each other second starts with a 100 ms pause followed by two 100 ms slots for bits A and B. Four odd parity bits protect UK time and date.'],
-    bpc: ['100 / 200 / 300 / 400 ms', 'Each cycle lasts 20 seconds. A reduction of 100, 200, 300 or 400 ms encodes two bits. Binary fields carry Beijing time, cycle index, date and parity. Compatibility is experimental.'],
+    dcf77: ['100 / 200 ms', t("A 100 ms {0} means 0; 200 ms means 1. Second 59 has no reduction and identifies the minute boundary. Three even parity bits protect minutes, hours and date.", gated ? t("full pause") : t("reduction"))],
+    jjy: ['200 / 500 / 800 ms', t("Each second begins at high amplitude for 800 ms (0), 500 ms (1) or 200 ms (marker). The code carries Japanese time (JST), day of year, and hour and minute parity.")],
+    wwvb: ['200 / 500 / 800 ms', t("The legacy AM code reduces amplitude for 200 ms (0), 500 ms (1) or 800 ms (marker). It transmits UTC; the Casio applies its home city time zone. Includes leap year and US DST flags.")],
+    msf: ['500 ms · bit A/B', t("The minute starts with 500 ms without a carrier. Each other second starts with a 100 ms pause followed by two 100 ms slots for bits A and B. Four odd parity bits protect UK time and date.")],
+    bpc: ['100 / 200 / 300 / 400 ms', t("Each cycle lasts 20 seconds. A reduction of 100, 200, 300 or 400 ms encodes two bits. Binary fields carry Beijing time, cycle index, date and parity. Compatibility is experimental.")],
   };
   $('pulse-label').textContent = explanations[station.id][0];
   $('protocol-explanation').textContent = explanations[station.id][1];
-  $('protocol-cities').textContent = `${station.name} · ${station.country}. Compatible home cities: ${station.cities}, if supported by your module.`;
-  $('guide-station').textContent = `For ${station.name}, use a compatible home city: ${station.cities}, if supported by your module. ${station.id === 'jjy' || station.id === 'bpc' ? 'Leave DST OFF.' : 'Use DST AUTO if supported.'}`;
-  $('footer-station').textContent = `${station.name} ＋ ${station.country.toUpperCase()}`;
+  $('protocol-cities').textContent = t("{0} · {1}. Compatible home cities: {2}, if supported by your module.", station.name, t(station.country), station.cities);
+  $('guide-station').textContent = t("For {0}, use a compatible home city: {1}, if supported by your module. {2}", station.name, station.cities, station.id === 'jjy' || station.id === 'bpc' ? t("Leave DST OFF.") : t("Use DST AUTO if supported."));
+  $('footer-station').textContent = `${station.name} ＋ ${t(station.country).toUpperCase()}`;
   $('station-reference').dataset.reference = { dcf77: 'ptb', jjy: 'jjy', wwvb: 'wwvb', msf: 'msf', bpc: 'bpc' }[station.id];
   currentFrame = null;
   lastSecond = -1;
+}
+
+function localizedSymbolDescription(frame, second) {
+  const description = symbolDescription(frame, second);
+  const symbol = description.match(/^symbol (\d+) · (\d+) ms$/);
+  if (symbol) return t('symbol {0} · {1} ms', symbol[1], symbol[2]);
+  const pulse = description.match(/^(\d+) ms (high|reduced)$/);
+  if (pulse) return t(pulse[2] === 'high' ? '{0} ms high' : '{0} ms reduced', pulse[1]);
+  return t(description);
 }
 
 function renderFrame(epoch) {
@@ -410,8 +430,8 @@ function renderFrame(epoch) {
   currentFrame = frame;
   $('target-minute').textContent = `${pad(frame.time.hour)}:${pad(frame.time.minute)}:${pad(frame.time.second)} ${frame.time.zone}`;
   $('bit-summary').textContent = `${getStation(frame.stationId).name} · ${frame.duration} S`;
-  $('parity-status').textContent = frame.checks.length ? frame.checks.map(check => `${check.label} ${check.ok ? '✓' : '✕'}`).join(' · ') : 'No parity in this AM code';
-  $('telegram-description').textContent = frame.description;
+  $('parity-status').textContent = frame.checks.length ? frame.checks.map(check => `${check.label} ${check.ok ? '✓' : '✕'}`).join(' · ') : t("No parity in this AM code");
+  $('telegram-description').textContent = t(frame.description);
   $('bit-grid').classList.toggle('quaternary', frame.stationId === 'bpc');
   $('bit-grid').replaceChildren();
   frame.bits.forEach((value, second) => {
@@ -419,14 +439,14 @@ function renderFrame(epoch) {
     const bit = document.createElement('div');
     bit.className = `bit ${value === -1 ? 'marker' : field?.kind || 'reserved'}`;
     bit.textContent = symbolLabel(frame, second);
-    bit.title = `Second ${second} · ${field?.name || 'Reserved'} · ${symbolDescription(frame, second)}`;
+    bit.title = t("Second {0} · {1} · {2}", second, t(field?.name || 'Reserved'), localizedSymbolDescription(frame, second));
     $('bit-grid').append(bit);
   });
   $('bit-legend').replaceChildren();
   frame.fields.forEach(field => {
     const entry = document.createElement('span');
     const dot = document.createElement('i'); dot.className = field.kind;
-    entry.append(dot, document.createTextNode(field.name)); $('bit-legend').append(entry);
+    entry.append(dot, document.createTextNode(t(field.name))); $('bit-legend').append(entry);
   });
 }
 
@@ -471,22 +491,22 @@ function update() {
       const elapsed = Math.max(0, epoch - session.startEpoch);
       const remaining = Math.max(0, Math.ceil((session.endEpoch - epoch) / 1000));
       $('remaining').textContent = `${pad(Math.floor(remaining / 60))}:${pad(remaining % 60)}`;
-      $('remaining-label').textContent = epoch < session.startEpoch ? 'ALIGNING…' : 'TIME REMAINING';
-      $('status-badge').textContent = epoch < session.startEpoch ? 'ALIGNING' : 'TRANSMITTING';
+      $('remaining-label').textContent = epoch < session.startEpoch ? t("ALIGNING…") : t("TIME REMAINING");
+      $('status-badge').textContent = epoch < session.startEpoch ? t("ALIGNING") : t("TRANSMITTING");
       $('current-bit').textContent = symbolLabel(currentFrame, symbolSecond);
       $('frames-sent').textContent = Math.max(0, Math.min(session.minutes, Math.floor((epoch - session.firstFullMinute) / 60000)));
       $('progress-ring').style.strokeDashoffset = String(276.46 * (1 - Math.min(1, elapsed / (session.endEpoch - session.startEpoch))));
       $('transmit-note').textContent = epoch < session.firstFullMinute
-        ? `Aligning signal. First complete minute starts at ${pad(stationTime(preferences.stationId, session.firstFullMinute).hour)}:${pad(stationTime(preferences.stationId, session.firstFullMinute).minute)}.`
-        : `Transmitting · ${session.sampleRate / 1000} kHz audio · leave your watch near the speaker.`;
+        ? t("Aligning signal. First complete minute starts at {0}:{1}.", pad(stationTime(preferences.stationId, session.firstFullMinute).hour), pad(stationTime(preferences.stationId, session.firstFullMinute).minute))
+        : t("Transmitting · {0} kHz audio · leave your watch near the speaker.", session.sampleRate / 1000);
       if (epoch > session.endEpoch + 2000) stop('interrupted', 'The audio engine did not report completion. Check the output and try again.');
     } else {
       $('remaining').textContent = `${pad(preferences.duration)}:00`;
-      $('remaining-label').textContent = 'READY WHEN YOU ARE';
+      $('remaining-label').textContent = t("READY WHEN YOU ARE");
       $('progress-ring').style.strokeDashoffset = '276.46';
       $('current-bit').textContent = '—';
       $('frames-sent').textContent = '0';
-      $('transmit-note').textContent = 'Start manual reception on your Casio, then transmit for 5–10 minutes.';
+      $('transmit-note').textContent = t("Start manual reception on your Casio, then transmit for 5–10 minutes.");
     }
     if (secondKey % 30 === 0) renderReference();
     // Detect wall-clock jumps and wake events without using the mutable wall clock for audio.
@@ -508,8 +528,8 @@ async function refreshDevices() {
   try {
     const devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audiooutput' && d.deviceId !== 'default');
     const select = $('audio-output');
-    select.replaceChildren(new Option('Default system output', 'default'));
-    devices.forEach((device, index) => select.append(new Option(device.label || `Audio output ${index + 1}`, device.deviceId)));
+    select.replaceChildren(new Option(t("Default system output"), 'default'));
+    devices.forEach((device, index) => select.append(new Option(device.label || t("Audio output {0}", index + 1), device.deviceId)));
     if (![...select.options].some(option => option.value === preferences.deviceId)) preferences.deviceId = 'default';
     select.value = preferences.deviceId;
     savePreferences();
@@ -559,8 +579,8 @@ $('latency-offset').addEventListener('change', event => {
 $('refresh-devices').addEventListener('click', refreshDevices);
 $('test-output').addEventListener('click', async () => {
   busy = true; setControls();
-  try { await testOutput(preferences.deviceId, preferences.channel); notify(`${CHANNEL_LABELS[preferences.channel]} channel test complete. Check the output and system volume.`); }
-  catch (error) { notify(`Audio test failed: ${error.message}`, true); }
+  try { await testOutput(preferences.deviceId, preferences.channel); notify(t("{0} channel test complete. Check the output and system volume.", t(CHANNEL_LABELS[preferences.channel]))); }
+  catch (error) { notify(t("Audio test failed: {0}", error.message), true); }
   finally { busy = false; setControls(); }
 });
 $('profile-select').addEventListener('change', event => {
@@ -587,7 +607,7 @@ $('profile-form').addEventListener('submit', event => {
   if (existing) profiles = profiles.map(p => p.id === existing.id ? profile : p); else profiles.push(profile);
   activeProfileId = profile.id;
   const saved = saveProfiles(); showProfile(profile.id);
-  if (saved) notify(`Profile «${profile.name}» saved with the current settings.`);
+  if (saved) notify(t("Profile «{0}» saved with the current settings.", profile.name));
 });
 $('profile-delete').addEventListener('click', () => {
   if (session || busy || !editingProfileId) return;
@@ -595,8 +615,8 @@ $('profile-delete').addEventListener('click', () => {
   profiles = profiles.filter(p => p.id !== removedId);
   if (activeProfileId === removedId) activeProfileId = null;
   saveProfiles(); showProfile(null);
-  notify('Profile deleted. Existing trials remain in history.');
-  const undo = document.createElement('button'); undo.className = 'text-button'; undo.textContent = 'Undo';
+  notify(t("Profile deleted. Existing trials remain in history."));
+  const undo = document.createElement('button'); undo.className = 'text-button'; undo.textContent = t("Undo");
   undo.onclick = () => { profiles = oldProfiles; activeProfileId = oldActive; saveProfiles(); showProfile(removedId); $('toast').hidden = true; };
   $('toast').append(document.createTextNode(' '), undo);
 });
@@ -604,7 +624,7 @@ $('profile-restore-success').addEventListener('click', () => {
   const profile = profiles.find(p => p.id === editingProfileId);
   if (!session && !busy && profile?.lastSuccess) {
     const available = applyConfiguration(profile.lastSuccess.settings, profile.id); navigate('sync');
-    if (available) notify('Successful settings restored. Check the system volume and placement recorded in the trial.');
+    if (available) notify(t("Successful settings restored. Check the system volume and placement recorded in the trial."));
   }
 });
 $('history-prev').addEventListener('click', () => { historyPage--; renderHistory(); });
@@ -615,23 +635,23 @@ $('trial-save-outcome').addEventListener('click', () => {
   trial.outcome = $('trial-outcome').value;
   const saved = persist('atomic.history', history), profileSaved = rememberSuccess(trial);
   renderHistory();
-  if (saved && profileSaved) notify('Trial outcome updated.');
+  if (saved && profileSaved) notify(t("Trial outcome updated."));
 });
 $('trial-restore').addEventListener('click', () => {
   const trial = history.find(t => t.id === selectedTrialId);
   if (!session && !busy && trial?.snapshot) {
     const available = applyConfiguration({ ...trial.snapshot.settings, volume: trial.endVolume ?? trial.snapshot.settings.volume }, trial.snapshot.profileId);
     navigate('sync');
-    if (available) notify('Trial settings restored. The saved profile settings remain available.');
+    if (available) notify(t("Trial settings restored. The saved profile settings remain available."));
   }
 });
 $('clear-history').addEventListener('click', () => {
   const old = history;
   history = []; persist('atomic.history', history); renderHistory();
   clearTimeout(toastTimer);
-  $('toast').replaceChildren(document.createTextNode('History cleared. '));
+  $('toast').replaceChildren(document.createTextNode(t("History cleared. ")));
   const undo = document.createElement('button');
-  undo.className = 'text-button'; undo.textContent = 'Undo';
+  undo.className = 'text-button'; undo.textContent = t("Undo");
   undo.onclick = () => { history = [...old, ...history].sort((a, b) => b.at - a.at); persist('atomic.history', history); renderHistory(); $('toast').hidden = true; };
   $('toast').append(undo); $('toast').classList.remove('error'); $('toast').hidden = false;
   toastTimer = setTimeout(() => { $('toast').hidden = true; }, 8000);
@@ -656,7 +676,30 @@ window.addEventListener('beforeunload', () => {
   engine.stop(); desktop.setTransmitting(false);
 });
 
-STATIONS.forEach(station => $('station-select').append(new Option(`${station.name} · ${station.country} · ${station.frequency / 1000} kHz`, station.id)));
+STATIONS.forEach(station => $('station-select').append(new Option(`${station.name} · ${t(station.country)} · ${station.frequency / 1000} kHz`, station.id)));
+$('language-select').value = getLanguage();
+$('language-select').addEventListener('change', event => {
+  if (!setLanguage(event.target.value)) notify(t('Language could not be saved on this device.'), true);
+});
+onLanguageChange(language => {
+  $('sync-button').textContent = syncing ? t('Checking time…') : t('Check time ↻');
+  $('session-message').textContent = localizeStoredMessage($('session-message').textContent);
+  $('toast').textContent = localizeStoredMessage($('toast').textContent);
+  const defaultOutput = $('audio-output').querySelector('option[value=default]');
+  if (defaultOutput) defaultOutput.textContent = t('Default system output');
+  $('profile-form-title').textContent = t(editingProfileId ? 'Edit watch' : 'New watch');
+  for (const option of $('theme-select').options) option.textContent = t(THEMES.find(theme => theme.id === option.value).name);
+  for (const option of $('station-select').options) {
+    const station = getStation(option.value);
+    option.textContent = `${station.name} · ${t(station.country)} · ${numberFormat({ maximumFractionDigits: 1 }).format(station.frequency / 1000)} kHz`;
+  }
+  renderStation(); renderReference(); renderHistory(); renderProfileOptions(); renderProfileSummary(); setControls();
+  navigate(document.querySelector('.page.active').id.replace('page-', ''));
+  if (selectedTrialId && !$('page-trial').hidden) openTrial(selectedTrialId);
+  if (desktop.setLanguage) desktop.setLanguage(language);
+  lastSecond = -1; update();
+});
+if (desktop.setLanguage) desktop.setLanguage(getLanguage());
 $('station-select').addEventListener('change', event => {
   if (session || busy) { event.target.value = preferences.stationId; return; }
   preferences.stationId = event.target.value;

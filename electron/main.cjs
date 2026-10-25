@@ -1,18 +1,43 @@
 const { app, BrowserWindow, ipcMain, Menu, powerSaveBlocker, powerMonitor, shell } = require('electron');
 const path = require('node:path');
+const fs = require('node:fs');
 const { performance } = require('node:perf_hooks');
 const { synchronize } = require('./ntp.cjs');
 const { createIssDataService } = require('./iss-data.cjs');
 
 app.setName('Atomic Clock Sync');
+// Keep the existing profile path (or a caller's temporary test profile) when
+// changing the display name. Chromium storage must stay in the same directory.
+const userDataPath = app.getPath('userData');
+fs.mkdirSync(userDataPath, { recursive: true });
+app.setName('AtomicClockSync');
+app.setPath('userData', userDataPath);
 let mainWindow;
 let blocker = null;
 let syncing = null;
 let issData;
+const menuLabels = {
+  en: ['About', 'Hide', 'Hide Others', 'Quit', 'Edit', 'Undo', 'Redo', 'Cut', 'Copy', 'Paste', 'Select All', 'Window', 'Minimize'],
+  it: ['Informazioni su', 'Nascondi', 'Nascondi altre', 'Esci da', 'Modifica', 'Annulla', 'Ripeti', 'Taglia', 'Copia', 'Incolla', 'Seleziona tutto', 'Finestra', 'Riduci a icona'],
+  fr: ['À propos de', 'Masquer', 'Masquer les autres', 'Quitter', 'Édition', 'Annuler', 'Rétablir', 'Couper', 'Copier', 'Coller', 'Tout sélectionner', 'Fenêtre', 'Réduire'],
+  de: ['Über', 'Ausblenden', 'Andere ausblenden', 'Beenden:', 'Bearbeiten', 'Rückgängig', 'Wiederholen', 'Ausschneiden', 'Kopieren', 'Einfügen', 'Alles auswählen', 'Fenster', 'Minimieren'],
+  es: ['Acerca de', 'Ocultar', 'Ocultar otros', 'Salir de', 'Editar', 'Deshacer', 'Rehacer', 'Cortar', 'Copiar', 'Pegar', 'Seleccionar todo', 'Ventana', 'Minimizar'],
+  ja: ['情報：', '隠す：', 'ほかを隠す', '終了：', '編集', '取り消す', 'やり直す', '切り取り', 'コピー', '貼り付け', 'すべて選択', 'ウィンドウ', '最小化'],
+};
+function applyMenu(language = 'en') {
+  const text = menuLabels[language];
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    ...(process.platform === 'darwin' ? [{ label: app.name, submenu: [{ role: 'about', label: `${text[0]} ${app.name}` }, { type: 'separator' }, { role: 'hide', label: `${text[1]} ${app.name}` }, { role: 'hideOthers', label: text[2] }, { type: 'separator' }, { role: 'quit', label: `${text[3]} ${app.name}` }] }] : []),
+    { label: text[4], submenu: ['undo','redo',null,'cut','copy','paste','selectAll'].map((role,index) => role ? { role, label: text[index < 2 ? index + 5 : index + 4] } : { type: 'separator' }) },
+    { label: text[11], submenu: [{ role: 'minimize', label: text[12] }] },
+  ]));
+}
 const historicalSources = require('../assets/time-machine/sources.json');
 const references = {
   ...Object.fromEntries(Object.entries(historicalSources).map(([key, source]) => [key, source.url])),
   moonScience: 'https://science.nasa.gov/moon/moon-phases/',
+  lightScience: 'https://science.nasa.gov/mission/webb/science-overview/science-explainers/how-does-webb-see-back-in-time/',
+  lightJpl: 'https://ssd.jpl.nasa.gov/horizons/manual.html',
   bttf: 'https://www.backtothefuture.com/movies/faq',
   ptb: 'https://www.ptb.de/cms/en/ptb/fachabteilungen/abt4/fb-44/ag-442/dissemination-of-legal-time/dcf77/dcf77-time-code.html',
   casio: 'https://support.casio.com/en/manual/manuallist.php?cid=009',
@@ -43,7 +68,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100, height: 740, useContentSize: true,
     resizable: false, maximizable: false, fullscreenable: false,
-    backgroundColor: '#10110E', title: 'Atomic Clock Sync',
+    backgroundColor: '#10110E', title: 'AtomicClockSync',
     titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 21, y: 15 },
     icon: path.join(__dirname, '../assets/icon.png'),
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'),
@@ -80,16 +105,17 @@ ipcMain.handle('iss:refresh', async event => {
 ipcMain.handle('reference:open', async (_event, key) => {
   if (Object.hasOwn(references, key)) await shell.openExternal(references[key]);
 });
+ipcMain.handle('app:language', (event, language) => {
+  if (event.sender !== mainWindow?.webContents || !Object.hasOwn(menuLabels, language)) return false;
+  applyMenu(language);
+  return true;
+});
 
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
   app.on('second-instance', () => { if (mainWindow) { mainWindow.restore(); mainWindow.focus(); } });
   app.whenReady().then(() => {
-    Menu.setApplicationMenu(Menu.buildFromTemplate([
-      ...(process.platform === 'darwin' ? [{ label: app.name, submenu: [{ role: 'about', label: 'About Atomic Clock Sync' }, { type: 'separator' }, { role: 'hide', label: 'Hide Atomic Clock Sync' }, { role: 'hideOthers', label: 'Hide Others' }, { type: 'separator' }, { role: 'quit', label: 'Quit Atomic Clock Sync' }] }] : []),
-      { label: 'Edit', submenu: [{ role: 'undo', label: 'Undo' }, { role: 'redo', label: 'Redo' }, { type: 'separator' }, { role: 'cut', label: 'Cut' }, { role: 'copy', label: 'Copy' }, { role: 'paste', label: 'Paste' }, { role: 'selectAll', label: 'Select All' }] },
-      { label: 'Window', submenu: [{ role: 'minimize', label: 'Minimize' }] },
-    ]));
+    applyMenu();
     createWindow();
     powerMonitor.on('suspend', () => interrupt('Computer going to sleep. Restart transmission.'));
     powerMonitor.on('resume', () => interrupt('Computer resumed. Check the time again.'));

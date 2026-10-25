@@ -1,0 +1,28 @@
+{
+  "epoch": "2026-10-25T12:00:00Z",
+  "centre": "Earth centre (500@399)",
+  "quantity": "JPL Horizons observer quantity 21: one-way down-leg light-time",
+  "manual": "https://ssd.jpl.nasa.gov/horizons/manual.html",
+  "samples": [
+    {
+      "id": "sun",
+      "seconds": 496.20481320000005,
+      "query": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%2710%27&CENTER=%27500%40399%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272026-10-25+12%3A00%27&STOP_TIME=%272026-10-25+13%3A00%27&STEP_SIZE=%271+h%27&QUANTITIES=%2721%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27NO%27"
+    },
+    {
+      "id": "moon",
+      "seconds": 1.2390276,
+      "query": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27301%27&CENTER=%27500%40399%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272026-10-25+12%3A00%27&STOP_TIME=%272026-10-25+13%3A00%27&STEP_SIZE=%271+h%27&QUANTITIES=%2721%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27NO%27"
+    },
+    {
+      "id": "mars",
+      "seconds": 740.7658446,
+      "query": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27499%27&CENTER=%27500%40399%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272026-10-25+12%3A00%27&STOP_TIME=%272026-10-25+13%3A00%27&STEP_SIZE=%271+h%27&QUANTITIES=%2721%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27NO%27"
+    },
+    {
+      "id": "neptune",
+      "seconds": 14476.8045456,
+      "query": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27899%27&CENTER=%27500%40399%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272026-10-25+12%3A00%27&STOP_TIME=%272026-10-25+13%3A00%27&STEP_SIZE=%271+h%27&QUANTITIES=%2721%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27NO%27"
+    }
+  ]
+}

@@ -55,6 +55,7 @@ app.whenReady().then(async () => {
         const page = document.querySelector('.page.active');
         const bounds = page.getBoundingClientRect();
         return [...page.querySelectorAll('*')].filter(el => {
+          if (el.parentElement.closest('#page-settings .settings-panel')) return false; // Intentionally scrollable for longer translations.
           const r = el.getBoundingClientRect();
           return r.width && r.height && (r.bottom > bounds.bottom + 1 || r.right > bounds.right + 1);
         }).map(el => el.id || el.className || el.tagName);

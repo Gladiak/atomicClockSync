@@ -1,5 +1,22 @@
 # Release notes
 
+## 1.9.0 — Light Travel, languages and fluid navigation
+
+- Added Light Travel: an original cinematic Solar System with nine selectable light sources, an animated photon trail, arrival ripples and source departure/reflection versus Earth reception clocks. Date-dependent light times are calculated offline, with UTC previews from 1900–2100 and a six-month jump.
+- Added fixed-observation replay at 1×/10×/100×/1000× or a twelve-second overview, pause/resume, continuous speed changes and automatic pause when leaving or hiding the view. Integrated six languages, nine themes, reduced motion, keyboard controls and an in-app science explanation.
+- Validated light-time calculations against four independent JPL Horizons observer-centre reference samples; added replay/date unit coverage and native UI, language, theme and transmission-isolation checks.
+- Added English, Italian, French, German, Spanish and Japanese under Settings → Language, with immediate switching and independent local persistence. Localized static UI, dynamic messages, time/number formatting, astronomy, all 32 historical journeys and native menus. Personal names, notes, capsules and protocol identifiers remain intact.
+- Included Noto Sans JP under SIL OFL 1.1 for offline Japanese glyph coverage. Adapted navigation wrapping, settings scrolling and Japanese synchronization spacing; added six-language layout, residual-English, persistence and live-audio validation.
+- Renamed the Electron application, native menu, window title and future package product name to **AtomicClockSync**. Existing profiles, preferences, history, time capsules and ISS cache retain their existing storage directory.
+- Enlarged the titlebar app name to 13 px with a stronger weight and contrast.
+- Added directional slide/scale/fade section entrances, coordinated heading motion and a sliding sidebar selection indicator. Navigation and focus update immediately; rapid clicks cancel obsolete animations. Live transmission continues independently.
+- Respect reduced-motion preferences, including changes while an animation is running. Repeat clicks on the current section do not restart motion.
+- Added a visible Electron navigation check covering identity, temporary-profile preservation, rapid clicks, focus handoff, reduced motion, sidebar alignment and uninterrupted muted audio.
+
+Validation: 65 unit tests, including comparisons with independent JPL light-time samples; native desktop, World View, ISS, Moon/Time Machine, Back in Time, navigation, six-language and Light Travel suites. Linux x64 AppImage tested on Ubuntu 22.04 in Docker with a virtual display and muted AudioWorklet audio. DEB/RPM metadata and application payload checked against that AppImage. Windows x64 portable archive and embedded sources verified; Windows runtime and native Fedora/openSUSE installation remain untested.
+
+Individual downloads: `AtomicClockSync-1.9.0-arm64-mac.zip`, `AtomicClockSync-1.9.0-windows-x64-portable.exe`, `AtomicClockSync-1.9.0-linux-x86_64.AppImage`, `AtomicClockSync-1.9.0-linux-amd64.deb`, `AtomicClockSync-1.9.0-linux-x86_64.rpm` and `SHA256SUMS.txt`. macOS uses an ad-hoc signature without notarization; Windows is unsigned. Existing local data keeps its original storage location. No combined platform archive is distributed.
+
 ## 1.8.0 — Moon Observatory and Time Machine
 
 - Added an offline Moon Observatory with original procedural lunar artwork, calculated phase and illumination, distance, age, local altitude/azimuth, moonrise/moonset, a full-Moon countdown and four upcoming quarter phases.

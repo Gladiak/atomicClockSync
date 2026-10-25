@@ -4,24 +4,24 @@
 
 This guide is the English translation and update of the original Italian manual.
 
-Atomic Clock Sync is a **JavaScript and Electron desktop app** that helps synchronize Casio Multiband 6 watches by simulating the time codes of five stations through audio. It uses a fixed **1100 × 740** window with separate compact views. The interface is in English. This is an independent implementation inspired by [Clock Wave](https://cw.rzapps.com/).
+AtomicClockSync is a **JavaScript and Electron desktop app** that helps synchronize Casio Multiband 6 watches by simulating the time codes of five stations through audio. It uses a fixed **1100 × 740** window with separate compact views. The interface supports English, Italian, French, German, Spanish and Japanese. This is an independent implementation inspired by [Clock Wave](https://cw.rzapps.com/).
 
 ## Ready-to-use applications
 
-Current version: **1.8.0**.
+Current version: **1.9.0**.
 
-- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.8.0-arm64-mac.zip`.
-- Windows x64 portable: `release/Atomic Clock Sync-1.8.0-windows-x64-portable.exe`.
-- Linux x64 portable: `release/Atomic Clock Sync-1.8.0-linux-x86_64.AppImage`.
-- Debian/Ubuntu/Mint x64: `release/Atomic Clock Sync-1.8.0-linux-amd64.deb`.
-- Fedora/openSUSE x64: `release/Atomic Clock Sync-1.8.0-linux-x86_64.rpm`.
+- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.9.0-arm64-mac.zip`.
+- Windows x64 portable: `release/AtomicClockSync-1.9.0-windows-x64-portable.exe`.
+- Linux x64 portable: `release/AtomicClockSync-1.9.0-linux-x86_64.AppImage`.
+- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-1.9.0-linux-amd64.deb`.
+- Fedora/openSUSE x64: `release/AtomicClockSync-1.9.0-linux-x86_64.rpm`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
 
 The Windows build was produced on macOS. Its x64 architecture, embedded sources and archive integrity were checked, but it has not been run on Windows. It has no Windows digital signature. The portable executable requires no installation; profiles and history are stored in the local user profile rather than inside the executable.
 
-On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './Atomic Clock Sync-1.8.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './Atomic Clock Sync-1.8.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './Atomic Clock Sync-1.8.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
+On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-1.9.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-1.9.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-1.9.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
 
 ## Stations
 
@@ -159,6 +159,16 @@ Select a row to show the sky plot: north is up, east right, the outer circle is 
 
 The ACES introduction describes the PHARAO caesium clock and SHM hydrogen maser installed on Columbus, and links to the ESA mission page. Full sources and license notices are in [Third-party data and software](THIRD_PARTY.md#iss-sources-and-orbit-software).
 
+## Light Travel
+
+Open **Light Travel** to explore the Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus and Neptune. Select a source in the orbital scene or the cards below. The main counter shows the age of its light arriving at Earth; the two UTC clocks show departure/reflection and reception. Distances and light times change with the selected date.
+
+**Follow this light** reconstructs one fixed observation. Choose real time (1×), 10×, 100×, 1000× or an overview lasting at most twelve seconds. Pause/resume or change speed at any point. The photon trail ends in an arrival ripple; **Replay this light** repeats the same observation. Playback pauses when the section or window becomes hidden. Reset returns to the current live or preview observation.
+
+Use the UTC date/time fields for an independent preview between 1900 and 2100. **+6 months** preserves the time and clamps the day to the destination month's last day; **Live** restores the app time reference. These controls leave watch transmission and settings unchanged.
+
+Calculations work offline using Astronomy Engine and body-centre positions corrected for light travel. For the Moon and planets, the departure clock is the reflection time: the earlier journey from the Sun is excluded. The orbit diagram compresses distances and uses illustrative sizes. Surface location, atmospheric effects and actual sky visibility are not modelled. **Science & sources** explains these conventions and links to NASA and JPL. Reduced motion replaces the moving photon with numeric progress.
+
 ## Moon Observatory
 
 Select **Moon Observatory** in the sidebar. It uses the city selected in World View and shared with ISS Observatory. Click the city name to choose a different location. The local clock, moonrise/moonset and four upcoming quarter-phase times use that city's time zone, including daylight-saving changes. A missing moonrise or moonset is shown as **No event today**; the app does not substitute an event from another day.
@@ -189,6 +199,8 @@ This offline fan tribute has no effect on NTP, audio transmission, watch profile
 
 ## Themes and compact interface
 
+Choose **Settings → Language** to switch between English, Italiano, Français, Deutsch, Español and 日本語. The selection is saved locally, independently of watch profiles. Changes apply immediately, including native menus, without restarting or interrupting transmission. Dates and numbers follow the interface language; time zones and encoded station time are preserved. Watch names, placement notes, personal memories and capsule messages are never translated. Place names retain their source spelling. Japanese glyphs are available offline through the bundled Noto Sans JP font. Settings panels can scroll when longer text needs more room.
+
 Choose a palette in **Settings → Theme**:
 
 | Theme | Accent | Appearance |
@@ -213,6 +225,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **History:** all trials, pagination and separate details, editable outcomes and undoable clearing.
 - **World View:** day/night atlas, offline city search, station range rings and seasonal timeline.
 - **ISS Observatory:** tracking, local passes and sky diagram, station background and educational time in orbit.
+- **Light Travel:** nine light sources, offline light-time estimates, UTC previews and a controllable photon journey.
 - **Moon Observatory:** calculated lunar phases, local moonrise/moonset, upcoming quarters and independent time preview.
 - **Time Machine:** sourced historical journeys, personal memories and locally stored time capsules; also opens Back in Time.
 - **Back in Time:** movie time circuits, live elapsed counters and a cinematic 88 mph jump.
@@ -266,10 +279,12 @@ Electron `localStorage` is kept in `Local Storage/leveldb` inside that directory
 ## Tests and builds
 
 ```sh
-npm test                 # 58 protocol, PCM, stereo, profile, NTP, orbit and movie-time tests
+npm test                 # 65 protocol, PCM, profile, orbit, movie-time, light-time and translation checks
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
+npm run test:languages   # Six languages, layout, Japanese font, persistence and live audio
 npm run test:world       # Offline atlas, search worker, timeline and audio isolation
 npm run test:iss         # ISS network states, passes, nine themes and audio isolation
+npm run test:light-travel # JPL-referenced light times, replay, previews, languages and themes
 npm run test:observatory  # Moon phases, historical journeys, capsules, themes and audio isolation
 npm run test:back-in-time # Movie dates, jumps, layout, reduced motion and audio isolation
 npm run build:iss        # Rebuild the bundled JavaScript SGP4 library
