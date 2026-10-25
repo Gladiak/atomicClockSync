@@ -280,6 +280,7 @@ npm run dist:win         # Windows x64 portable; native NSIS toolset configured
 npm run dist:linux       # Linux x64 AppImage + DEB + RPM; requires Linux
 npm run dist:linux:docker # Isolated Linux x64 build using Docker
 npm run checksums        # Hash current-version individual packages; requires Python 3
+npm run checksums -- --github # Match GitHub's download filenames in SHA256SUMS.txt
 ```
 
 The desktop test uses a temporary profile. It checks all nine themes, selected text contrast ratios of at least 4.5:1, persistence, invalid saved-theme fallback, live theme changes and separation from audio settings. It also verifies isolation, fixed window size, all views and FAQs without overflow, the five station selections, channel/profile locking, profile CRUD and undo, settings restore, immutable history, GET/ERR updates, legacy migration, output tests, volume changes, offline fallback, window closing and sleep interruption.

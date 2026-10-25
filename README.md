@@ -181,9 +181,10 @@ npm run dist:win         # Windows x64 portable, with the configured native NSIS
 npm run dist:linux       # Linux x64 AppImage + DEB + RPM; run on Linux
 npm run dist:linux:docker # Same packages from macOS/Windows/Linux with Docker
 npm run checksums        # Hash current-version platform packages; requires Python 3
+npm run checksums -- --github # Use GitHub download filenames in the published manifest
 ```
 
-The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run checksums` generates `SHA256SUMS.txt` for the current-version individual packages available in `release/`. Electron Builder additionally supports Snap, Flatpak, Pacman and archive targets; AppImage, DEB and RPM are configured here. The DEB/RPM payloads match the application tested on Ubuntu; installation and desktop integration on other distributions remain untested.
+The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run checksums` generates `SHA256SUMS.txt` for the current-version individual packages available in `release/`; use `-- --github` before uploading that manifest because GitHub replaces filename spaces with dots. Electron Builder additionally supports Snap, Flatpak, Pacman and archive targets; AppImage, DEB and RPM are configured here. The DEB/RPM payloads match the application tested on Ubuntu; installation and desktop integration on other distributions remain untested.
 
 The 58 unit tests include independent decoding of generated PCM across the autumn DST transition and movie-date duration calculations. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
 

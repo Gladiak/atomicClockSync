@@ -1,6 +1,12 @@
 from pathlib import Path
+import argparse
 import hashlib
 import json
+
+parser = argparse.ArgumentParser(description='Hash individual platform release packages.')
+parser.add_argument('--github', action='store_true',
+                    help='Use GitHub asset filenames (spaces are replaced with dots on upload).')
+options = parser.parse_args()
 
 root = Path(__file__).resolve().parents[1]
 release = root / 'release'
@@ -19,7 +25,8 @@ for file in packages:
     with file.open('rb') as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b''):
             digest.update(chunk)
-    lines.append(f'{digest.hexdigest()}  {file.name}\n')
+    name = file.name.replace(' ', '.') if options.github else file.name
+    lines.append(f'{digest.hexdigest()}  {name}\n')
 
 temporary = release / 'SHA256SUMS.txt.tmp'
 temporary.write_text(''.join(lines), encoding='utf-8')
