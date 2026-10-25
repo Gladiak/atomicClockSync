@@ -29,7 +29,8 @@ Windows: extract the executable in Windows/ and run it.
 Node.js is not required to use the packaged apps.
 
 LOCAL DATA
-Profiles, preferences and history are stored in the local user profile.
+Profiles, preferences, trial history and personal keepsakes are stored
+in the local user profile.
 Portable means installation-free; settings are not stored inside the EXE.
 
 VALIDATION

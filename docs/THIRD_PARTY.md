@@ -2,6 +2,60 @@
 
 World View is an offline vector visualization. Geographic and city data are bundled with the app. City lights are an illustrative rendering of population-weighted settlement locations, not measured light emissions or live satellite imagery.
 
+## Moon Observatory and historical journeys
+
+Moon Observatory uses **Astronomy Engine 2.1.19** for lunar phase, illuminated fraction, geocentric distance, topocentric equatorial/horizon coordinates, apparent rise/set, previous new Moon and upcoming quarter phases. These functions are bundled in the existing offline vendor file; its MIT notice is retained in `assets/world/SOFTWARE_LICENSES.txt`. [JavaScript reference](https://github.com/cosinekitty/astronomy/blob/master/source/js/README.md), [NASA lunar phases](https://science.nasa.gov/moon/moon-phases/). No NASA texture or imagery is bundled: the lunar albedo/craters are generated procedurally and illumination is applied to a schematic sphere. Apparent horizon/orientation, terrain, libration and eclipses are not rendered as photographic observations.
+
+Historical records are curated from these primary sources:
+
+- **Wright Flyer**, 17 December 1903, approximately 10:35 EST / 15:35 UTC: [National Park Service](https://www.nps.gov/articles/wrightflyer.htm). The counter is marked approximate and omits seconds.
+- **Sputnik 1**, 4 October 1957: [NASA history](https://www.nasa.gov/history/monograph10/sputnite.html). The record intentionally uses date-only precision without choosing among published launch-time conventions.
+- **Vostok 1**, 12 April 1961 at 06:07 UTC: [ESA flight chronology](https://www.esa.int/About_Us/50_years_of_ESA/50_years_of_humans_in_space/The_flight_of_Vostok_1). Minute precision.
+- **Apollo 11 lunar landing**, 20 July 1969 at 20:17:39 GMT, and **first footstep**, 21 July 1969 at 02:56:15 GMT: [NASA mission summary](https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm). The app treats the recorded GMT values as UTC clock timestamps; other summaries can round touchdown by a second.
+- **Voyager 1 launch**, 5 September 1977 at 12:56:01 UT: [NASA mission record](https://science.nasa.gov/mission/voyager/voyager-1/).
+- **Web software placed in the public domain**, 30 April 1993: [CERN](https://home.cern/science/computing/the-birth-of-the-web). Date-only precision.
+
+Stories are original short summaries and historical scenes are original SVG illustrations, not archival images. Counters use JavaScript timestamps rather than a leap-second-aware time scale; date-only counters use UTC calendar boundaries. Personal keepsakes are local user content and have no external data source.
+
+### Full historical catalogue
+
+The 32 journeys are ordered chronologically. Early date-only records are displayed as recorded, with UTC calendar-day counting used as the app convention; this does not assert that UTC existed in those eras. Sources are shared between the UI labels and Electron’s external-link allowlist in `assets/time-machine/sources.json`.
+
+| Date | Journey | Precision | Primary source |
+| --- | --- | --- | --- |
+| 1582-10-15 | The calendar skips ten days | day | [Vatican Observatory](https://www.vaticanobservatory.va/en/history/astronomy-calendars-and-religion) |
+| 1610-01-07 | Small lights around Jupiter | day | [NASA](https://www.nasa.gov/history/410-years-ago-galileo-discovers-jupiters-moons/) |
+| 1783-11-21 | The sky becomes a destination | day | [Smithsonian](https://airandspace.si.edu/stories/editorial/presidential-writings-reveal-early-interest-ballooning) |
+| 1883-11-18 | The day the clocks agreed | day | [Library of Congress](https://www.loc.gov/item/today-in-history/november-18) |
+| 1903-12-17 | Twelve seconds that changed flight | approximate | [NPS](https://www.nps.gov/articles/wrightflyer.htm) |
+| 1957-10-04 | Earth gets a new companion | day | [NASA](https://www.nasa.gov/history/monograph10/sputnite.html) |
+| 1961-04-12 | One human. One orbit. | minute | [ESA](https://www.esa.int/About_Us/50_years_of_ESA/50_years_of_humans_in_space/The_flight_of_Vostok_1) |
+| 1963-06-16 | Seagull reaches the stars | day | [NASA](https://www.nasa.gov/history/sally-ride-first-american-woman-in-space/) |
+| 1965-03-18 | Outside the spacecraft | day | [NASA](https://www.nasa.gov/history/space-station-20th-spacewalking-history/) |
+| 1968-12-21 | Round the Moon and back | minute | [NASA](https://www.nasa.gov/missions/apollo/apollo-8-mission-details/) |
+| 1969-07-20 | The Eagle has landed | second | [NASA](https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm) |
+| 1969-07-21 | A footprint beyond Earth | second | [NASA](https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm) |
+| 1969-10-29 | Two letters connect two worlds | day | [UCLA](https://www.lk.cs.ucla.edu/internet_first_words.html) |
+| 1977-08-20 | A grand tour begins | second | [NASA](https://science.nasa.gov/mission/voyager/voyager-2/) |
+| 1977-09-05 | A message to the stars | second | [NASA](https://science.nasa.gov/mission/voyager/voyager-1/) |
+| 1981-04-12 | A spacecraft with wings | second | [NASA](https://www.nasa.gov/mission/sts-1/) |
+| 1990-04-24 | An observatory above the air | second | [NASA](https://science.nasa.gov/mission/hubble/observatory/missions-to-hubble/deployment/) |
+| 1993-04-30 | A world of connections | day | [CERN](https://home.cern/science/computing/the-birth-of-the-web) |
+| 1997-07-04 | Small wheels on a red world | day | [NASA](https://science.nasa.gov/mission/mars-pathfinder/) |
+| 2000-11-02 | A home above the world | day | [NASA](https://www.nasa.gov/humans-in-space/expedition-1-kicks-off-science-aboard-international-space-station/) |
+| 2007-01-09 | A computer in your pocket | day | [Apple](https://www.apple.com/newsroom/2007/01/09Apple-Reinvents-the-Phone-with-iPhone/) |
+| 2008-09-10 | A first lap beneath the border | minute | [CERN](https://home.cern/first-beam-in-the-lhc-accelerating-science/) |
+| 2012-07-04 | A particle steps out of theory | day | [CERN](https://home.cern/cern-experiments-observe-particle-consistent-with-long-sought-higgs-boson/) |
+| 2014-11-12 | Touchdown on a comet | day | [ESA](https://www.esa.int/Newsroom/Press_Releases/Touchdown%21_Rosetta_s_Philae_probe_lands_on_comet) |
+| 2015-07-14 | A distant point becomes a world | minute | [NASA](https://science.nasa.gov/mission/new-horizons/) |
+| 2015-09-14 | Listening to space-time | day | [LIGO / Caltech](https://www.ligo.caltech.edu/detection) |
+| 2019-04-10 | The shadow becomes visible | day | [EHT Collaboration](https://eventhorizontelescope.org/press-release-april-10-2019-astronomers-capture-first-image-black-hole) |
+| 2019-05-20 | Nature becomes the ruler | day | [NIST](https://www.nist.gov/si-redefinition) |
+| 2021-02-18 | A laboratory reaches Jezero | day | [NASA](https://spaceplace.nasa.gov/mars-2020/en/) |
+| 2021-04-19 | The Wright moment on Mars | day | [NASA](https://www.nasa.gov/news-release/nasas-ingenuity-mars-helicopter-succeeds-in-historic-first-flight/) |
+| 2021-12-25 | A golden eye leaves Earth | minute | [NASA](https://science.nasa.gov/mission/webb/faqs-full/) |
+| 2022-07-12 | Ancient light, a new view | day | [NASA](https://svs.gsfc.nasa.gov/14180/) |
+
 ## Back in Time film references
 
 Back in Time is an unofficial fan tribute inspired by the Back to the Future trilogy. Its seven-segment instruments and flux-capacitor schematic are original SVG/CSS artwork; no film stills, logos, fonts, music, dialogue recordings or other media assets are bundled. Film titles and character references identify the inspiration; they do not imply affiliation or endorsement.

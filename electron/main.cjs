@@ -9,7 +9,10 @@ let mainWindow;
 let blocker = null;
 let syncing = null;
 let issData;
+const historicalSources = require('../assets/time-machine/sources.json');
 const references = {
+  ...Object.fromEntries(Object.entries(historicalSources).map(([key, source]) => [key, source.url])),
+  moonScience: 'https://science.nasa.gov/moon/moon-phases/',
   bttf: 'https://www.backtothefuture.com/movies/faq',
   ptb: 'https://www.ptb.de/cms/en/ptb/fachabteilungen/abt4/fb-44/ag-442/dissemination-of-legal-time/dcf77/dcf77-time-code.html',
   casio: 'https://support.casio.com/en/manual/manuallist.php?cid=009',

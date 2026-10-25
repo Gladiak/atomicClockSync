@@ -23,7 +23,7 @@ app.whenReady().then(async()=>{
   if(e.closest('svg'))return false;const r=e.getBoundingClientRect();return r.width&&r.height&&(r.right>b.right+1||r.bottom>b.bottom+1);
  }).map(e=>e.id||e.className);})()`);assert.deepEqual(result,[],'Fixed-window overflow: '+result);
  assert.equal(await run('document.documentElement.scrollHeight<=innerHeight'),true);
- assert.equal(await run("document.querySelector('.sidebar-station').getBoundingClientRect().bottom<=document.querySelector('.sidebar-bottom').getBoundingClientRect().top+1"),true,'Sidebar sections overlap');}
+ assert.equal(await run("document.querySelector('.sidebar nav').getBoundingClientRect().bottom<=document.querySelector('.sidebar-bottom').getBoundingClientRect().top+1"),true,'Sidebar sections overlap');}
  try{
   if(win.webContents.isLoading())await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));
   await until("!document.getElementById('start-button').disabled");

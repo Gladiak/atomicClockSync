@@ -200,26 +200,11 @@ button,a,input,select,summary {
   stroke-linecap:round;
   stroke-linejoin:round;
 }
-.sidebar-station {
-  border-top:1px solid var(--line);
-  margin:23px 7px 0;
-  padding-top:19px;
-}
 .tiny-label,.eyebrow {
   font:7px var(--mono);
   letter-spacing:1.1px;
   color:var(--muted);
   font-weight:500;
-}
-.sidebar-station>div {
-  display:flex;
-  align-items:center;
-  gap:7px;
-  font:18px var(--mono);
-  margin-top:13px;
-}
-.sidebar-station strong {
-  font-weight:400;
 }
 .signal-dot,.small-dot {
   display:inline-block;
@@ -244,22 +229,6 @@ button,a,input,select,summary {
 .station-flag {
   font-size:15px;
   line-height:1;
-}
-.sidebar-station .station-flag {
-  margin-left:auto;
-}
-.sidebar-station p {
-  color:var(--faint);
-  font-size:9px;
-  line-height:1.6;
-  margin:9px 0;
-  overflow-wrap:anywhere;
-}
-.station-frequency {
-  font:19px var(--mono);
-  color:var(--muted);
-  display:block;
-  margin-top:13px;
 }
 .sidebar-bottom {
   margin-top:auto;

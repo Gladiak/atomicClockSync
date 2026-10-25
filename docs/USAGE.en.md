@@ -8,11 +8,11 @@ Atomic Clock Sync is a **JavaScript and Electron desktop app** that helps synchr
 
 ## Ready-to-use applications
 
-Current version: **1.7.0**.
+Current version: **1.8.0**.
 
-- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.7.0-arm64-mac.zip`.
-- Windows x64 portable: `release/Atomic Clock Sync-1.7.0-windows-x64-portable.exe`.
-- Combined package: `release/Atomic Clock Sync-1.7.0-macOS-Windows.zip`.
+- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.8.0-arm64-mac.zip`.
+- Windows x64 portable: `release/Atomic Clock Sync-1.8.0-windows-x64-portable.exe`.
+- Combined package: `release/Atomic Clock Sync-1.8.0-macOS-Windows.zip`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
@@ -155,9 +155,27 @@ Select a row to show the sky plot: north is up, east right, the outer circle is 
 
 The ACES introduction describes the PHARAO caesium clock and SHM hydrogen maser installed on Columbus, and links to the ESA mission page. Full sources and license notices are in [Third-party data and software](THIRD_PARTY.md#iss-sources-and-orbit-software).
 
+## Moon Observatory
+
+Select **Moon Observatory** in the sidebar. It uses the city selected in World View and shared with ISS Observatory. Click the city name to choose a different location. The local clock, moonrise/moonset and four upcoming quarter-phase times use that city's time zone, including daylight-saving changes. A missing moonrise or moonset is shown as **No event today**; the app does not substitute an event from another day.
+
+The main display shows calculated phase, illuminated fraction, Earth-centred distance, age since the most recent new Moon, apparent altitude and azimuth measured clockwise from north. **Above your horizon** describes geometric placement, not optical visibility. Terrain, buildings, weather and local atmospheric variations are not modeled. The disc uses original procedural terrain with a schematic phase orientation: waxing is lit on the right, waning on the left. It does not reproduce actual lunar terrain, libration, eclipse shadows or the apparent orientation through a telescope.
+
+Click an upcoming phase to preview its instant, use the UTC date and time-of-day slider, or move one day with the arrows. **Live** restores the app's current NTP/system time reference. A preview is kept in memory while switching views, but does not persist after restarting the app. Supported dates are 1900–2100. All calculations run offline; rendering and timers stop while the section is hidden.
+
+## Time Machine
+
+Select **Time Machine → Historical journeys** to browse 32 documented events. Search titles, dates or places, or filter by Space / Discovery / Clocks & calendars. Each event has an original illustration, a story, a documented date and a button that opens its primary source externally. **Explore this moment** previews the historical clock; **Return to now** restores the real reference. Leaving the section ends this reconstruction. The elapsed counter always uses the real present.
+
+Records carry an explicit precision. Date-only records count UTC calendar-day boundaries and do not show hours or seconds. Approximate times are marked and rounded to elapsed minutes; minute-resolution records omit seconds. Second-resolution events retain seconds. Counters follow JavaScript UTC time with 86,400-second days and do not model leap seconds.
+
+**My moments & capsules** lets you create, edit and delete up to 100 keepsakes. All entered dates/times are explicitly UTC; they are not interpreted in the computer's local zone. Ordinary moments can be in the past or future, with a count-up or countdown. A new capsule requires a message and a future opening date. Its message and edit action remain hidden/disabled until that date, using the real app clock. The message then becomes readable while the view is open or the next time you return. Deletion asks for confirmation inside the card.
+
+Keepsakes are stored in localStorage under `atomic.moments`, alongside existing preferences. They are not encrypted, synced or protected from someone inspecting local storage or changing the device clock. A capsule is a personal keepsake, not a security boundary. No background service or notification is required. The **Back in Time** button opens the film circuits; **Historical journeys** returns here. Both historical and lunar previews leave actual transmission and watch settings unchanged.
+
 ## Back in Time
 
-Select **Back in Time** in the sidebar to enter the Hill Valley laboratory. Select one of five movie dates to load the red **Destination Time** circuit and show a live elapsed-time counter. Each destination card also shows its elapsed days. Durations are actual elapsed 24-hour days, followed by hours, minutes and seconds, rather than calendar anniversaries.
+Select **Time Machine → Back in Time** to enter the Hill Valley laboratory. Select one of five movie dates to load the red **Destination Time** circuit and show a live elapsed-time counter. Each destination card also shows its elapsed days. Durations are actual elapsed 24-hour days, followed by hours, minutes and seconds, rather than calendar anniversaries.
 
 The green **Present Time** starts with the app's current time reference. **Let’s hit 88 MPH** charges the flux capacitor and jumps the green display to a cinematic preview of your chosen date, while the amber **Last Time Departed** records where you left. Click **Explore this date** after arrival, then **Return to the present** to restore the live display. Before your first trip, the amber display is a decorative preset of Einstein's return in 1985. The elapsed counters always use the real app time, even during a preview.
 
@@ -191,6 +209,8 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **History:** all trials, pagination and separate details, editable outcomes and undoable clearing.
 - **World View:** day/night atlas, offline city search, station range rings and seasonal timeline.
 - **ISS Observatory:** tracking, local passes and sky diagram, station background and educational time in orbit.
+- **Moon Observatory:** calculated lunar phases, local moonrise/moonset, upcoming quarters and independent time preview.
+- **Time Machine:** sourced historical journeys, personal memories and locally stored time capsules; also opens Back in Time.
 - **Back in Time:** movie time circuits, live elapsed counters and a cinematic 88 mph jump.
 - **Settings:** output device, test tone, waveform, manual timing correction, NTP diagnostics and theme selection.
 - **Quick guide:** station-specific instructions and FAQs, with one answer open at a time.
@@ -242,10 +262,11 @@ Electron `localStorage` is kept in `Local Storage/leveldb` inside that directory
 ## Tests and builds
 
 ```sh
-npm test                 # 51 protocol, PCM, stereo, profile, NTP, orbit and movie-time tests
+npm test                 # 58 protocol, PCM, stereo, profile, NTP, orbit and movie-time tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:world       # Offline atlas, search worker, timeline and audio isolation
 npm run test:iss         # ISS network states, passes, nine themes and audio isolation
+npm run test:observatory  # Moon phases, historical journeys, capsules, themes and audio isolation
 npm run test:back-in-time # Movie dates, jumps, layout, reduced motion and audio isolation
 npm run build:iss        # Rebuild the bundled JavaScript SGP4 library
 npm run build:world      # Rebuild the local map and astronomy bundle

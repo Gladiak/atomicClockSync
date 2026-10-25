@@ -30,7 +30,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.querySelector('.bttf-dashboard').getBoundingClientRect().bottom<=document.querySelector('.bttf-elapsed').getBoundingClientRect().top"), true, 'Dashboard overlaps elapsed panel');
     const sidebarBottom = await run("document.querySelector('.sidebar-bottom').getBoundingClientRect().bottom");
     assert.ok(sidebarBottom <= await run('innerHeight'), `Sidebar bottom overflows: ${sidebarBottom}`);
-    assert.equal(await run("document.querySelector('.sidebar-station').getBoundingClientRect().bottom<=document.querySelector('.sidebar-bottom').getBoundingClientRect().top+1"), true, 'Sidebar overlap');
+    assert.equal(await run("document.querySelector('.sidebar nav').getBoundingClientRect().bottom<=document.querySelector('.sidebar-bottom').getBoundingClientRect().top+1"), true, 'Sidebar overlap');
   }
   try {
     if (win.webContents.isLoading()) await new Promise(resolve => win.webContents.once('did-finish-load', resolve));

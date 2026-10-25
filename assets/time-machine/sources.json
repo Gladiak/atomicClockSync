@@ -1,0 +1,126 @@
+{
+  "tmFlight": {
+    "label": "NPS",
+    "url": "https://www.nps.gov/articles/wrightflyer.htm"
+  },
+  "tmSputnik": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/history/monograph10/sputnite.html"
+  },
+  "tmGagarin": {
+    "label": "ESA",
+    "url": "https://www.esa.int/About_Us/50_years_of_ESA/50_years_of_humans_in_space/The_flight_of_Vostok_1"
+  },
+  "tmApollo": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm"
+  },
+  "tmVoyager": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/voyager/voyager-1/"
+  },
+  "tmWeb": {
+    "label": "CERN",
+    "url": "https://home.cern/science/computing/the-birth-of-the-web"
+  },
+  "tmGregorian": {
+    "label": "Vatican Observatory",
+    "url": "https://www.vaticanobservatory.va/en/history/astronomy-calendars-and-religion"
+  },
+  "tmGalileo": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/history/410-years-ago-galileo-discovers-jupiters-moons/"
+  },
+  "tmBalloon": {
+    "label": "Smithsonian",
+    "url": "https://airandspace.si.edu/stories/editorial/presidential-writings-reveal-early-interest-ballooning"
+  },
+  "tmRailway": {
+    "label": "Library of Congress",
+    "url": "https://www.loc.gov/item/today-in-history/november-18"
+  },
+  "tmTereshkova": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/history/sally-ride-first-american-woman-in-space/"
+  },
+  "tmSpacewalk": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/history/space-station-20th-spacewalking-history/"
+  },
+  "tmApollo8": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/missions/apollo/apollo-8-mission-details/"
+  },
+  "tmArpanet": {
+    "label": "UCLA",
+    "url": "https://www.lk.cs.ucla.edu/internet_first_words.html"
+  },
+  "tmVoyager2": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/voyager/voyager-2/"
+  },
+  "tmShuttle": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/mission/sts-1/"
+  },
+  "tmHubble": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/hubble/observatory/missions-to-hubble/deployment/"
+  },
+  "tmPathfinder": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/mars-pathfinder/"
+  },
+  "tmIss": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/humans-in-space/expedition-1-kicks-off-science-aboard-international-space-station/"
+  },
+  "tmIphone": {
+    "label": "Apple",
+    "url": "https://www.apple.com/newsroom/2007/01/09Apple-Reinvents-the-Phone-with-iPhone/"
+  },
+  "tmLhc": {
+    "label": "CERN",
+    "url": "https://home.cern/first-beam-in-the-lhc-accelerating-science/"
+  },
+  "tmHiggs": {
+    "label": "CERN",
+    "url": "https://home.cern/cern-experiments-observe-particle-consistent-with-long-sought-higgs-boson/"
+  },
+  "tmPhilae": {
+    "label": "ESA",
+    "url": "https://www.esa.int/Newsroom/Press_Releases/Touchdown%21_Rosetta_s_Philae_probe_lands_on_comet"
+  },
+  "tmPluto": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/new-horizons/"
+  },
+  "tmLigo": {
+    "label": "LIGO / Caltech",
+    "url": "https://www.ligo.caltech.edu/detection"
+  },
+  "tmBlackHole": {
+    "label": "EHT Collaboration",
+    "url": "https://eventhorizontelescope.org/press-release-april-10-2019-astronomers-capture-first-image-black-hole"
+  },
+  "tmSi": {
+    "label": "NIST",
+    "url": "https://www.nist.gov/si-redefinition"
+  },
+  "tmPerseverance": {
+    "label": "NASA",
+    "url": "https://spaceplace.nasa.gov/mars-2020/en/"
+  },
+  "tmIngenuity": {
+    "label": "NASA",
+    "url": "https://www.nasa.gov/news-release/nasas-ingenuity-mars-helicopter-succeeds-in-historic-first-flight/"
+  },
+  "tmWebb": {
+    "label": "NASA",
+    "url": "https://science.nasa.gov/mission/webb/faqs-full/"
+  },
+  "tmWebbImages": {
+    "label": "NASA",
+    "url": "https://svs.gsfc.nasa.gov/14180/"
+  }
+}

@@ -1,5 +1,19 @@
 # Release notes
 
+## 1.8.0 — Moon Observatory and Time Machine
+
+- Added an offline Moon Observatory with original procedural lunar artwork, calculated phase and illumination, distance, age, local altitude/azimuth, moonrise/moonset, a full-Moon countdown and four upcoming quarter phases.
+- Shared the observing city with World View and ISS; added an independent 1900–2100 UTC date/time preview and Live reset.
+- Added historical journeys with original illustrated scenes, primary-source links, search/category filters, historical clock reconstruction and elapsed counters that respect documented date/time precision.
+- Added locally saved personal memories, future countdowns and time capsules with scheduled message reveal, editing and confirmed deletion. Capsule storage is not encrypted.
+- Expanded the archive to 32 chronologically ordered journeys across Space, Discovery and Timekeeping, with 31 primary-source links and 17 illustration families.
+- Removed the selected-station panel from the sidebar to reserve room for future sections; station details remain in Synchronize.
+- Collected historical journeys, personal keepsakes and the existing Back in Time film dashboard under Time Machine, with a distinct lunar icon and compact navigation.
+
+Validation: 58 unit tests and a dedicated observatory suite covering local lunar events, date previews, historical precision, personal CRUD/persistence, capsule sealing, all nine themes, the fixed window and real muted AudioWorklet isolation.
+
+Packages: `Atomic Clock Sync-1.8.0-arm64-mac.zip`, `Atomic Clock Sync-1.8.0-windows-x64-portable.exe`, `Atomic Clock Sync-1.8.0-macOS-Windows.zip`, and `SHA256SUMS.txt`. macOS arm64 is runtime-tested. Windows x64 is checked for package integrity and embedded sources but has not been run on Windows. Mac signing is ad-hoc and not notarized; Windows is unsigned.
+
 ## 1.7.0 — Back in Time
 
 - Added a Hill Valley time laboratory inspired by Back to the Future, with original red, green and amber seven-segment time circuits and a vector flux capacitor.

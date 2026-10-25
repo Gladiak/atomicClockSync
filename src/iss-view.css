@@ -1,5 +1,5 @@
-/* Compact navigation leaves room for the observatory and time lab within 740px. */
-.sidebar nav { gap:3px; }.nav-item { padding:7px 10px; }.nav-label { margin:18px 0 13px 7px; }.sidebar-station { margin-top:18px; padding-top:15px; }
+/* Shared navigation stays compact as observatories and time tools grow. */
+.sidebar nav { gap:3px; }.nav-item { padding:8px 10px; }.nav-label { margin:18px 0 13px 7px; }
 .iss-page { display:grid; grid-template-rows:34px minmax(0,1fr) 25px; gap:9px; min-height:0; }
 .iss-toolbar { display:flex; align-items:center; gap:9px; min-width:0; }
 .iss-tabs { display:flex; align-items:center; gap:3px; padding:3px; border:1px solid var(--line); border-radius:6px; background:var(--panel); }

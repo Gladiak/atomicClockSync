@@ -4,6 +4,8 @@ import { THEMES, applyTheme } from './themes.mjs';
 import { createWorldView } from './world-view.mjs';
 import { createIssView } from './iss-view.mjs';
 import { createBackInTimeView } from './back-in-time.mjs';
+import { createMoonView } from './moon-view.mjs';
+import { createTimeMachineView } from './time-machine.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
 
 const $ = id => document.getElementById(id);
@@ -51,6 +53,10 @@ const issView = createIssView({ getNow: now, getObserver: () => worldView.getCit
   chooseCity: () => { navigate('world'); $('world-city-search').focus(); } });
 const backInTimeView = createBackInTimeView({ getNow: now, getReference: () => reference
   ? (now() - reference.nowMs < 30 * 60000 ? 'NTP VERIFIED' : 'NTP CHECK NEEDED') : 'SYSTEM CLOCK' });
+const moonView = createMoonView({ getNow: now, getObserver: () => worldView.getCity(),
+  chooseCity: () => { navigate('world'); $('world-city-search').focus(); },
+  getReference: () => reference ? (now() - reference.nowMs < 30 * 60000 ? 'NTP verified' : 'NTP check needed') : 'System clock · unverified' });
+const timeMachineView = createTimeMachineView({ getNow: now, persist, notify });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 function persist(key, value) {
@@ -75,6 +81,8 @@ function navigate(page) {
   const titles = { sync: ['Sync your watch', 'Choose a station, place your Casio nearby and transmit.'],
     signal: ['Inside the signal', 'The selected station time code, live.'],
     world: ['A world between light and time', 'Follow the Sun. Find your city. Explore the signals that keep us in sync.'],
+    moon: ['A little closer to the Moon', 'Follow its phases. Find your moonrise. Explore a different kind of time.'],
+    'time-machine': ['Time Machine', 'Some moments change the world. Others change your world.'],
     iss: ['An observatory in orbit', 'Track our orbital outpost. Discover your next encounter with the ISS.'],
     'back-in-time': ['Back in Time', 'A little less precision. A lot more temporal displacement.'],
     history: ['Your synchronization history', 'Your trials, stored only on this device.'],
@@ -87,8 +95,8 @@ function navigate(page) {
     $(`page-${name}`).hidden = page !== name;
     $(`page-${name}`).classList.toggle('active', page === name);
   }
-  document.querySelectorAll('[data-page]').forEach(button => {
-    const selected = button.dataset.page === (page === 'trial' ? 'history' : page);
+  document.querySelectorAll('.sidebar [data-page]').forEach(button => {
+    const selected = button.dataset.page === (page === 'trial' ? 'history' : page === 'back-in-time' ? 'time-machine' : page);
     button.classList.toggle('selected', selected);
     if (selected) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
@@ -98,6 +106,8 @@ function navigate(page) {
   worldView.setVisible(page === 'world');
   issView.setVisible(page === 'iss');
   backInTimeView.setVisible(page === 'back-in-time');
+  moonView.setVisible(page === 'moon');
+  timeMachineView.setVisible(page === 'time-machine');
   window.scrollTo(0, 0);
 }
 
@@ -367,11 +377,8 @@ function renderStation() {
   const tone = `${number(station.audioFrequency)} Hz`;
   dateFormatter = new Intl.DateTimeFormat('en-GB', { timeZone: station.timeZone, day: '2-digit', month: 'long', year: 'numeric', weekday: 'short' });
   $('station-select').value = station.id;
-  $('sidebar-station-name').textContent = station.name;
-  $('sidebar-flag').textContent = $('station-card-flag').textContent = station.flag;
-  $('sidebar-location').textContent = station.location;
-  $('sidebar-coordinates').textContent = station.coordinates;
-  $('sidebar-frequency').textContent = $('station-card-frequency').textContent = frequency;
+  $('station-card-flag').textContent = station.flag;
+  $('station-card-frequency').textContent = frequency;
   $('station-card-name').textContent = $('settings-station').textContent = station.name;
   $('station-location').textContent = station.location;
   $('audio-frequency').textContent = $('settings-frequency').textContent = tone;

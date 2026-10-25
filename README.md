@@ -10,6 +10,8 @@ The interface, source files and documentation are in English. Read the [full use
 
 ## Features
 
+- **Moon Observatory:** offline lunar phases, illumination, distance, local moonrise/moonset, upcoming quarters and an independent timeline shared with your World View city.
+- **Time Machine:** 32 sourced historical journeys, precision-aware elapsed counters, personal memories, countdowns and locally stored time capsules.
 - **Back in Time:** a playful time-circuit dashboard inspired by Back to the Future, with five movie destinations, live elapsed-time counters and an animated 88 mph trip.
 - **ISS Orbital Observatory:** live orbital estimates, offline prediction cache, local sighting passes, a sky plot and an educational time-dilation explorer.
 - **World View:** an offline vector Earth with astronomical day/night, amber city lights, five stations, nominal coverage rings, 171,637 searchable cities and a seasonal timeline.
@@ -67,11 +69,27 @@ Tracking uses SGP4 orbital calculations, **not onboard telemetry**. The interfac
 
 See the [ISS user guide](docs/USAGE.en.md#iss-orbital-observatory) and [source/licensing notes](docs/THIRD_PARTY.md#iss-sources-and-orbit-software).
 
+## Moon Observatory
+
+![Moon Observatory — calculated phases and local observing times](docs/images/moon-observatory.png)
+
+Explore the Moon from your World View city, with calculated illumination, distance from Earth's centre, lunar age, altitude, azimuth and local moonrise/moonset. A full-Moon countdown and the next four phase events use the same observing city and time zone. Click a phase, select a UTC date or scrub the time of day to preview independently; **Live** restores the app's time reference.
+
+Calculations run offline using Astronomy Engine. The original procedural lunar terrain and phase orientation are illustrative, rather than a photographic map or telescope view. Rise/set estimates assume a level horizon and standard atmospheric conditions. Dates from 1900 through 2100 are supported.
+
+## Time Machine
+
+![Time Machine — a journey to the Apollo 11 landing](docs/images/time-machine.png)
+
+Open **Time Machine → Historical journeys** to explore 32 moments from the Gregorian calendar reform in 1582 to Webb’s first full science image set in 2022. Filter space exploration, discovery/invention, or clocks/calendars; search titles, places, mission names and stories. Each moment has an original illustrated scene and an external primary-source reference. Dates without a documented time show only UTC calendar days; approximate and minute-resolution records do not invent elapsed seconds.
+
+**My moments & capsules** stores up to 100 local memories and countdowns. Create a time capsule with a future UTC opening date: its message remains hidden in the interface until that date. Capsules are stored locally without encryption; this is a keepsake feature, not secure storage. Memories can be edited, and deletion requires an explicit confirmation. **Back in Time** opens the existing film dashboard from the same section. All previews leave NTP, transmitted time and watch settings unchanged.
+
 ## Back in Time
 
 ![Back in Time — time circuits, flux capacitor and movie destinations](docs/images/back-in-time.png)
 
-Open **Back in Time** for a playful detour through Hill Valley. A brushed-metal dashboard recreates the red, green and amber time-circuit displays using original SVG instruments, alongside a flux capacitor and an **88 MPH** jump button.
+Open **Time Machine → Back in Time** for a playful detour through Hill Valley. A brushed-metal dashboard recreates the red, green and amber time-circuit displays using original SVG instruments, alongside a flux capacitor and an **88 MPH** jump button.
 
 Choose the Old West (2 September 1885), the first 1955 destination (5 November), the clock-tower lightning strike (12 November 1955), Einstein's return at Twin Pines Mall (26 October 1985), or the arrival in the future (21 October 2015). Every card shows elapsed days; the selected event has a live days/hours/minutes/seconds counter.
 
@@ -85,13 +103,13 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **1.7.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
+Current version: **1.8.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `Atomic Clock Sync-1.7.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
-| `Atomic Clock Sync-1.7.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
-| `Atomic Clock Sync-1.7.0-macOS-Windows.zip` | Both packages, instructions and checksums | Combined distribution |
+| `Atomic Clock Sync-1.8.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
+| `Atomic Clock Sync-1.8.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
+| `Atomic Clock Sync-1.8.0-macOS-Windows.zip` | Both packages, instructions and checksums | Combined distribution |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include their runtime; **Node.js is not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
@@ -138,6 +156,7 @@ npm test                 # Protocol, PCM, stereo routing, profile, migration and
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:world       # Offline atlas, city worker, timeline and audio isolation
 npm run test:iss         # ISS states, passes, sky plot, themes and audio isolation
+npm run test:observatory  # Moon phases, historical journeys, capsules, themes and audio isolation
 npm run test:back-in-time # Movie circuits, time travel, layout and audio isolation
 npm run build:iss        # Rebuild the bundled SGP4 library
 npm run build:world      # Rebuild the bundled cartography/astronomy dependencies
@@ -148,7 +167,7 @@ npm run dist:linux       # Linux AppImage configuration; not validated
 npm run bundle           # Combine existing Mac/Windows packages; requires Python 3
 ```
 
-The 51 unit tests include independent decoding of generated PCM across the autumn DST transition and movie-date duration calculations. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
+The 58 unit tests include independent decoding of generated PCM across the autumn DST transition and movie-date duration calculations. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 
