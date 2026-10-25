@@ -11,6 +11,7 @@ const references = {
   ptb: 'https://www.ptb.de/cms/en/ptb/fachabteilungen/abt4/fb-44/ag-442/dissemination-of-legal-time/dcf77/dcf77-time-code.html',
   casio: 'https://support.casio.com/en/manual/manuallist.php?cid=009',
   inspiration: 'https://cw.rzapps.com/',
+  geonames: 'https://www.geonames.org/',
   jjy: 'https://jjy.nict.go.jp/jjy/trans/index-e.html',
   wwvb: 'https://www.nist.gov/pml/time-and-frequency-division/time-distribution/radio-station-wwvb/wwvb-time-code-format',
   msf: 'https://www.npl.co.uk/getattachment/2afd4c3b-fc8d-486c-b2b9-fc9a5a66394c/msf-time-date-code-2019.pdf',

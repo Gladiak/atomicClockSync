@@ -1,0 +1,89 @@
+/* A dark, self-contained observatory surface retains amber light in every app theme. */
+.world-page { display:grid; grid-template-rows:34px minmax(0,1fr) 94px 70px; gap:9px; min-height:0; }
+.world-toolbar { display:flex; align-items:center; gap:12px; min-width:0; }
+.world-search { position:relative; flex:1; min-width:180px; }
+.world-search>span { position:absolute; left:10px; top:3px; font-size:22px; color:var(--muted); }
+.world-search input { width:100%; height:32px; padding:0 12px 0 32px; border:1px solid var(--border-control); border-radius:6px; background:var(--surface-input); color:var(--text); font-size:11px; }
+.world-search input::placeholder { color:var(--faint); }
+.world-catalog { color:var(--faint); font:8px var(--mono); white-space:nowrap; }
+.world-coverage-control { display:flex; align-items:center; gap:7px; font-size:10px; color:var(--muted); }
+.world-coverage-control select { width:100px; height:32px; font-size:10px; padding-left:9px; }
+.world-toggle { height:32px; border:1px solid var(--border-control); border-radius:5px; background:var(--surface-input); color:var(--muted); font-size:10px; padding:0 10px; white-space:nowrap; }
+.world-toggle[aria-pressed=true] { border-color:var(--accent-text); color:var(--accent-text); }
+.world-results { position:absolute; z-index:15; top:37px; left:0; width:360px; max-width:calc(100vw - 230px); padding:5px; border:1px solid var(--border-strong); border-radius:8px; background:var(--panel); box-shadow:0 14px 45px #0008; }
+.world-result { display:flex; flex-direction:column; align-items:flex-start; gap:3px; width:100%; padding:8px 10px; border-radius:4px; background:none; text-align:left; }
+.world-result strong { font-size:11px; font-weight:500; }
+.world-result span { color:var(--muted); font-size:9px; }
+.world-result:hover,.world-result[aria-selected=true] { background:var(--surface-hover); color:var(--accent-text); }
+.world-search-message { display:block; padding:12px; color:var(--muted); font-size:11px; }
+.world-stage { position:relative; overflow:hidden; min-height:0; border:1px solid #344452; border-radius:10px; isolation:isolate; color:#e8edf2; background:radial-gradient(ellipse at 50% 44%,#152a38 0%,#091522 50%,#050b13 100%); box-shadow:inset 0 0 60px #0005,0 4px 16px #0002; }
+.world-stage:before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 45% 100%,#f2a84b0c,transparent 65%); }
+#world-map { display:block; width:100%; height:100%; overflow:hidden; }
+.world-stage-heading { position:absolute; z-index:2; top:16px; left:18px; pointer-events:none; }
+.world-overline { font:6.8px var(--mono); letter-spacing:1px; color:var(--faint); display:block; }
+.world-stage .world-overline { color:#94a8b9; }
+.world-time-row { display:flex; align-items:center; gap:8px; margin-top:6px; }
+.world-time-row time { font:22px var(--mono); letter-spacing:-.7px; }
+.world-utc-label { font:8px var(--mono); color:#a6b5c3; }
+.world-live { font:6px var(--mono); letter-spacing:.7px; border:1px solid #668c77; color:#c2f2cc; background:#192e25; padding:3px 4px; border-radius:3px; }
+.world-live.preview { color:#ffe0a3; border-color:#8a6941; background:#2b231c; }
+.world-date-label { display:block; margin-top:4px; color:#b1bfcb; font:8px var(--mono); }
+.world-solar-hud { position:absolute; top:16px; right:18px; text-align:right; display:flex; flex-direction:column; gap:6px; pointer-events:none; }
+.world-solar-hud strong { font:10px var(--mono); color:#f2d4a0; font-weight:400; }
+.world-solar-hud>span:last-child { color:#a0b1c0; font-size:8px; }
+.world-graticule { fill:none; stroke:#a3b7bb; stroke-width:.45; opacity:.12; }
+.world-borders { fill:none; stroke:#b9d2d4; stroke-width:.48; opacity:.42; }
+.world-sphere-outline { fill:none; stroke:#7d9eab; stroke-width:.65; opacity:.45; }
+.world-map-bottom { position:absolute; bottom:10px; left:16px; right:16px; display:flex; justify-content:space-between; gap:8px; color:#a5b4c2; font:6.5px var(--mono); pointer-events:none; }
+.world-map-bottom i { display:inline-block; width:4px; height:4px; border-radius:50%; background:#ffbf69; box-shadow:0 0 6px #ffb345; margin-right:4px; }
+.world-attribution { pointer-events:auto; font:inherit; color:inherit; background:none; padding:0; }
+.world-attribution:hover { color:#ffe0a3; }
+.world-loading { position:absolute; inset:45% 0 auto; text-align:center; color:#d1dce4; font:11px var(--mono); }
+.world-station-marker { cursor:pointer; outline:none; }
+.world-station-marker .station-target { fill:#0a1822; stroke:#e8d3ab; stroke-width:1; }
+.world-station-marker .station-center { fill:#e5c99b; }
+.world-station-marker .station-ring { fill:none; stroke:#fbd699; stroke-width:.8; opacity:.3; }
+.world-station-marker text { font:9px var(--mono); fill:#e8edf2; paint-order:stroke; stroke:#06101b; stroke-width:3px; stroke-linejoin:round; }
+.world-station-marker.selected .station-target { stroke:#fff0cb; stroke-width:1.6; }
+.world-station-marker.selected .station-center { fill:#fff2c6; }
+.world-station-marker.selected .station-ring { opacity:.8; }
+.world-station-marker:focus-visible .station-ring,.world-station-marker:hover .station-ring { stroke:#fff; stroke-width:2; opacity:1; }
+.world-station-marker.transmitting .station-ring { animation:world-beacon 2.5s ease-out infinite; }
+@keyframes world-beacon { 0% { stroke-width:2; opacity:1; } 100% { stroke-width:.3; opacity:.2; } }
+.world-city-halo { fill:#ffbc4d; opacity:.08; stroke:#ffd99c; stroke-width:.7; }
+#world-city-marker text { font:9px var(--mono); fill:#ffdf9e; paint-order:stroke; stroke:#081421; stroke-width:3px; }
+.world-details { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:9px; }
+.world-place-card,.world-station-card { border:1px solid var(--line); border-radius:7px; padding:10px 12px; background:var(--panel); min-width:0; position:relative; }
+.world-place-card { display:grid; grid-template-columns:1fr auto; gap:4px 12px; }
+.world-place-title { min-width:0; }
+.world-place-title>strong { display:inline-block; font-size:15px; font-weight:500; letter-spacing:-.3px; margin-top:4px; max-width:145px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; vertical-align:bottom; }
+.world-place-title>span:last-child { display:inline-block; font-size:9px; color:var(--muted); margin-left:7px; max-width:110px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; vertical-align:baseline; }
+.world-place-time { text-align:right; }
+.world-place-time strong { display:block; font:18px var(--mono); font-weight:400; }
+.world-place-time span { display:block; margin-top:3px; color:var(--accent-text); font-size:8px; }
+.world-sun-facts { display:flex; align-items:end; gap:24px; }
+.world-sun-facts span { font-size:8px; color:var(--faint); display:block; margin-bottom:3px; }
+.world-sun-facts strong { font:10px var(--mono); font-weight:400; }
+.world-place-zone { align-self:end; text-align:right; color:var(--faint); font:7px var(--mono); max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.world-station-card { display:grid; grid-template-columns:1fr auto; align-content:space-between; gap:7px; }
+.world-station-card>div:first-child { grid-column:1 / -1; }
+.world-station-tabs { display:flex; gap:5px; margin-top:6px; }
+.world-station-tabs button { padding:3px 7px; background:var(--surface-secondary); color:var(--muted); border:1px solid var(--line); border-radius:3px; font:8px var(--mono); }
+.world-station-tabs button[aria-pressed=true] { color:var(--accent-text); border-color:var(--accent-text); background:color-mix(in srgb,var(--accent) 8%,var(--panel)); }
+.world-station-summary { min-width:0; display:flex; flex-direction:column; gap:3px; }
+.world-station-summary strong { font-size:10px; font-weight:500; }
+.world-station-summary span { font:7px var(--mono); color:var(--muted); }
+.world-use-station { color:var(--accent-text); background:none; font-size:9px; padding:2px 0; align-self:end; white-space:nowrap; }
+.world-timeline { padding:9px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel); min-width:0; }
+.world-timeline-top { display:flex; align-items:center; gap:12px; }
+.world-play { width:24px; height:24px; flex-shrink:0; border:1px solid var(--border-control); border-radius:50%; color:var(--accent-text); background:var(--surface-input); font-size:9px; }
+.world-date-input input { width:118px; height:24px; border:0; padding:0; color:var(--text); background:transparent; font:10px var(--mono); color-scheme:inherit; }
+#world-time-slider { min-width:0; flex:1; height:14px; margin:0; accent-color:#ffc372; }
+.world-now { background:none; color:var(--accent-text); font-size:10px; padding:4px 0; }
+.world-timeline-bottom { display:flex; justify-content:space-between; gap:10px; align-items:center; margin-top:7px; }
+#world-preview-note { color:var(--faint); font:7px var(--mono); }
+.world-seasons { display:flex; gap:5px; }
+.world-seasons button { background:none; color:var(--muted); padding:2px 6px; border:1px solid var(--line); border-radius:3px; font-size:8px; }
+.world-seasons button:hover,.world-seasons button[aria-pressed=true] { border-color:var(--accent-text); color:var(--accent-text); }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+@media(prefers-reduced-motion:reduce) { .world-station-marker.transmitting .station-ring { animation:none; } }

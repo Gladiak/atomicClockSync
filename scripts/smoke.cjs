@@ -48,6 +48,7 @@ app.whenReady().then(async () => {
     assert.equal(window.isFullScreenable(), false);
     assert.deepEqual(window.getContentSize(), [1100, 740]);
     const assertFits = async () => {
+      if (await run("!document.getElementById('page-world').hidden")) await until("document.getElementById('world-loading').hidden");
       const overflow = await run(`(() => {
         const page = document.querySelector('.page.active');
         const bounds = page.getBoundingClientRect();
@@ -60,7 +61,7 @@ app.whenReady().then(async () => {
       assert.equal(await run('document.documentElement.scrollHeight <= window.innerHeight'), true);
     };
     await assertFits();
-    for (const page of ['profiles', 'signal', 'settings', 'guide', 'history', 'sync']) {
+    for (const page of ['profiles', 'signal', 'world', 'settings', 'guide', 'history', 'sync']) {
       await run(`document.querySelector('[data-page=${page}]').click()`);
       await assertFits();
       if (page === 'guide') {
@@ -79,7 +80,7 @@ app.whenReady().then(async () => {
     for (const theme of themes) {
       await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);
       assert.equal(await run('document.documentElement.dataset.theme'), theme);
-      for (const page of ['sync','profiles','signal','history','guide','settings']) {
+      for (const page of ['sync','profiles','signal','world','history','guide','settings']) {
         await run(`document.querySelector('[data-page=${page}]').click()`);
         await assertFits();
       }

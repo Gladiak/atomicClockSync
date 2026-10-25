@@ -1,6 +1,6 @@
 {
   "name": "atomic-clock-sync",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Sync Casio Multiband 6 watches with simulated time signals through your speakers. A JavaScript and Electron desktop app for macOS and Windows.",
   "main": "electron/main.cjs",
   "private": true,
@@ -12,7 +12,9 @@
     "dist": "electron-builder --mac zip",
     "dist:win": "electron-builder --win portable --x64",
     "dist:linux": "electron-builder --linux AppImage",
-    "bundle": "python3 scripts/bundle-releases.py"
+    "bundle": "python3 scripts/bundle-releases.py",
+    "build:world": "node scripts/build-world-vendor.mjs",
+    "test:world": "electron scripts/world-smoke.cjs"
   },
   "keywords": [
     "casio",
@@ -67,7 +69,12 @@
     }
   },
   "devDependencies": {
+    "astronomy-engine": "2.1.19",
+    "d3-geo": "3.1.1",
     "electron": "^45.0.0",
-    "electron-builder": "^26.18.0"
+    "electron-builder": "^26.18.0",
+    "esbuild": "0.28.2",
+    "topojson-client": "3.1.0",
+    "world-atlas": "2.0.2"
   }
 }

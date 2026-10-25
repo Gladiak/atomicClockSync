@@ -1,5 +1,19 @@
 # Release notes
 
+## 1.5.0 — A world between light and time
+
+- Added World View: a fully offline vector Earth with country boundaries, astronomical day/night shading, gradual twilight and amber city lights.
+- Added 171,637 searchable localities with a lazy-loaded worker index, accent/native-name matching, keyboard selection and persistent city choice.
+- Added local city clocks, sunrise, sunset, daylight duration and polar day/night handling, including DST and local calendar-day boundaries.
+- Added five interactive station markers, great-circle distance, explicit station selection and approximate Casio coverage overlays (off/selected/all).
+- Added independent UTC preview, one-day-per-minute playback, Live reset and computed equinox/solstice presets for 1900–2100.
+- Kept preview independent of the audio engine, settings and watch profiles; station changes stay locked during transmission.
+- Added source attribution, data provenance, software license notices and reproducible asset-generation scripts.
+
+Validation: 38 unit tests plus the full desktop and World View suites. The atlas is checked offline, across nine themes and in the fixed 1100 × 740 window, including real muted AudioWorklet transmission. City-light brightness and radio rings are illustrative, not live measurements.
+
+Packages: `Atomic Clock Sync-1.5.0-arm64-mac.zip`, `Atomic Clock Sync-1.5.0-windows-x64-portable.exe`, `Atomic Clock Sync-1.5.0-macOS-Windows.zip`, and `SHA256SUMS.txt`. macOS arm64 is runtime-tested; Windows is built and checked for integrity but has not been run on Windows. Mac signing is ad-hoc and not notarized; Windows is unsigned.
+
 ## 1.4.0 — English project release
 
 The interface, application messages, theme names, time formatting and primary documentation are now in English. Existing watch profiles, settings, theme IDs and trial history remain compatible. User-entered names and notes are preserved.

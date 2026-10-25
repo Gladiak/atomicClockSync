@@ -1,0 +1,20 @@
+{
+  "source": "https://download.geonames.org/export/dump/cities1000.zip",
+  "retrievedAt": "2026-10-25T13:57:08.826359+00:00",
+  "sourceSha256": "b5542441a467eeb6a761e3c10ce27fd25115dc255b96bd6702963a3542889ab2",
+  "cityCount": 171637,
+  "lightCount": 18650,
+  "bytes": 20827119,
+  "license": "CC BY 4.0",
+  "fields": [
+    "id",
+    "name",
+    "country",
+    "regionIndex",
+    "zoneIndex",
+    "latitude",
+    "longitude",
+    "population",
+    "searchAliases"
+  ]
+}

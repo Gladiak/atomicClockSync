@@ -1,6 +1,7 @@
 import { STATIONS, getStation, stationTime, stationFrameAt, audioEnvelope, symbolLabel, symbolDescription } from './stations.mjs';
 import { SignalEngine, testOutput } from './audio-engine.mjs';
 import { THEMES, applyTheme } from './themes.mjs';
+import { createWorldView } from './world-view.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
 
 const $ = id => document.getElementById(id);
@@ -35,6 +36,15 @@ let toastTimer;
 let lastSecond = -1;
 let currentFrame;
 let lastWallCheck = { wall: Date.now(), mono: performance.now() };
+const worldView = createWorldView({ getNow: now, getStationId: () => preferences.stationId,
+  isTransmitting: () => Boolean(session) || busy, persist, notify,
+  getReference: () => reference ? `${now()-reference.nowMs<30*60000?'NTP':'NTP check needed'} · ${reference.host}` : 'System clock · unverified',
+  useStation: id => {
+    if (session || busy) return;
+    $('station-select').value = id;
+    $('station-select').dispatchEvent(new Event('change'));
+    navigate('sync');
+  } });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 function persist(key, value) {
@@ -58,6 +68,7 @@ function notify(message, error = false) {
 function navigate(page) {
   const titles = { sync: ['Sync your watch', 'Choose a station, place your Casio nearby and transmit.'],
     signal: ['Inside the signal', 'The selected station time code, live.'],
+    world: ['A world between light and time', 'Follow the Sun. Find your city. Explore the signals that keep us in sync.'],
     history: ['Your synchronization history', 'Your trials, stored only on this device.'],
     profiles: ['A profile for every watch', 'Save the settings and placement that work.'],
     trial: ['Trial details', 'The settings used and the result observed on your Casio.'],
@@ -76,6 +87,7 @@ function navigate(page) {
   });
   $('page-title').replaceChildren(document.createTextNode(titles[page][0]), Object.assign(document.createElement('span'), { textContent: '.' }));
   $('page-subtitle').textContent = titles[page][1];
+  worldView.setVisible(page === 'world');
   window.scrollTo(0, 0);
 }
 

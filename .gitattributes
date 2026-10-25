@@ -9,3 +9,5 @@
 *.py text eol=lf
 *.svg text eol=lf
 *.png binary
+assets/world/vendor.mjs linguist-generated=true
+assets/world/*.json linguist-generated=true

@@ -8,11 +8,11 @@ Atomic Clock Sync is a **JavaScript and Electron desktop app** that helps synchr
 
 ## Ready-to-use applications
 
-Current version: **1.4.0**.
+Current version: **1.5.0**.
 
-- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.4.0-arm64-mac.zip`.
-- Windows x64 portable: `release/Atomic Clock Sync-1.4.0-windows-x64-portable.exe`.
-- Combined package: `release/Atomic Clock Sync-1.4.0-macOS-Windows.zip`.
+- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.5.0-arm64-mac.zip`.
+- Windows x64 portable: `release/Atomic Clock Sync-1.5.0-windows-x64-portable.exe`.
+- Combined package: `release/Atomic Clock Sync-1.5.0-macOS-Windows.zip`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
@@ -84,6 +84,34 @@ The tests independently decode three continuous minutes of PCM for each sine pro
 
 A user confirmed successful GW-6900 synchronization with DCF77 and built-in Mac speakers after version 1.1.3. Exact volume and placement were not recorded, so that result cannot be attributed solely to the full-pauses profile. The profile remains experimental. Temporary L3 drops do not necessarily prevent eventual reception.
 
+## World View
+
+Open **World View** for the offline vector atlas. It draws land and country boundaries without satellite textures, with astronomical day/night shading, graduated twilight and illustrative amber city lights.
+
+- **Live:** follows the same NTP-corrected time reference as the app, or explicitly marked system time when offline.
+- **Preview:** select a UTC date between 1900 and 2100 and scrub its 24 hours. The main UTC clock and the city clock always identify the time being explored. Preview does not alter the audio engine, watch profiles, operating-system clock or transmission time.
+- **Play:** advances one simulated day per real minute. Pause with the same button. Playback pauses when you leave World View and does not catch up after the app has been hidden. **Live** returns to the present.
+- **Seasonal presets:** March/September equinoxes and June/December solstices are calculated for the displayed UTC year. Hover over a preset for its event time. Month-based names apply in both hemispheres.
+- **Twilight lines:** toggle boundaries at solar altitudes 0°, −6°, −12° and −18°. The shaded transition remains visible when lines are hidden.
+
+### Cities
+
+Type at least two characters in **Find a city**. The catalog contains 171,637 localities from GeoNames and is loaded into a dedicated worker only when the search field is first focused. It includes coordinates, IANA time zones, region/country names and a bounded set of native and alternative spellings. Accents are normalized. Results show region and country to distinguish homonyms. Use the arrow keys and Enter, or click a result. Escape closes results.
+
+The selected city's clock, sunrise, sunset and daylight duration follow its local calendar day and daylight-saving rules. Sunrise/set use standard atmospheric refraction at sea level; weather, terrain and buildings are not modeled. Polar day/night are shown explicitly rather than inventing event times. The city clock's date and IANA zone appear below it.
+
+City selection is local to World View and does not set the Casio's Home City or modify a watch profile. The city, coverage mode and twilight-line setting persist. Preview time and playback do not persist; reopening the app starts in Live mode.
+
+The approximately 20 MB search catalog is separate from the 18,650 geographically grouped light points. Lights appear gradually through twilight and stay amber in all nine themes. Their intensity is an illustration based on settlement population, not measured urban brightness or a real-time observation.
+
+### Stations and range rings
+
+Click a station marker, use its keyboard focus and Enter/Space, or use the station tabs. The station card shows frequency, local station time and great-circle distance from the selected city. **Use station** explicitly applies it to the transmission settings and returns to Synchronize. It is disabled during transmission; map exploration remains available.
+
+**Coverage → Off / Selected / All stations** controls the range overlay. Rings follow approximate Casio module 3179 reception ranges: DCF77/MSF 1,500 km, WWVB 3,000 km, JJY 60 kHz 1,000 km and BPC 1,500 km. They are static geographic references for the real towers, not field-strength contours, live station-status information or predictions of watch reception. They do not describe the range of the app's local audio output.
+
+The map, search and astronomical calculations work offline. Rendering stops when World View is not visible. Data sources, license notices, modifications and rebuild instructions are documented in [Third-party data and software](THIRD_PARTY.md).
+
 ## Themes and compact interface
 
 Choose a palette in **Settings → Theme**:
@@ -108,6 +136,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **My watches:** profiles, notes and restoration of the last successful settings.
 - **Inside the signal:** complete time code, current symbol, fields and parity. BPC displays 20 symbols; MSF displays A/B pairs.
 - **History:** all trials, pagination and separate details, editable outcomes and undoable clearing.
+- **World View:** day/night atlas, offline city search, station range rings and seasonal timeline.
 - **Settings:** output device, test tone, waveform, manual timing correction, NTP diagnostics and theme selection.
 - **Quick guide:** station-specific instructions and FAQs, with one answer open at a time.
 
@@ -158,8 +187,10 @@ Electron `localStorage` is kept in `Local Storage/leveldb` inside that directory
 ## Tests and builds
 
 ```sh
-npm test                 # 33 protocol, PCM, stereo, profile, migration and NTP tests
+npm test                 # 38 protocol, PCM, stereo, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
+npm run test:world       # Offline atlas, search worker, timeline and audio isolation
+npm run build:world      # Rebuild the local map and astronomy bundle
 npm run pack             # Unpacked application
 npm run dist             # macOS ZIP
 npm run dist:win         # Windows x64 portable; native NSIS toolset configured

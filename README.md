@@ -10,6 +10,8 @@ The interface, source files and documentation are in English. Read the [full use
 
 ## Features
 
+- **World View:** an offline vector Earth with astronomical day/night, amber city lights, five stations, nominal coverage rings, 171,637 searchable cities and a seasonal timeline.
+
 - **Five station protocols:** individual time-code encoders, markers and modulation envelopes.
 - **NTP time checks:** PTB and Cloudflare references, with visible system-clock fallback when offline.
 - **Watch profiles:** save the station, output, waveform, channel, volume, duration and placement notes for each watch.
@@ -32,6 +34,18 @@ The interface, source files and documentation are in English. Read the [full use
 
 Station availability depends on the watch module and its home city. JJY currently supports the **60 kHz** station. BPC physical compatibility is experimental.
 
+## World View
+
+![World View — solstice, city lights and nominal radio coverage](docs/images/world-view.png)
+
+Explore a vector Earth with a moving day/night terminator, gradual twilight and amber lights from 18,650 geographically grouped settlements. The map uses the app's time reference in **Live** mode. Scrub a UTC day, play one day per minute, or jump to an equinox or solstice. **Preview** time never changes the transmitted time.
+
+Search **171,637 localities offline**, including local spellings and accented names. Select a city to see its local clock, sunrise, sunset, day length and distance to the selected station. City search loads its catalog in a dedicated worker on first focus; approximately 20 MB of data is kept separate from the much smaller map/light layer.
+
+Explore all five station markers. **Coverage → Off / Selected / All stations** shows nominal Casio reception-range rings, not live signal measurements or reception guarantees. **Use station** explicitly selects a station for transmission and is unavailable during an active session. City lights illustrate settlement locations and are not measured light emissions.
+
+Map: Natural Earth. Cities: GeoNames, CC BY 4.0. See [data sources, licenses and asset rebuild instructions](docs/THIRD_PARTY.md).
+
 ## How audio synchronization works
 
 A normal audio output cannot directly generate the longwave radio carrier expected by the watch. The app produces a lower-frequency audio tone and relies on harmonics and electromagnetic coupling from the speaker or earphone electronics.
@@ -40,13 +54,13 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **1.4.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
+Current version: **1.5.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `Atomic Clock Sync-1.4.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
-| `Atomic Clock Sync-1.4.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
-| `Atomic Clock Sync-1.4.0-macOS-Windows.zip` | Both packages, instructions and checksums | Combined distribution |
+| `Atomic Clock Sync-1.5.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
+| `Atomic Clock Sync-1.5.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
+| `Atomic Clock Sync-1.5.0-macOS-Windows.zip` | Both packages, instructions and checksums | Combined distribution |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include their runtime; **Node.js is not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
@@ -91,6 +105,8 @@ The explicit runtime download is needed for the Electron version used here. No w
 ```sh
 npm test                 # Protocol, PCM, stereo routing, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
+npm run test:world       # Offline atlas, city worker, timeline and audio isolation
+npm run build:world      # Rebuild the bundled cartography/astronomy dependencies
 npm run pack             # Unpacked application
 npm run dist             # macOS ZIP for the host architecture
 npm run dist:win         # Windows x64 portable, with the configured native NSIS toolset
@@ -98,7 +114,7 @@ npm run dist:linux       # Linux AppImage configuration; not validated
 npm run bundle           # Combine existing Mac/Windows packages; requires Python 3
 ```
 
-The 33 unit tests include independent decoding of generated PCM across the autumn DST transition. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
+The 38 unit tests include independent decoding of generated PCM across the autumn DST transition. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 
@@ -113,6 +129,8 @@ Preferences, themes, watch profiles and trial history are stored locally using E
 ```
 
 Close the app before backing up that entire directory. Replacing the app or cleaning the build directory does not delete it.
+
+World View remembers its selected city, coverage mode and twilight-line preference separately from watch profiles. City queries stay offline.
 
 NTP checks contact `ptbtime1.ptb.de`, `ptbtime2.ptb.de` and `time.cloudflare.com`. They adjust the time reference inside the app, not the operating system clock. NTP uses UDP/123 without NTS authentication. Offline use is available with the system clock.
 
