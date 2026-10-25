@@ -1,7 +1,8 @@
 {
   "name": "atomic-clock-sync",
   "version": "1.8.0",
-  "description": "Sync Casio Multiband 6 watches with simulated time signals through your speakers. A JavaScript and Electron desktop app for macOS and Windows.",
+  "description": "Sync Casio Multiband 6 watches with simulated time signals through your speakers. A JavaScript and Electron desktop app for macOS, Windows and Linux.",
+  "homepage": "https://github.com/Gladiak/atomicClockSync",
   "main": "electron/main.cjs",
   "private": true,
   "scripts": {
@@ -11,7 +12,8 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder --mac zip",
     "dist:win": "electron-builder --win portable --x64",
-    "dist:linux": "electron-builder --linux AppImage",
+    "dist:linux": "electron-builder --linux --x64",
+    "dist:linux:docker": "bash scripts/build-linux-docker.sh",
     "bundle": "python3 scripts/bundle-releases.py",
     "build:world": "node scripts/build-world-vendor.mjs",
     "test:world": "electron scripts/world-smoke.cjs",
@@ -63,13 +65,17 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "AppImage",
+        "deb"
       ],
       "category": "Utility",
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "maintainer": "Atomic Clock Sync contributors",
+      "artifactName": "${productName}-${version}-linux-${arch}.${ext}"
     },
     "toolsets": {
-      "nsis": "1.2.1"
+      "nsis": "1.2.1",
+      "appimage": "1.0.3"
     }
   },
   "devDependencies": {

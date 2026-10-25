@@ -1,6 +1,6 @@
 # Atomic Clock Sync
 
-Sync Casio Multiband 6 watches with simulated time signals through your speakers. Built with **JavaScript and Electron** for macOS and Windows.
+Sync Casio Multiband 6 watches with simulated time signals through your speakers. Built with **JavaScript and Electron** for macOS, Windows and Linux.
 
 ![Atomic Clock Sync — synchronization screen](docs/images/synchronization.png)
 
@@ -109,12 +109,23 @@ Current version: **1.8.0**. Download the apps from [GitHub Releases](https://git
 | --- | --- | --- |
 | `Atomic Clock Sync-1.8.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
 | `Atomic Clock Sync-1.8.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
+| `Atomic Clock Sync-1.8.0-linux-x86_64.AppImage` | Portable Linux x64 application | Built on Ubuntu 22.04 in Docker; packaged UI and muted audio tested on a virtual display |
+| `Atomic Clock Sync-1.8.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Package metadata and contents verified against the tested application |
 | `Atomic Clock Sync-1.8.0-macOS-Windows.zip` | Both packages, instructions and checksums | Combined distribution |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include their runtime; **Node.js is not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
 
-Release binaries are excluded from Git and are intended for GitHub Releases. Linux packaging is configured but has not been built or tested for this release.
+On Linux x64, choose the AppImage for portable use or the DEB for desktop-menu integration on Debian-based distributions. The names `x86_64` and `amd64` both mean 64-bit Intel/AMD PCs. These builds do not target ARM64. To run the AppImage or install the DEB from your download directory:
+
+```sh
+chmod +x 'Atomic Clock Sync-1.8.0-linux-x86_64.AppImage'
+./'Atomic Clock Sync-1.8.0-linux-x86_64.AppImage'
+# Alternatively, on Debian/Ubuntu/Mint:
+sudo apt install './Atomic Clock Sync-1.8.0-linux-amd64.deb'
+```
+
+Linux validation uses Ubuntu 22.04 x64 in Docker with a virtual display, muted audio and `--no-sandbox` for the container-only test. Normal launch commands retain Chromium's sandbox. Audio output and physical watch reception still need a real Linux desktop/hardware test. Release binaries are excluded from Git and are intended for GitHub Releases; Linux packages are separate from the Mac/Windows combined ZIP.
 
 ## Quick start
 
@@ -163,9 +174,12 @@ npm run build:world      # Rebuild the bundled cartography/astronomy dependencie
 npm run pack             # Unpacked application
 npm run dist             # macOS ZIP for the host architecture
 npm run dist:win         # Windows x64 portable, with the configured native NSIS toolset
-npm run dist:linux       # Linux AppImage configuration; not validated
+npm run dist:linux       # Linux x64 AppImage + DEB; run on Linux
+npm run dist:linux:docker # Same packages from macOS/Windows/Linux with Docker
 npm run bundle           # Combine existing Mac/Windows packages; requires Python 3
 ```
+
+The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run bundle` also includes any current-version Linux packages in the top-level checksums. Electron Builder additionally supports RPM, Snap, Flatpak, Pacman and archive targets; only AppImage and DEB are configured and validated here.
 
 The 58 unit tests include independent decoding of generated PCM across the autumn DST transition and movie-date duration calculations. The desktop suite checks the real interface, all nine themes, selected text contrast ratios, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Tests use a temporary profile and do not overwrite user data.
 

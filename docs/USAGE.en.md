@@ -12,12 +12,16 @@ Current version: **1.8.0**.
 
 - macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.8.0-arm64-mac.zip`.
 - Windows x64 portable: `release/Atomic Clock Sync-1.8.0-windows-x64-portable.exe`.
+- Linux x64 portable: `release/Atomic Clock Sync-1.8.0-linux-x86_64.AppImage`.
+- Debian/Ubuntu/Mint x64: `release/Atomic Clock Sync-1.8.0-linux-amd64.deb`.
 - Combined package: `release/Atomic Clock Sync-1.8.0-macOS-Windows.zip`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
 
 The Windows build was produced on macOS. Its x64 architecture, embedded sources and archive integrity were checked, but it has not been run on Windows. It has no Windows digital signature. The portable executable requires no installation; profiles and history are stored in the local user profile rather than inside the executable.
+
+On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './Atomic Clock Sync-1.8.0-linux-amd64.deb'`. Both Linux packages target Intel/AMD x64; ARM64 is not included. They are separate downloads from the combined Mac/Windows ZIP. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
 
 ## Stations
 
@@ -273,13 +277,14 @@ npm run build:world      # Rebuild the local map and astronomy bundle
 npm run pack             # Unpacked application
 npm run dist             # macOS ZIP
 npm run dist:win         # Windows x64 portable; native NSIS toolset configured
-npm run dist:linux       # Linux AppImage configuration; not validated
+npm run dist:linux       # Linux x64 AppImage + DEB; requires Linux
+npm run dist:linux:docker # Isolated Linux x64 build using Docker
 npm run bundle           # Combine existing Mac/Windows packages; requires Python 3
 ```
 
 The desktop test uses a temporary profile. It checks all nine themes, selected text contrast ratios of at least 4.5:1, persistence, invalid saved-theme fallback, live theme changes and separation from audio settings. It also verifies isolation, fixed window size, all views and FAQs without overflow, the five station selections, channel/profile locking, profile CRUD and undo, settings restore, immutable history, GET/ERR updates, legacy migration, output tests, volume changes, offline fallback, window closing and sleep interruption.
 
-Screenshots are written to `artifacts/`. macOS arm64 has been built and tested. Windows portable x64 has been built and checked for integrity, but not executed on Windows. Linux is configured but not validated.
+Screenshots are written to `artifacts/`. macOS arm64 has been built and tested. Windows portable x64 has been built and checked for integrity, but not executed on Windows. Linux x64 AppImage and DEB packages have been built and checked; the packaged UI and muted audio transmission were tested in Docker on a virtual display. Linux desktop audio hardware has not been tested.
 
 ## Technical references
 

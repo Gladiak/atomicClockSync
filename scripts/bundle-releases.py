@@ -57,7 +57,11 @@ with zipfile.ZipFile(temporary) as archive:
         assert info['CFBundleShortVersionString'] == version
         assert hashlib.sha256(mac_archive.read('Atomic Clock Sync.app/Contents/Resources/app.asar')).digest() == hashlib.sha256((release / 'mac-arm64/Atomic Clock Sync.app/Contents/Resources/app.asar').read_bytes()).digest()
 temporary.replace(bundle)
-(release / 'SHA256SUMS.txt').write_text(''.join(f'{hashlib.sha256(file.read_bytes()).hexdigest()}  {file.name}\n' for file in [mac, windows, bundle]))
+# Linux packages are published separately; do not wrap AppImages in another ZIP.
+linux = [release / f'Atomic Clock Sync-{version}-linux-{arch}.{ext}'
+         for arch, ext in [('x86_64', 'AppImage'), ('amd64', 'deb')]]
+packages = [mac, windows, bundle] + [file for file in linux if file.is_file()]
+(release / 'SHA256SUMS.txt').write_text(''.join(f'{hashlib.sha256(file.read_bytes()).hexdigest()}  {file.name}\n' for file in packages))
 print(f'Created and verified: {bundle.name} ({bundle.stat().st_size / 1024**2:.1f} MiB)')
 print('Contents:')
 with zipfile.ZipFile(bundle) as archive:

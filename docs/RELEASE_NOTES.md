@@ -14,6 +14,8 @@ Validation: 58 unit tests and a dedicated observatory suite covering local lunar
 
 Packages: `Atomic Clock Sync-1.8.0-arm64-mac.zip`, `Atomic Clock Sync-1.8.0-windows-x64-portable.exe`, `Atomic Clock Sync-1.8.0-macOS-Windows.zip`, and `SHA256SUMS.txt`. macOS arm64 is runtime-tested. Windows x64 is checked for package integrity and embedded sources but has not been run on Windows. Mac signing is ad-hoc and not notarized; Windows is unsigned.
 
+Linux distribution added: `Atomic Clock Sync-1.8.0-linux-x86_64.AppImage` and `Atomic Clock Sync-1.8.0-linux-amd64.deb`, published separately with hashes in `SHA256SUMS.txt`. Both target Intel/AMD x64. Built using a pinned official Electron Builder Docker image on Ubuntu 22.04. Verified matching embedded sources and package payloads; tested the packaged UI, Moon Observatory, 32 historical journeys, World View and muted AudioWorklet transmission on a virtual display. Container testing uses `--no-sandbox`; normal launch retains sandboxing. Linux hardware audio and physical watch reception remain untested. Added `npm run dist:linux:docker`; the combined ZIP remains Mac/Windows only.
+
 ## 1.7.0 — Back in Time
 
 - Added a Hill Valley time laboratory inspired by Back to the Future, with original red, green and amber seven-segment time circuits and a vector flux capacitor.
