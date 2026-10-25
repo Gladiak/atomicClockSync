@@ -1,5 +1,17 @@
 # Release notes
 
+## 1.7.0 — Back in Time
+
+- Added a Hill Valley time laboratory inspired by Back to the Future, with original red, green and amber seven-segment time circuits and a vector flux capacitor.
+- Added five movie destinations spanning 1885, 1955, 1985 and 2015, elapsed-day counters on every card and a live days/hours/minutes/seconds counter for the selected moment.
+- Added an animated 88 MPH jump, a “GRANDE GIOVE!!” arrival screen, a cinematic destination preview and return to the present. Departures are recorded on the amber circuit; leaving during acceleration cancels the jump.
+- Kept cinematic previews separate from the real app time reference, audio transmission and watch settings. All circuits use California time, support offline operation and respect reduced-motion preferences.
+- Replaced the sidebar's text symbols with nine distinct SVG icons for synchronization, watches, signal, world, ISS, time travel, history, settings and guide. Kept consistent strokes, alignment and theme colors in the fixed desktop window.
+
+Validation: 51 unit tests, the desktop suite and the Back in Time suite. Checks cover Pacific dates, DST and leap-day durations, five destinations, all nine themes, fixed-window layout, live counters, jump/return/cancellation, focus handling, reduced motion and real muted AudioWorklet isolation.
+
+Packages: `Atomic Clock Sync-1.7.0-arm64-mac.zip`, `Atomic Clock Sync-1.7.0-windows-x64-portable.exe`, `Atomic Clock Sync-1.7.0-macOS-Windows.zip`, and `SHA256SUMS.txt`. macOS arm64 is runtime-tested. Windows x64 is checked for package integrity and embedded sources but has not been run on Windows. Mac signing is ad-hoc and not notarized; Windows is unsigned.
+
 ## 1.6.0 — ISS Orbital Observatory
 
 - Added a dedicated ISS section with Tracking, Passes, Station and Time in Orbit views.

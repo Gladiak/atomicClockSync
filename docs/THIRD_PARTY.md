@@ -1,6 +1,14 @@
-# Geographic, astronomy and ISS data and software
+# Data, software and creative references
 
 World View is an offline vector visualization. Geographic and city data are bundled with the app. City lights are an illustrative rendering of population-weighted settlement locations, not measured light emissions or live satellite imagery.
+
+## Back in Time film references
+
+Back in Time is an unofficial fan tribute inspired by the Back to the Future trilogy. Its seven-segment instruments and flux-capacitor schematic are original SVG/CSS artwork; no film stills, logos, fonts, music, dialogue recordings or other media assets are bundled. Film titles and character references identify the inspiration; they do not imply affiliation or endorsement.
+
+Chronology references: the [official film FAQ](https://www.backtothefuture.com/movies/faq), the [film timeline](https://backtothefuture.fandom.com/wiki/Back_to_the_Future_timeline), and the [journey chronology](https://backtothefutureblog.art.blog/2020/05/03/space-time-continuum/). The selected moments are 2 September 1885 at 08:00, the destination circuit setting of 5 November 1955 at 06:00 (not Marty's later arrival), 12 November 1955 at 22:04, Einstein's return on 26 October 1985 at 01:21, and 21 October 2015 at 16:29.
+
+For reproducible elapsed durations, fictional Hill Valley is interpreted as California using `America/Los_Angeles`. Event offsets are Pacific standard time (UTC−08:00) in September 1885 and November 1955, and Pacific daylight time (UTC−07:00) in October 1985 and October 2015. These are an app convention for interpreting fictional on-screen local clocks, rather than a claim that the films specify UTC timestamps. Durations use actual seconds with 86,400-second days. The present and elapsed counters use the app's NTP/system time reference; cinematic travel affects only the green display.
 
 ## Geographic data
 

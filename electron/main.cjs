@@ -10,6 +10,7 @@ let blocker = null;
 let syncing = null;
 let issData;
 const references = {
+  bttf: 'https://www.backtothefuture.com/movies/faq',
   ptb: 'https://www.ptb.de/cms/en/ptb/fachabteilungen/abt4/fb-44/ag-442/dissemination-of-legal-time/dcf77/dcf77-time-code.html',
   casio: 'https://support.casio.com/en/manual/manuallist.php?cid=009',
   inspiration: 'https://cw.rzapps.com/',

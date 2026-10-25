@@ -8,11 +8,11 @@ Atomic Clock Sync is a **JavaScript and Electron desktop app** that helps synchr
 
 ## Ready-to-use applications
 
-Current version: **1.6.0**.
+Current version: **1.7.0**.
 
-- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.6.0-arm64-mac.zip`.
-- Windows x64 portable: `release/Atomic Clock Sync-1.6.0-windows-x64-portable.exe`.
-- Combined package: `release/Atomic Clock Sync-1.6.0-macOS-Windows.zip`.
+- macOS Apple Silicon: `release/mac-arm64/Atomic Clock Sync.app` or `release/Atomic Clock Sync-1.7.0-arm64-mac.zip`.
+- Windows x64 portable: `release/Atomic Clock Sync-1.7.0-windows-x64-portable.exe`.
+- Combined package: `release/Atomic Clock Sync-1.7.0-macOS-Windows.zip`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
@@ -155,6 +155,16 @@ Select a row to show the sky plot: north is up, east right, the outer circle is 
 
 The ACES introduction describes the PHARAO caesium clock and SHM hydrogen maser installed on Columbus, and links to the ESA mission page. Full sources and license notices are in [Third-party data and software](THIRD_PARTY.md#iss-sources-and-orbit-software).
 
+## Back in Time
+
+Select **Back in Time** in the sidebar to enter the Hill Valley laboratory. Select one of five movie dates to load the red **Destination Time** circuit and show a live elapsed-time counter. Each destination card also shows its elapsed days. Durations are actual elapsed 24-hour days, followed by hours, minutes and seconds, rather than calendar anniversaries.
+
+The green **Present Time** starts with the app's current time reference. **Let’s hit 88 MPH** charges the flux capacitor and jumps the green display to a cinematic preview of your chosen date, while the amber **Last Time Departed** records where you left. Click **Explore this date** after arrival, then **Return to the present** to restore the live display. Before your first trip, the amber display is a decorative preset of Einstein's return in 1985. The elapsed counters always use the real app time, even during a preview.
+
+All movie circuits use **America/Los_Angeles**, the California time zone used for fictional Hill Valley, independently of your computer or station time zone. The 5 November 1955 destination uses the time-circuit setting of 06:00, rather than the later arrival time in the story. Navigation away cancels a jump that is still charging. The preview is kept only in memory; reopening the app starts in the present. Rendering pauses while the section is hidden. Reduced-motion mode skips acceleration and goes straight to the arrival screen.
+
+This offline fan tribute has no effect on NTP, audio transmission, watch profiles or system time. No film images, recordings or music are included. The **Film chronology** reference opens externally.
+
 ## Themes and compact interface
 
 Choose a palette in **Settings → Theme**:
@@ -181,6 +191,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **History:** all trials, pagination and separate details, editable outcomes and undoable clearing.
 - **World View:** day/night atlas, offline city search, station range rings and seasonal timeline.
 - **ISS Observatory:** tracking, local passes and sky diagram, station background and educational time in orbit.
+- **Back in Time:** movie time circuits, live elapsed counters and a cinematic 88 mph jump.
 - **Settings:** output device, test tone, waveform, manual timing correction, NTP diagnostics and theme selection.
 - **Quick guide:** station-specific instructions and FAQs, with one answer open at a time.
 
@@ -231,10 +242,11 @@ Electron `localStorage` is kept in `Local Storage/leveldb` inside that directory
 ## Tests and builds
 
 ```sh
-npm test                 # 48 protocol, PCM, stereo, profile, migration and NTP tests
+npm test                 # 51 protocol, PCM, stereo, profile, NTP, orbit and movie-time tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:world       # Offline atlas, search worker, timeline and audio isolation
 npm run test:iss         # ISS network states, passes, nine themes and audio isolation
+npm run test:back-in-time # Movie dates, jumps, layout, reduced motion and audio isolation
 npm run build:iss        # Rebuild the bundled JavaScript SGP4 library
 npm run build:world      # Rebuild the local map and astronomy bundle
 npm run pack             # Unpacked application

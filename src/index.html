@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="./styles.css"><script type="module" src="./app.mjs"></script>
 <link rel="stylesheet" href="./world-view.css">
 <link rel="stylesheet" href="./iss-view.css">
+<link rel="stylesheet" href="./back-in-time.css">
 </head>
 <body>
 <div class="titlebar"><span>ATOMIC CLOCK SYNC</span><span>DESKTOP / <span id="platform">MAC</span></span></div>
@@ -16,17 +17,18 @@
   <a class="brand" href="#sync" aria-label="Atomic Clock Sync"><span class="brand-mark">◉</span><span>atomic<span class="brand-sub">CLOCK SYNC</span></span></a>
   <div class="nav-label">YOUR TIME, PRECISELY.</div>
   <nav aria-label="Main navigation">
-    <button class="nav-item selected" data-page="sync" aria-current="page"><span>◎</span>Synchronize</button>
-    <button class="nav-item" data-page="profiles"><span>◉</span>My watches</button>
-    <button class="nav-item" data-page="signal"><span>⌁</span>Inside the signal</button>
-    <button class="nav-item" data-page="world"><span>◌</span>World View</button>
-    <button class="nav-item" data-page="iss"><span>⌁</span>ISS Observatory</button>
-    <button class="nav-item" data-page="history"><span>◷</span>History</button>
-    <button class="nav-item" data-page="settings"><span>☷</span>Settings</button>
-    <button class="nav-item" data-page="guide"><span>⌘</span>Quick guide</button>
+    <button class="nav-item selected" data-page="sync" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="1.5"/><path d="M12 9.5V21m-4 0h8M7.8 12.2a6 6 0 0 1 0-8.4m8.4 0a6 6 0 0 1 0 8.4M5 15a10 10 0 0 1 0-14m14 0a10 10 0 0 1 0 14"/></svg>Synchronize</button>
+    <button class="nav-item" data-page="profiles"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="3"/><path d="m8 6 1-4h6l1 4m-8 12 1 4h6l1-4m-4-9v3l2 1m4-3h2v4h-2"/></svg>My watches</button>
+    <button class="nav-item" data-page="signal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M4 12h3l2-5 5 10 2-5h4"/></svg>Inside the signal</button>
+    <button class="nav-item" data-page="world"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5a16 16 0 0 0 14 0M5 17.5a16 16 0 0 1 14 0"/></svg>World View</button>
+    <button class="nav-item" data-page="iss"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="8" width="6" height="8" rx="1"/><path d="M12 3v5m0 8v5m-7-9h4m6 0h4M1 5h4v14H1zm18 0h4v14h-4zM1 9h4m-4 6h4m14-6h4m-4 6h4M10 5h4"/></svg>ISS Observatory</button>
+    <button class="nav-item" data-page="back-in-time"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-8z"/></svg>Back in Time</button>
+    <button class="nav-item" data-page="history"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 1.7 7.4M3 4v6h6m3-3v5l3 2"/></svg>History</button>
+    <button class="nav-item" data-page="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3m4 0h11M3 12h11m4 0h3M3 18h5m4 0h9"/><rect x="6" y="3" width="4" height="6" rx="1"/><rect x="14" y="9" width="4" height="6" rx="1"/><rect x="8" y="15" width="4" height="6" rx="1"/></svg>Settings</button>
+    <button class="nav-item" data-page="guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v16m0-16C9 3 5 3 2 4v15c3-1 7-1 10 2 3-3 7-3 10-2V4c-3-1-7-1-10 1M5 8c1.5-.3 2.5 0 4 .5M5 12c1.5-.3 2.5 0 4 .5m6-4c1.5-.5 2.5-.8 4-.5m-4 4.5c1.5-.5 2.5-.8 4-.5"/></svg>Quick guide</button>
   </nav>
   <div class="sidebar-station"><span class="tiny-label">SELECTED STATION</span><div><span class="signal-dot"></span><strong id="sidebar-station-name">DCF77</strong><span id="sidebar-flag" class="station-flag">🇩🇪</span></div><p id="sidebar-location">Mainflingen, Germany</p><p id="sidebar-coordinates">50°01′ N · 09°00′ E</p><span class="station-frequency" id="sidebar-frequency">77.5 kHz</span></div>
-  <div class="sidebar-bottom"><span class="chip">MULTIBAND 6</span><p>A small signal.<br>The right time.</p><span class="version">v1.6.0 <span>● LOCAL</span></span></div>
+  <div class="sidebar-bottom"><span class="chip">MULTIBAND 6</span><p>A small signal.<br>The right time.</p><span class="version">v1.7.0 <span>● LOCAL</span></span></div>
 </aside>
 <main>
   <header class="page-header"><div><div class="eyebrow">PRECISION, ONE SECOND AT A TIME</div><h1 id="page-title">Sync your watch<span>.</span></h1><p id="page-subtitle">Choose a station, place your Casio nearby and transmit.</p></div><button id="help-button" class="icon-button" aria-label="Open the guide">?</button></header>
@@ -51,6 +53,42 @@
         <button class="placement-tip" data-goto="guide"><span>↗</span><span>Keep your watch nearby.<small>Watch 1–5 cm from the speaker.</small></span></button>
       </aside>
     </div>
+  </section>
+  <section id="page-back-in-time" class="page bttf-page" aria-label="Back in Time laboratory" hidden>
+    <div class="bttf-heading"><span><i></i> HILL VALLEY TEMPORAL LABORATORY</span><span>EST. 1985 <b> / </b> EXPERIMENT 088</span></div>
+    <div class="bttf-dashboard">
+      <section class="bttf-rack" aria-label="Time circuits">
+        <div class="bttf-rack-heading"><span>TIME CIRCUITS</span><span id="bttf-circuit-status">● ONLINE</span></div>
+        <div id="bttf-destination" class="bttf-circuit bttf-red" role="img" aria-label="Destination time"></div>
+        <div id="bttf-present" class="bttf-circuit bttf-green" role="img" aria-label="Present time"></div>
+        <div id="bttf-departed" class="bttf-circuit bttf-amber" role="img" aria-label="Last time departed"></div>
+        <div class="bttf-rack-footer"><span>HILL VALLEY · PACIFIC TIME · 24H</span><span id="bttf-reference">SYSTEM CLOCK</span></div>
+      </section>
+      <section class="bttf-reactor" aria-label="Flux capacitor and time travel controls">
+        <div class="bttf-reactor-heading"><span>FLUX CAPACITOR</span><span>1.21 <small>GW</small></span></div>
+        <div class="bttf-flux-window">
+          <svg class="bttf-flux" viewBox="0 0 260 155" aria-hidden="true">
+            <g class="bttf-flux-mounts"><circle cx="60" cy="30" r="17"/><circle cx="200" cy="30" r="17"/><circle cx="130" cy="130" r="17"/><path d="M48 18l24 24m116-24l24 24m-94 76l24 24"/></g>
+            <g class="bttf-flux-tubes"><path d="M60 30v23l70 35 70-35V30M130 88v42"/></g>
+            <g class="bttf-flux-core"><path d="M60 30v23l70 35 70-35V30M130 88v42"/></g>
+            <g class="bttf-flux-flow"><path d="M60 30v23l70 35M200 30v23l-70 35M130 130V88"/></g>
+            <circle class="bttf-flux-center" cx="130" cy="88" r="6"/>
+          </svg>
+          <span class="bttf-flux-caption">SHIELD EYES FROM TEMPORAL PARADOXES</span>
+        </div>
+        <div class="bttf-speed"><div><strong id="bttf-speed">00</strong><span>MPH</span></div><p id="bttf-reactor-note">Flux dispersal: stable.<br>One very questionable idea: ready.</p></div>
+        <button id="bttf-jump" class="bttf-jump"><span>ϟ</span> LET’S HIT 88 MPH <span>→</span></button>
+        <button id="bttf-reset" class="bttf-reset" disabled>↺ Return to the present</button>
+      </section>
+      <div id="bttf-arrival" class="bttf-arrival" hidden><span>TEMPORAL DISPLACEMENT COMPLETE</span><strong>GRANDE GIOVE!!</strong><p id="bttf-arrival-note"></p><button id="bttf-continue">Explore this date →</button></div>
+    </div>
+    <section class="bttf-elapsed" aria-label="Elapsed time since the selected movie event">
+      <div class="bttf-elapsed-caption"><span id="bttf-elapsed-label">THE FUTURE IS ALREADY HISTORY</span><strong id="bttf-event-title">Welcome to the future</strong><small id="bttf-event-detail">Hoverboards were supposed to be a thing by now.</small></div>
+      <div class="bttf-duration" id="bttf-duration"><div><strong id="bttf-days">—</strong><span>DAYS</span></div><b>:</b><div><strong id="bttf-hours">00</strong><span>HRS</span></div><b>:</b><div><strong id="bttf-minutes">00</strong><span>MIN</span></div><b>:</b><div><strong id="bttf-seconds">00</strong><span>SEC</span></div></div>
+    </section>
+    <div class="bttf-dates-heading"><span>CHOOSE YOUR TEMPORAL DESTINATION</span><span>5 FIXED POINTS. ONE VERY FLEXIBLE TIMELINE.</span></div>
+    <div id="bttf-dates" class="bttf-dates" role="group" aria-label="Famous dates from the trilogy"></div>
+    <div class="bttf-footnote"><span>Fan-made tribute to Back to the Future · Cinematic time travel only. Your Casio stays in this century.</span><button data-reference="bttf">Film chronology ↗</button></div>
   </section>
   <section id="page-signal" class="page" aria-label="Signal details" hidden>
     <section class="telegram panel"><div class="section-heading"><h2>Live time code</h2><span class="chip" id="bit-summary">DCF77 · 60 S</span></div><div id="telegram-details"><div class="telegram-meta"><span>Encoded time <strong id="target-minute">—</strong></span><span id="parity-status">P1 · P2 · P3 ✓</span></div><div id="bit-grid" class="bit-grid" aria-label="Time code symbols"></div><div id="bit-legend" class="bit-legend"></div><p class="muted-text" id="telegram-description">The time code describes the next minute.</p></div></section>
@@ -125,7 +163,7 @@
   <section id="page-settings" class="page" aria-label="Settings" hidden>
     <div class="settings-grid"><section class="panel settings-panel"><div class="section-heading"><h2>Audio output</h2><span class="chip" id="settings-station">DCF77</span></div><label for="audio-output">Device</label><div class="device-row"><select id="audio-output"><option value="default">Default system output</option></select><button id="refresh-devices" class="icon-button" aria-label="Refresh devices">↻</button></div><p class="muted-text">Use a built-in speaker or wired earphone. Bluetooth and AirPlay can add latency and filter the signal.</p><label for="wave-type">Audio profile <span id="settings-frequency">15,500 Hz</span></label><select id="wave-type"><option value="sine">Sine · standard</option><option id="dcf-gated-option" value="sine-gated">DCF77 · full pauses (experimental)</option><option value="square">Square · experimental</option></select><p class="muted-text" id="profile-hint">If DCF77 shows L3 then ERR, try full pauses. Square waves can produce more audible tones.</p><button id="test-output" class="secondary-button">♫ Test output · 1 second</button><p class="muted-text">Low-volume 440 Hz tone on the selected channel.</p><label for="latency-offset">Manual output advance (ms)</label><input id="latency-offset" type="number" min="-1000" max="1000" step="1" value="0"><p class="muted-text">Positive values advance the signal. Leave at 0 unless measured; reported output latency is already compensated.</p></section>
     <section class="panel settings-panel"><div class="section-heading"><h2>Time reference</h2><span class="chip" id="ntp-chip">SYSTEM</span></div><div class="settings-facts"><div><span>Source</span><strong id="ntp-source">System clock</strong></div><div><span>Measured offset</span><strong id="ntp-offset">Unavailable</strong></div><div><span>Estimated network uncertainty</span><strong id="ntp-uncertainty">Unavailable</strong></div><div><span>Last checked</span><strong id="ntp-last">Never</strong></div></div><button id="settings-sync" class="secondary-button">Check time via NTP ↻</button><p class="muted-text">PTB and Cloudflare. Correction applies within the app and does not change your computer clock. Network uncertainty excludes audio latency.</p><div class="privacy-note"><span class="signal-dot"></span> No telemetry · local data only</div></section></div>
-    <section class="panel about-panel"><span class="brand-mark">◉</span><div><h2>Atomic Clock Sync <span class="muted-text">1.6.0</span></h2><p>JavaScript + Electron · BPC, JJY, WWVB, DCF77 and MSF · Independent app inspired by Clock Wave.</p></div><div class="theme-control"><div class="theme-label"><label for="theme-select">Theme</label><span class="theme-swatches" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div><select id="theme-select" aria-label="Interface theme"></select></div></section>
+    <section class="panel about-panel"><span class="brand-mark">◉</span><div><h2>Atomic Clock Sync <span class="muted-text">1.7.0</span></h2><p>JavaScript + Electron · BPC, JJY, WWVB, DCF77 and MSF · Independent app inspired by Clock Wave.</p></div><div class="theme-control"><div class="theme-label"><label for="theme-select">Theme</label><span class="theme-swatches" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div><select id="theme-select" aria-label="Interface theme"></select></div></section>
   </section>
   <section id="page-guide" class="page" aria-label="Quick guide" hidden>
     <div class="guide-steps"><article class="panel guide-step"><span class="step-number">01</span><h3>Prepare your Casio</h3><p id="guide-station">Select a home city compatible with DCF77, such as ROM / BER / PAR. Use DST AUTO if supported.</p></article><article class="panel guide-step"><span class="step-number">02</span><h3>Position your watch</h3><p>Place the antenna, often at 12 o’clock, 1–5 cm from the speaker. Take the watch off your wrist and try rotating it if reception is weak.</p></article><article class="panel guide-step"><span class="step-number">03</span><h3>Start reception</h3><p>Start manual reception following your Casio module manual. Check the time in the app and transmit at moderate volume.</p></article><article class="panel guide-step"><span class="step-number">04</span><h3>Wait and check</h3><p>Wait 5–10 minutes without moving the watch. Check its display and confirm reception in the app only after success.</p></article></div>

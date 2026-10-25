@@ -3,6 +3,7 @@ import { SignalEngine, testOutput } from './audio-engine.mjs';
 import { THEMES, applyTheme } from './themes.mjs';
 import { createWorldView } from './world-view.mjs';
 import { createIssView } from './iss-view.mjs';
+import { createBackInTimeView } from './back-in-time.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
 
 const $ = id => document.getElementById(id);
@@ -48,6 +49,8 @@ const worldView = createWorldView({ getNow: now, getStationId: () => preferences
   } });
 const issView = createIssView({ getNow: now, getObserver: () => worldView.getCity(), desktop, notify,
   chooseCity: () => { navigate('world'); $('world-city-search').focus(); } });
+const backInTimeView = createBackInTimeView({ getNow: now, getReference: () => reference
+  ? (now() - reference.nowMs < 30 * 60000 ? 'NTP VERIFIED' : 'NTP CHECK NEEDED') : 'SYSTEM CLOCK' });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 function persist(key, value) {
@@ -73,6 +76,7 @@ function navigate(page) {
     signal: ['Inside the signal', 'The selected station time code, live.'],
     world: ['A world between light and time', 'Follow the Sun. Find your city. Explore the signals that keep us in sync.'],
     iss: ['An observatory in orbit', 'Track our orbital outpost. Discover your next encounter with the ISS.'],
+    'back-in-time': ['Back in Time', 'A little less precision. A lot more temporal displacement.'],
     history: ['Your synchronization history', 'Your trials, stored only on this device.'],
     profiles: ['A profile for every watch', 'Save the settings and placement that work.'],
     trial: ['Trial details', 'The settings used and the result observed on your Casio.'],
@@ -93,6 +97,7 @@ function navigate(page) {
   $('page-subtitle').textContent = titles[page][1];
   worldView.setVisible(page === 'world');
   issView.setVisible(page === 'iss');
+  backInTimeView.setVisible(page === 'back-in-time');
   window.scrollTo(0, 0);
 }
 
