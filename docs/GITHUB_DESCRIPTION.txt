@@ -1,1 +1,0 @@
-Sync Casio Multiband 6 watches with simulated time signals through your speakers. A JavaScript and Electron desktop app for macOS and Windows.
