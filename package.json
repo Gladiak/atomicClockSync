@@ -14,7 +14,7 @@
     "dist:win": "electron-builder --win portable --x64",
     "dist:linux": "electron-builder --linux --x64",
     "dist:linux:docker": "bash scripts/build-linux-docker.sh",
-    "bundle": "python3 scripts/bundle-releases.py",
+    "checksums": "python3 scripts/release-checksums.py",
     "build:world": "node scripts/build-world-vendor.mjs",
     "test:world": "electron scripts/world-smoke.cjs",
     "build:iss": "node scripts/build-iss.mjs",
