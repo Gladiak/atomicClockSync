@@ -206,3 +206,7 @@ The reproducible orbit fixture in `test/fixtures/iss-omm.json` is a CelesTrak IS
 npm run build:iss
 npm run test:iss
 ```
+
+## Application manual screenshots
+
+`assets/guide/` contains original screenshots of this application's interface: thirteen views in each of the six supported languages. They are captured by `scripts/capture-manual.cjs` using an isolated temporary profile, synthetic watch/history/accuracy records and the repository's ISS fixture; no user records are included. Screenshots are examples, not evidence of physical reception. Interface artwork, map data and fonts retain their existing licenses and attribution documented above.

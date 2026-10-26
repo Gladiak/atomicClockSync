@@ -19,3 +19,18 @@ test('all 96 historical journey titles, stories and exhibit captions are transla
     assert.ok(Object.hasOwn(messages, event[field]), `${event.id}: ${field}`);
   }
 });
+
+test('every manual chapter has translated narrative and a real screenshot in each language', async () => {
+  const { MANUAL_CHAPTERS } = await import('../src/guide-data.mjs');
+  const { readFileSync } = await import('node:fs');
+  for (const chapter of MANUAL_CHAPTERS) {
+    for (const source of [chapter.title,chapter.purpose,...chapter.body,chapter.example,chapter.note]) {
+      assert.ok(messages[source],chapter.id+': '+source);
+      for (const language of ['it','fr','de','es','ja']) assert.notEqual(messages[source][language],source,chapter.id+' '+language);
+    }
+    for (const language of ['en','it','fr','de','es','ja']) {
+      const image=readFileSync(new URL(`../assets/guide/${language}/${chapter.image}.jpg`,import.meta.url));
+      assert.equal(image.readUInt16BE(0),0xffd8);assert.ok(image.length>10000,chapter.id+' '+language);
+    }
+  }
+});

@@ -25,7 +25,10 @@
     "test:back-in-time": "electron scripts/back-in-time-smoke.cjs",
     "test:observatory": "electron scripts/observatory-smoke.cjs",
     "test:light-travel": "electron scripts/light-travel-smoke.cjs",
-    "test:reception-lab": "electron scripts/reception-lab-smoke.cjs"
+    "test:reception-lab": "electron scripts/reception-lab-smoke.cjs",
+    "test:accuracy": "electron scripts/watch-accuracy-smoke.cjs",
+    "test:guide": "electron scripts/guide-smoke.cjs",
+    "capture:guide": "electron scripts/capture-manual.cjs"
   },
   "keywords": [
     "casio",

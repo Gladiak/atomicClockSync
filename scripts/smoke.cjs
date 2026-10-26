@@ -55,7 +55,7 @@ app.whenReady().then(async () => {
         const page = document.querySelector('.page.active');
         const bounds = page.getBoundingClientRect();
         return [...page.querySelectorAll('*')].filter(el => {
-          if (el.parentElement.closest('#page-settings .settings-panel')) return false; // Intentionally scrollable for longer translations.
+          if (el.parentElement.closest('#page-settings .settings-panel,.manual-reader,.manual-index-list')) return false; // Intentionally scrollable for longer translations.
           const r = el.getBoundingClientRect();
           return r.width && r.height && (r.bottom > bounds.bottom + 1 || r.right > bounds.right + 1);
         }).map(el => el.id || el.className || el.tagName);
@@ -67,13 +67,7 @@ app.whenReady().then(async () => {
     for (const page of ['profiles', 'signal', 'world', 'iss', 'settings', 'guide', 'history', 'sync']) {
       await run(`document.querySelector('[data-page=${page}]').click()`);
       await assertFits();
-      if (page === 'guide') {
-        for (let i = 0; i < 4; i++) {
-          await run(`document.querySelectorAll('details')[${i}].open=true`);
-          await assertFits();
-        }
-        await run("document.querySelectorAll('details').forEach(d=>d.open=false)");
-      }
+
     }
     const themes = await run("[...document.getElementById('theme-select').options].map(option=>option.value)");
     assert.equal(themes.length, 9);
@@ -186,7 +180,7 @@ app.whenReady().then(async () => {
     await pause(200);
     await capture('desktop-settings.png');
     await run("document.querySelector('[data-page=guide]').click()");
-    assert.equal(await run("document.querySelectorAll('.guide-step').length"), 4);
+    assert.equal(await run("document.querySelectorAll('.manual-chapter').length"), 16);
     await pause(200);
     await capture('desktop-guide.png');
     await run("document.querySelector('[data-page=sync]').click(); document.getElementById('start-button').click()");

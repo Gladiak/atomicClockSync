@@ -27,6 +27,7 @@ export function createReceptionLab({getData,openTrial,prepare,goTo}){
   const $=id=>document.getElementById(`rl-${id}`);
   let visible=false,watch='all',station='all',tab='overview',left=null,right=null,baseline=null,field='volume',draft=null;
   let currentTrials=[],currentStats=null;
+  let requestedWatch=null;
   function option(select,label,value){select.append(new Option(label,value));}
   function trialLabel(trial){return `${dates.format(trial.at)} · ${trial.snapshot?.watch.name||t('Not linked')} · ${outcome(trial)}`;}
   function fillTrials(select,trials,selection){select.replaceChildren();for(const trial of trials)option(select,trialLabel(trial),trial.id);select.value=selection||'';select.disabled=!trials.length;}
@@ -116,6 +117,7 @@ export function createReceptionLab({getData,openTrial,prepare,goTo}){
     if(!visible)return;
     const data=getData(),watches=new Map(data.profiles.map(profile=>[profile.id,profile.name]));
     for(const trial of data.history)if(trial.snapshot?.profileId&&!watches.has(trial.snapshot.profileId))watches.set(trial.snapshot.profileId,trial.snapshot.watch.name||t('Archived watch'));
+    if(requestedWatch&&!watches.has(requestedWatch.id))watches.set(requestedWatch.id,requestedWatch.name||t('Archived watch'));
     if(watch!=='all'&&watch!=='unlinked'&&!watches.has(watch))watch='all';
     const select=$('watch');select.replaceChildren();option(select,t('All watches'),'all');option(select,t('Unlinked trials'),'unlinked');for(const[id,name]of watches)option(select,name,id);select.value=watch;
     currentTrials=filterTrials(data.history,watch,station);currentStats=summarizeTrials(currentTrials);
@@ -144,5 +146,5 @@ export function createReceptionLab({getData,openTrial,prepare,goTo}){
   $('field').addEventListener('change',()=>{field=$('field').value;draft=null;prepareForm();});
   $('apply').addEventListener('click',()=>{const trial=currentTrials.find(item=>item.id===baseline);try{const settings=prepareTrial(trial,field,draft);if(!getData().locked)prepare(trial,settings);}catch{updatePrepared();}});
   onLanguageChange(render);
-  return {setVisible(value){visible=value;if(value)render();},refresh:render};
+  return {setVisible(value){visible=value;if(value)render();},refresh:render,openWatch(id,name){watch=id;requestedWatch={id,name};left=right=baseline=null;draft=null;}};
 }

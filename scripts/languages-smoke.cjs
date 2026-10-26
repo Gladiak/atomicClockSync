@@ -22,7 +22,7 @@ app.whenReady().then(async () => {
     const overflow = await run(`(() => {
       const page=document.querySelector('.page.active'), bounds=page.getBoundingClientRect();
       return [...page.querySelectorAll('*')].filter(element => {
-        if(element.closest('svg') || element.parentElement.closest('.tm-events,.tm-moments,.tm-personal-note,.iss-pass-list,.settings-panel'))return false;
+        if(element.closest('svg') || element.parentElement.closest('.tm-events,.tm-moments,.tm-personal-note,.iss-pass-list,.settings-panel,.manual-reader,.manual-index-list'))return false;
         const r=element.getBoundingClientRect(); if(!r.width||!r.height)return false;
         return r.right>bounds.right+1 || r.bottom>bounds.bottom+1;
       }).map(element=>element.id || element.className);
@@ -60,7 +60,7 @@ app.whenReady().then(async () => {
       assert.equal(await run("JSON.parse(localStorage.getItem('atomic.language'))"),language);
       assert.equal(await run("document.getElementById('profile-name').value"),'History');
       assert.equal(await run("document.getElementById('tm-note').value"),'Private untranslated message');
-      for(const page of ['settings','sync','profiles','signal','world','moon','iss','time-machine','back-in-time','light-travel','reception-lab','history','guide']) {
+      for(const page of ['settings','sync','profiles','signal','world','moon','iss','time-machine','back-in-time','light-travel','reception-lab','watch-accuracy','history','guide']) {
         await click(page);
         if(page==='world') await until("document.getElementById('world-loading').hidden");
         if(page==='iss') await run("document.querySelector('[data-iss-tab=tracking]').click()");

@@ -66,6 +66,47 @@ A trial marked **GET** also saves the last successful configuration for its asso
 
 If a saved output device is unavailable, the app selects the system output and shows a notice. The saved profile is not overwritten automatically.
 
+## Navigation groups
+
+The sidebar rests as a slim icon rail. Hover over it to reveal the complete menu; leaving folds it automatically after a short grace period. Keyboard focus also expands it, keeping the menu available while you navigate its controls. The edge chevron offers an explicit expand/collapse action. Settings and Guide stay visible above the version, outside the collapsible groups. Expansion overlays the page, preserving its width and position.
+
+| Group | Views |
+| --- | --- |
+| Signals | Synchronize, Reception Lab, Inside the signal |
+| Watches | My watches, Watch Accuracy, History |
+| Explore | World View, Moon Observatory, ISS Observatory, Light Travel, Time Machine |
+| Always-visible footer | Settings, Guide |
+
+Headings have one icon and a short label. Click a heading to open its animated submenu; opening another folds the previous one. Click the open heading to fold all groups. This choice is saved in `atomic.sidebar.v1` and restored when you reveal the rail again. Folding the menu keeps the current page and audio running. Its group icon stays accented, with the current page in the tooltip.
+
+Internal shortcuts select the destination group without forcing the rail open over your work. Trial details belong to History; Back in Time belongs to Time Machine. Group headings support Enter/Space, arrow keys and Home/End. Hidden submenus are inert and leave the keyboard order. Movement preferences are respected, including rail expansion and submenu animation. All groups fit without scrolling at the standard window size in the six supported languages.
+
+## Application Guide
+
+Open **Guide** from the sidebar footer for the complete offline application manual. Its chapter index covers Getting started, Synchronize, Reception Lab, Inside the signal, My watches, Watch Accuracy, History, World View, Moon Observatory, ISS Observatory, Light Travel, Time Machine, Back in Time, Settings, Troubleshooting and Data & privacy.
+
+Chapters explain the purpose and meaning of a feature in connected prose, followed by a concrete example and practical limitations. A real example screenshot appears in the current interface language. Click it for a larger view; close with the image’s close button or Escape. Escape in this preview closes the image without stopping a transmission. The rest of the app retains its usual Escape-to-stop behavior.
+
+**Open section** navigates to the actual tool. The header’s **?** opens the chapter for the current section; trial details use the History chapter. Previous/Next and the chapter index support continuous reading. The last chapter is saved locally in `atomic.guide.chapter`; per-chapter scroll is remembered during the session. Language changes translate the whole explanation, examples, notes and screenshots, preserving the selected chapter. The reader and index scroll independently within the fixed window. Reduced motion is respected.
+
+The 78 screenshots are captured from the real app with an isolated sample profile, never the user's records. They are bundled for offline reading. Use `npm run capture:guide` after interface/version changes to regenerate all thirteen views in six languages.
+
+## Watch Accuracy
+
+Create a profile in **My watches**, then open **Watch Accuracy** or press **Track accuracy** on the profile. Quartz, mechanical and radio-controlled watches can all use the manual journal.
+
+1. Compare the watch with the reference display in the same time zone. The large clock uses the device time zone; UTC is displayed alongside it. Check the time first when possible.
+2. Press **Capture current reference** at the comparison, then enter **watch − reference** in seconds: `+3` means three seconds fast; `−2` means two seconds slow. Decimal points and commas are accepted. Choose a 1-second or 0.1-second reading step to describe your reading resolution. Capture records a timestamp and reference snapshot; it does not read the watch or eliminate reaction error.
+3. Optionally record wear/resting state, position, temperature and a personal note. Save the observation. The date field and journal timeline are UTC. Changing the observation date invalidates its captured reference provenance; backdated manual entries never acquire a current NTP check.
+4. Return on another day. The app fits the period’s readings after at least two measurements spanning 24 hours. Seven days and three readings change the label from an early estimate to an observed trend, not to a confidence certificate. With three or more readings, scatter around the fit is shown; mixed reference checks are flagged.
+5. Record confirmed synchronization, manual adjustment, automatic radio/DST correction or battery/maintenance as a correction event. Each starts a new period with an unknown offset until measured. Select a period above the graph; open **Journal** to see all records for the watch. Clicking a graph point edits its observation. Removing an event merges adjacent periods, with explicit confirmation and an undo option.
+
+**Estimated now** is an extrapolation from the fitted line. It is available only for the latest period and no more than seven days after its latest reading; completed periods never project across a correction. Notes, human reading error and changing reference conditions limit interpretation. No automatic connection to the watch, watch-rate adjustment, condition-based recommendation or camera measurement is included.
+
+For a linked GET in **History → Details**, **Track accuracy** pre-fills a synchronization event. Confirm the actual correction time before saving. GET is your reception report and never proves a zero-offset measurement. Repeated insertion of the same trial is blocked. **Reception Lab** opens filtered to the selected watch.
+
+**Export JSON / Export CSV** downloads the selected watch’s complete journal across periods, with UTC timestamps, references and conditions. JSON preserves personal text; CSV protects formula-like text when opened in spreadsheets. These are exports, not an import/restore workflow. Removed profiles retain their journals as archived watches. Data lives in `atomic.accuracy.v1`; an unreadable or unsupported archive is kept intact, blocks writes and offers **Export original data** for recovery. Export before clearing app data. See [technical details](WATCH_ACCURACY.md).
+
 ## Reception Lab
 
 Use **Reception Lab → Overview** to filter saved trials by watch or station. GET percentage is GET divided by GET + ERR, using only the outcomes you entered. Unverified trials never count as failures. Configuration groups require a recorded snapshot, uninterrupted audio and constant app volume; different watches and unlinked attempts are kept separate. The list prioritizes verified sample size, not an automatic recommendation. Fewer than three verified outcomes are marked as a small sample.
@@ -232,6 +273,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **Synchronize:** watch and station selection, clock, envelope, start/stop, volume, channel and duration.
 - **My watches:** profiles, notes and restoration of the last successful settings.
 - **Inside the signal:** complete time code, current symbol, fields and parity. BPC displays 20 symbols; MSF displays A/B pairs.
+- **Watch Accuracy:** manual offset journal, drift estimates, correction periods and per-watch exports.
 - **Reception Lab:** per-watch results, configuration groups, A/B comparison and preparation with one audio-setting change.
 - **History:** all trials, pagination and separate details, editable outcomes and undoable clearing.
 - **World View:** day/night atlas, offline city search, station range rings and seasonal timeline.
@@ -241,7 +283,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **Time Machine:** sourced historical journeys, personal memories and locally stored time capsules; also opens Back in Time.
 - **Back in Time:** movie time circuits, live elapsed counters and a cinematic 88 mph jump.
 - **Settings:** output device, test tone, waveform, manual timing correction, NTP diagnostics and theme selection.
-- **Quick guide:** station-specific instructions and FAQs, with one answer open at a time.
+- **Guide:** sixteen illustrated narrative chapters, practical examples, contextual help and full text/screenshots in six languages.
 
 ## Running from source
 
@@ -290,8 +332,11 @@ Electron `localStorage` is kept in `Local Storage/leveldb` inside that directory
 ## Tests and builds
 
 ```sh
-npm test                 # 74 protocol, PCM, profile, orbit, light-time, reception statistics and translation checks
+npm test                 # 86 protocol, PCM, profile, orbit, light-time, reception/drift statistics and localization checks
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
+npm run test:guide        # Whole manual, localized screenshots, pinned utilities and audio isolation
+npm run capture:guide     # Real screenshots with an isolated sample profile in six languages
+npm run test:accuracy     # Offset measurements, period boundaries, GET links, exports and UI
 npm run test:reception-lab # Honest rates, filtering, A/B, preparation, languages and themes
 npm run test:languages   # Six languages, layout, Japanese font, persistence and live audio
 npm run test:world       # Offline atlas, search worker, timeline and audio isolation

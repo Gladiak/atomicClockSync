@@ -7,7 +7,10 @@ import { createBackInTimeView } from './back-in-time.mjs';
 import { createMoonView } from './moon-view.mjs';
 import { createTimeMachineView } from './time-machine.mjs';
 import { createReceptionLab } from './reception-lab.mjs';
+import { createWatchAccuracy } from './watch-accuracy.mjs';
 import { createLightTravelView } from './light-travel.mjs';
+import { createGuide } from './guide.mjs';
+import { createSidebar } from './sidebar.mjs';
 import { createSectionTransitions } from './section-transitions.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, getLanguage, setLanguage, onLanguageChange, localizeDocument, localizeStoredMessage } from './i18n.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
@@ -16,6 +19,7 @@ const $ = id => document.getElementById(id);
 const desktop = window.desktop;
 localizeDocument();
 const engine = new SignalEngine();
+const sidebar = createSidebar({ persist });
 const transitionSection = createSectionTransitions();
 const pad = value => String(value).padStart(2, '0');
 let dateFormatter;
@@ -80,6 +84,15 @@ const receptionLab = createReceptionLab({
   }
 });
 
+const guideView = createGuide({ goTo: navigate, persist });
+
+const accuracyView = createWatchAccuracy({
+  getNow: now, getData: () => ({profiles, history, activeProfileId, reference, locked: Boolean(session) || busy || syncing}),
+  persist, notify, checkTime: () => syncClock(),
+  goTo: (page, id) => page === 'trial' ? openTrial(id) : navigate(page),
+  openLab: (id, name) => { receptionLab.openWatch(id, name); navigate('reception-lab'); }
+});
+
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 function persist(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); return true; }
@@ -109,11 +122,12 @@ function navigate(page) {
     iss: [t("An observatory in orbit"), t("Track our orbital outpost. Discover your next encounter with the ISS.")],
     'back-in-time': [t("Back in Time"), t("A little less precision. A lot more temporal displacement.")],
     'reception-lab': [t('Learn from every reception'),t('Compare your GET and ERR results. Change one audio setting and try again.')],
+    'watch-accuracy': [t('Every watch has its own rhythm'),t('Measure its offset. Follow its drift. Discover the way your watch keeps time.')],
     history: [t("Your synchronization history"), t("Your trials, stored only on this device.")],
     profiles: [t("A profile for every watch"), t("Save the settings and placement that work.")],
     trial: [t("Trial details"), t("The settings used and the result observed on your Casio.")],
     settings: [t("Set up your signal"), t("Configure the signal for your device.")],
-    guide: [t("Quick start guide"), t("Prepare your Casio and start transmitting.")] };
+    guide: [t("Application guide"), t("Purpose, controls and practical steps for every section.")] };
   if (!titles[page]) page = 'sync';
   const previousPage = document.querySelector('.page.active');
   for (const name of Object.keys(titles)) {
@@ -126,6 +140,7 @@ function navigate(page) {
     if (selected) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
   });
+  sidebar.revealSelection(previousPage !== $(`page-${page}`));
   $('page-title').replaceChildren(document.createTextNode(titles[page][0]), Object.assign(document.createElement('span'), { textContent: '.' }));
   $('page-subtitle').textContent = titles[page][1];
   worldView.setVisible(page === 'world');
@@ -135,6 +150,8 @@ function navigate(page) {
   timeMachineView.setVisible(page === 'time-machine');
   lightTravelView.setVisible(page === 'light-travel');
   receptionLab.setVisible(page === 'reception-lab');
+  accuracyView.setVisible(page === 'watch-accuracy');
+  guideView.setVisible(page === 'guide');
   transitionSection(previousPage, $(`page-${page}`));
   window.scrollTo(0, 0);
 }
@@ -166,6 +183,8 @@ function setControls() {
   $('transmit-dot').className = `signal-dot ${session ? 'active' : 'muted'}`;
   $('session-dot').classList.toggle('signal-dot', Boolean(session));
   receptionLab.refresh();
+  $('trial-accuracy').disabled = !history.find(item => item.id === selectedTrialId && item.outcome === 'get' && item.snapshot?.profileId);
+  $('profile-accuracy').disabled = !profiles.some(profile => profile.id === editingProfileId);
   $('status-badge').classList.toggle('transmitting', Boolean(session));
 }
 
@@ -296,6 +315,7 @@ function fillFacts(container, entries) {
 
 function renderProfileOptions() {
   receptionLab.refresh();
+  accuracyView.refresh();
   for (const id of ['profile-select', 'profile-edit-select']) {
     const select = $(id);
     select.replaceChildren(new Option(id === 'profile-select' ? t("Custom settings") : t("New profile"), ''));
@@ -562,7 +582,9 @@ document.querySelectorAll('[data-page]').forEach(button => button.addEventListen
 document.querySelectorAll('[data-goto]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.goto)));
 document.querySelectorAll('[data-reference]').forEach(button => button.addEventListener('click', () => desktop.openReference(button.dataset.reference)));
 document.querySelector('.brand').addEventListener('click', event => { event.preventDefault(); navigate('sync'); });
-$('help-button').addEventListener('click', () => navigate('guide'));
+$('help-button').addEventListener('click', () => { const page = document.querySelector('.page.active').id.replace('page-', ''); if (page !== 'guide') guideView.openChapter(page); navigate('guide'); });
+$('profile-accuracy').addEventListener('click', () => { accuracyView.openWatch(editingProfileId); navigate('watch-accuracy'); });
+$('trial-accuracy').addEventListener('click', () => { if (accuracyView.openForTrial(history.find(item => item.id === selectedTrialId))) navigate('watch-accuracy'); });
 $('start-button').addEventListener('click', () => session ? stop() : start());
 $('confirmed-button').addEventListener('click', () => stop('confirmed'));
 $('sync-button').addEventListener('click', () => syncClock());
@@ -654,7 +676,7 @@ $('trial-save-outcome').addEventListener('click', () => {
   if (!trial) return;
   trial.outcome = $('trial-outcome').value;
   const saved = persist('atomic.history', history), profileSaved = rememberSuccess(trial);
-  renderHistory();
+  renderHistory(); setControls();
   if (saved && profileSaved) notify(t("Trial outcome updated."));
 });
 $('trial-restore').addEventListener('click', () => {

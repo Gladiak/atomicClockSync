@@ -12,6 +12,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 
 ## Features
 
+- **Watch Accuracy:** per-watch offset journal, segmented drift graphs, local/UTC references, correction events and JSON/CSV exports.
 - **Reception Lab:** per-watch GET/ERR statistics, recorded-configuration groups, A/B comparison and preparation of a trial changing one audio setting.
 - **Light Travel:** a cinematic offline Solar System, nine light sources, date-dependent travel times, departure/reception clocks and a controllable photon journey.
 - **Moon Observatory:** offline lunar phases, illumination, distance, local moonrise/moonset, upcoming quarters and an independent timeline shared with your World View city.
@@ -28,9 +29,17 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 - **Live signal view:** inspect the time code, current symbol, fields and parity checks.
 - **Nine themes:** eight dark palettes and one light palette, saved independently of watch profiles.
 - **Compact desktop interface:** a fixed 1100 × 740 window with separate views.
+- **Illustrated application Guide:** 16 narrative chapters, practical examples and 78 real UI screenshots across six languages, with image zoom and contextual help. Settings and Guide stay pinned above the sidebar version.
+- **Minimal sidebar:** a compact icon rail expands on hover or keyboard focus, overlaying the page without moving its content. Three animated groups keep navigation compact and remember the open theme.
 - **Fluid navigation:** directional section reveals, animated headings and a moving sidebar indicator, with instant reduced-motion navigation.
 - **Six interface languages:** offline translations of navigation, settings, notifications, astronomy, historical journeys and native menus, with a bundled Japanese font. Language changes preserve personal text and do not interrupt transmission.
 - **Local data:** no account, cloud storage or telemetry.
+
+## Application Guide
+
+![Application Guide — illustrated narrative with practical examples](docs/images/guide.png)
+
+**Settings** and **Guide** are always available at the foot of the sidebar, including as icons in compact mode. Guide opens an offline manual with sixteen chapters covering every section, reception problems and data management. Each chapter combines its purpose, explanatory prose, a practical example and a real screenshot in the selected language; click the screenshot to enlarge it. Images use illustrative sample data. The **?** button opens the chapter for the current view, and **Open section** returns to the actual tool. Reading, changing chapters or closing an image preview does not interrupt audio.
 
 ## Supported stations
 
@@ -43,6 +52,16 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 | BPC | Shangqiu, Henan, China | 68.5 kHz | 13,700 Hz | BJS / HKG |
 
 Station availability depends on the watch module and its home city. JJY currently supports the **60 kHz** station. BPC physical compatibility is experimental.
+
+## Watch Accuracy
+
+![Watch Accuracy — illustrative measurements and fitted drift](docs/images/watch-accuracy.png)
+
+Every watch has its own rhythm. Select a profile, capture the reference while comparing your watch and enter the signed offset in seconds: positive means fast, negative means slow. Local and UTC reference clocks are shown together; compare the same time zone. Backdated entries stay explicitly unverified. Reading step, optional wear/resting position, temperature and personal notes stay with each measurement.
+
+The graph fits all readings within one observation period after at least two readings spanning 24 hours. It separates the last measured offset, estimated daily drift and a clearly labelled extrapolation. Corrections, confirmed radio synchronizations and maintenance start a new period without inventing a zero reading. Record automatic radio and daylight-saving corrections too. Forecasts never cross a correction and stop after seven days without a new reading; scatter around the fit appears with three or more readings.
+
+Open **Track accuracy** from a profile or a linked GET trial. A GET trial pre-fills a correction event for your review; it does not create a measurement or save an event automatically. The journal supports editing, confirmed deletion and undo. Renaming a profile preserves identity; deleting it keeps its observations available as an archived watch. Export the selected watch as JSON or CSV. Everything stays local, and transmission keeps running while you explore. Manual readings and reference errors limit the estimate; it is not a certified accuracy measurement. See [measurement and data details](docs/WATCH_ACCURACY.md).
 
 ## Reception Lab
 
@@ -198,6 +217,9 @@ The explicit runtime download is needed for the Electron version used here. No w
 npm test                 # Protocol, PCM, stereo routing, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:navigation  # App identity, motion, rapid clicks, focus and live audio isolation
+npm run test:guide         # All manual prose/images in six languages, footer links and preview audio isolation
+npm run capture:guide      # Regenerate the manual screenshots from a temporary sample profile
+npm run test:accuracy      # Offset journal, segmented drift, GET links, exports, languages and themes
 npm run test:reception-lab # Statistics, A/B comparison, preparation, locales and audio isolation
 npm run test:languages   # Six locales, all views, Japanese glyphs, persistence and live audio
 npm run test:world       # Offline atlas, city worker, timeline and audio isolation
@@ -218,7 +240,7 @@ npm run checksums -- --github # Use GitHub download filenames in the published m
 
 The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run checksums` generates `SHA256SUMS.txt` for the current-version individual packages available in `release/`; use `-- --github` before uploading that manifest because GitHub replaces filename spaces with dots. Electron Builder additionally supports Snap, Flatpak, Pacman and archive targets; AppImage, DEB and RPM are configured here. The DEB/RPM payloads match the application tested on Ubuntu; installation and desktop integration on other distributions remain untested.
 
-The 74 unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
+The 86 unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 

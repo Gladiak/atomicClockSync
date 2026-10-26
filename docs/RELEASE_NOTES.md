@@ -1,6 +1,18 @@
 # Release notes
 
-## 1.10.0 — Reception Lab and 96 historical journeys
+## 1.10.0 — Watch Accuracy, illustrated Guide and 96 historical journeys
+
+Updated in place on 26 October 2026: this version keeps the same package filenames; the downloadable builds and SHA-256 checksums are replaced with the refreshed application.
+
+- Pinned Settings and renamed Guide outside the collapsible groups, keeping both available as footer icons in compact mode. Expanded Guide into sixteen narrative chapters with practical examples, contextual help, chapter navigation/persistence and real localized screenshots with a zoom preview. All 80 prose passages and 78 screenshots cover the six supported languages; screenshot capture uses temporary sample data without focused title outlines.
+- Added a minimal icon rail that automatically expands on hover or keyboard focus and folds on leave. The overlay keeps content geometry stable. Signals, Watches and Explore use short labels and animated submenus, with one open group at a time and remembered disclosure state. Active-group icons, an edge chevron, keyboard access, reduced motion and six-language checks are included. Hover and selection use a thin vertical accent line with transparent row backgrounds; the compact footer keeps the app version centred.
+- Added a per-watch manual offset journal with an original interactive graph, last measured offset, daily drift fit, observed scatter and clearly identified short-horizon extrapolations.
+- Added local/UTC reference clocks and contemporary NTP snapshots. Backdated/retimed entries remain unverified; manual reading resolution and optional wear, position, temperature and personal notes are retained.
+- Separated observation periods at synchronization, adjustment and maintenance events without assuming zero offset. Added point editing, confirmed deletion with period-merge explanation and undo.
+- Connected profiles, manually confirmed GET trials and filtered Reception Lab views. Watch IDs preserve identity across renames; archived profiles keep their journals. GET links pre-fill events for review and never save automatic zero readings.
+- Added per-watch JSON/CSV exports, spreadsheet-formula protection for text and recovery export for unsupported/corrupt archive data. Existing profiles and transmission settings remain intact.
+- Added all six languages, nine-theme UI and eleven numerical/data tests plus native journal, reference, export, layout, persistence and audio-isolation checks.
+
 
 - Tripled Time Machine from 32 to 96 journeys, adding 64 dated records across relativity, quantum timescales, atomic clocks, UTC/GPS, astronomy and space exploration. Added Time science and Astronomy filters, seven new vector illustrations and a capsule scene using the existing artwork.
 - Added five-language translations for every new narrative and caption, plus a chronological catalogue of all 96 events and their 87 institutional/publication references. New records deliberately use day precision; receipt/publication/announcement dates and UTC/local-date differences are identified explicitly.
@@ -9,7 +21,7 @@
 - Added baseline preparation changing exactly one supported audio setting. Saved profile settings remain intact; preparation does not start transmission, cannot run during a session and blocks removed profiles or unavailable outputs.
 - Added six-language/nine-theme UI, a dedicated sidebar icon and a compact explanation panel. Added eight unit tests and a native laboratory suite for statistics, edge cases, preparation, history updates, persistence and audio isolation.
 
-Validation: 74 unit tests, native desktop checks for Reception Lab and Time Machine, six languages and nine themes. Individual macOS Apple Silicon, Windows x64 portable and Linux x64 AppImage, DEB and RPM downloads are provided with SHA-256 checksums. macOS is ad-hoc signed without notarization; Windows is unsigned. Linux packaged UI and muted audio are tested in Docker; native Windows execution, RPM installation and physical watch reception remain untested.
+Validation: 86 unit tests; native desktop, navigation, Reception Lab, Watch Accuracy and full illustrated Guide checks across six languages and nine themes. Individual macOS Apple Silicon, Windows x64 portable and Linux x64 AppImage, DEB and RPM downloads are provided with SHA-256 checksums. macOS is ad-hoc signed without notarization; Windows is unsigned. Linux packaged UI and muted audio are tested in Docker; native Windows execution, RPM installation and physical watch reception remain untested.
 
 ## 1.9.0 — Light Travel, languages and fluid navigation
 

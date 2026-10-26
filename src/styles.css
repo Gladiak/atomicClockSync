@@ -1139,87 +1139,6 @@ input::placeholder,textarea::placeholder { color:var(--faint); opacity:1; }
   line-height:1.5;
   margin:7px 0 0;
 }
-.guide-steps {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-}
-.guide-step {
-  padding:17px 15px;
-  min-height:185px;
-}
-.step-number {
-  font:22px var(--mono);
-  color:var(--accent-text);
-}
-.guide-step h3 {
-  font-size:11px;
-  font-weight:500;
-  margin:16px 0 10px;
-}
-.guide-step p {
-  font-size:10px;
-  line-height:1.7;
-  color:var(--muted);
-  margin:0;
-}
-.guide-bottom {
-  display:grid;
-  grid-template-columns:1.3fr 1fr;
-  gap:14px;
-  margin-top:14px;
-}
-.guide-faq,.references-panel {
-  padding:19px;
-}
-.guide-faq h2 {
-  font-size:14px;
-  margin-bottom:15px;
-}
-.guide-faq details {
-  border-top:1px solid var(--line);
-  padding:11px 0;
-}
-.guide-faq summary {
-  cursor:pointer;
-  color:var(--muted);
-  font-size:10px;
-  line-height:1.5;
-}
-.guide-faq details p {
-  font-size:10px;
-  line-height:1.6;
-  color:var(--muted);
-  margin-bottom:0;
-}
-.references-panel h2 {
-  font-size:16px;
-  margin:10px 0 14px;
-  font-weight:400;
-}
-.reference-link {
-  display:flex;
-  justify-content:space-between;
-  text-align:left;
-  width:100%;
-  background:none;
-  padding:11px 0;
-  border-bottom:1px solid var(--line);
-  color:var(--muted);
-  font-size:10px;
-}
-.reference-link:hover {
-  color:var(--accent-text);
-}
-.references-panel>.muted-text {
-  font-size:9px;
-}
-.references-panel .primary-button {
-  margin-top:15px;
-  width:100%;
-  min-height:34px;
-  font-size:10px;
-}
 @keyframes pulse {
   50% {
     opacity:.45;
@@ -1242,3 +1161,80 @@ input::placeholder,textarea::placeholder { color:var(--faint); opacity:1; }
 .theme-swatches i:nth-child(2) { background:var(--accent); }
 .theme-swatches i:nth-child(3) { background:var(--accent-secondary); }
 .theme-swatches i:nth-child(4) { background:var(--text); }
+/* A compact icon rail becomes an overlay on pointer hover or keyboard focus.
+   Its width never participates in the content layout. */
+.sidebar{position:absolute;inset:0 auto 0 0;z-index:35;width:72px;padding:20px 12px 18px;background:var(--bg);overflow:visible;transition:width .28s cubic-bezier(.16,1,.3,1),box-shadow .28s ease,background-color .2s ease}
+.sidebar.is-expanded{width:236px;background:color-mix(in srgb,var(--bg),var(--panel) 20%);box-shadow:18px 0 45px -22px #0008}
+main{margin-left:72px;width:calc(100% - 72px)}
+.sidebar .brand{height:44px;min-height:44px;padding:0;gap:10px;overflow:hidden;white-space:nowrap}
+.sidebar .brand-mark{min-width:47px;text-align:center;font-size:35px;flex-shrink:0}
+.sidebar .brand>span:last-child{opacity:0;transform:translateX(-7px);transition:opacity .16s ease,transform .22s ease;min-width:135px;font-size:25px}
+.sidebar.is-expanded .brand>span:last-child{opacity:1;transform:none;transition-delay:.06s}
+.sidebar .brand-sub{font-size:7px;letter-spacing:2px}
+.sidebar-handle{position:absolute;z-index:2;top:30px;right:-10px;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;background:var(--panel);color:var(--muted);border:1px solid var(--line);padding:0}
+.sidebar-handle:hover{color:var(--text);background:var(--surface-hover)}
+.sidebar-handle svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s ease}
+.sidebar.is-expanded .sidebar-handle svg{transform:rotate(180deg)}
+.sidebar nav{margin-top:25px;gap:7px;flex-shrink:1;overflow:hidden}
+.nav-group{flex-shrink:0;min-width:0}
+.nav-group-toggle{display:grid;grid-template-columns:22px minmax(0,1fr) 12px;align-items:center;column-gap:11px;width:100%;min-height:45px;padding:10px 12px;background:transparent;border-radius:9px;text-align:left;color:var(--muted);font-family:inherit;font-size:11px;font-weight:500;line-height:1.4;overflow:hidden;transition:background-color .18s ease,color .18s ease}
+.nav-group-toggle:hover,.nav-group-toggle[aria-expanded=true]{background:var(--surface-hover);color:var(--text)}
+.nav-group-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.nav-group-label{white-space:nowrap;opacity:0;transform:translateX(-6px);transition:opacity .13s ease,transform .22s ease}
+.nav-group-chevron{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:transform .22s ease,opacity .13s ease}
+.sidebar.is-expanded .nav-group-label,.sidebar.is-expanded .nav-group-chevron{opacity:1;transform:none;transition-delay:.05s}
+.sidebar .nav-group-toggle[aria-expanded=true] .nav-group-chevron{transform:rotate(90deg)}
+.nav-group.has-current-page>.nav-group-toggle{color:var(--accent-text)}
+.nav-group.has-current-page>.nav-group-toggle .nav-group-icon{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 10%,transparent))}
+.sidebar:not(.is-expanded) .nav-group.has-current-page>.nav-group-toggle{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.nav-group-collapse{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .22s cubic-bezier(.16,1,.3,1),opacity .17s ease}
+.nav-group-toggle[aria-expanded=true]+.nav-group-collapse{grid-template-rows:1fr;opacity:1}
+.nav-group-items{min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:3px;margin-left:22px;padding-left:9px;border-left:1px solid var(--line);transform:translateY(-5px);transition:transform .22s cubic-bezier(.16,1,.3,1)}
+.nav-group-toggle[aria-expanded=true]+.nav-group-collapse .nav-group-items{transform:none}
+.nav-group .nav-item{padding:8px 10px;min-height:32px;width:100%;font-size:10px;border-radius:7px;white-space:normal}
+.nav-group .nav-item>svg{display:none}
+.sidebar .nav-indicator{border-radius:7px;box-shadow:none;background:color-mix(in srgb,var(--accent) 8%,var(--panel));left:31px;right:0}
+.sidebar .sidebar-bottom{height:28px;min-height:28px;padding:13px 12px 0;display:flex;align-items:center;gap:14px;overflow:hidden}
+.sidebar-local-dot{width:5px;height:5px;min-width:5px;border-radius:50%;background:var(--accent-text);opacity:.75}
+.sidebar .version{min-width:148px;font-size:8px;opacity:0;transition:opacity .15s ease;gap:15px}
+.sidebar.is-expanded .version{opacity:1;transition-delay:.08s}
+.sidebar-initializing .nav-group-collapse,.sidebar-initializing .nav-group-items{transition:none}
+@media(prefers-reduced-motion:reduce){.sidebar,.sidebar *{transition:none!important}}
+/* Quiet navigation feedback: only a fine underline, never a filled tile. */
+.sidebar.is-expanded{background:var(--bg);box-shadow:none}
+.nav-group-toggle{position:relative;font-weight:400;border-radius:0}
+.nav-group-toggle:hover,.nav-group-toggle[aria-expanded=true],.sidebar:not(.is-expanded) .nav-group.has-current-page>.nav-group-toggle{background:transparent}
+.nav-group.has-current-page>.nav-group-toggle .nav-group-icon{filter:none}
+.nav-group-toggle::after,.nav-group .nav-item::after{content:'';position:absolute;bottom:0;height:1px;background:var(--accent-text);opacity:0;transform:scaleX(.4);transform-origin:left;transition:opacity .15s ease,transform .22s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.nav-group-toggle::after{left:12px;right:12px}
+.nav-group .nav-item::after{left:10px;right:10px}
+.nav-group-toggle:hover::after,.nav-group-toggle:focus-visible::after,.sidebar:not(.is-expanded) .has-current-page>.nav-group-toggle::after,.has-current-page>.nav-group-toggle[aria-expanded=false]::after,.nav-group .nav-item:not(.selected):hover::after,.nav-group .nav-item:not(.selected):focus-visible::after{opacity:.65;transform:scaleX(1)}
+.nav-group .nav-item,.nav-group .nav-item:hover,.nav-group .nav-item.selected{background:transparent;border-radius:0}
+.sidebar .nav-indicator{height:1px;border-radius:0;box-shadow:none;background:var(--accent-text);opacity:.85}
+.sidebar-handle{background:var(--bg);border:0;border-radius:0;color:var(--muted)}
+.sidebar-handle:hover{background:var(--bg);color:var(--accent-text);box-shadow:inset 0 -1px var(--accent-text)}
+/* The selection follows a light vertical rail, leaving every row unfilled. */
+.nav-group-toggle::after{left:1px;right:auto;top:11px;bottom:11px;width:1px;height:auto;transform:scaleY(.4);transform-origin:center}
+.nav-group .nav-item::after{left:1px;right:auto;top:7px;bottom:7px;width:1px;height:auto;transform:scaleY(.4);transform-origin:center}
+.nav-group-toggle:hover::after,.nav-group-toggle:focus-visible::after,.sidebar:not(.is-expanded) .has-current-page>.nav-group-toggle::after,.has-current-page>.nav-group-toggle[aria-expanded=false]::after,.nav-group .nav-item:not(.selected):hover::after,.nav-group .nav-item:not(.selected):focus-visible::after{transform:scaleY(1)}
+.nav-group-toggle:hover::after,.nav-group .nav-item:not(.selected):hover::after{opacity:.45}
+.sidebar .nav-indicator{width:1px;height:auto;border-radius:0;opacity:.85}
+.sidebar-handle:hover{box-shadow:none}
+/* The collapsed rail keeps a readable, centred version instead of a lone dot. */
+.sidebar .sidebar-bottom{padding:12px 0 0;justify-content:center;gap:0}
+.sidebar .sidebar-local-dot{display:none}
+.sidebar .version{opacity:1;min-width:0;width:100%;justify-content:center;gap:0;font-size:8px;line-height:1.4;white-space:nowrap;transition:none}
+.sidebar:not(.is-expanded) .version>span{display:none}
+.sidebar.is-expanded .version{justify-content:space-between;padding:0 5px;gap:10px;transition:none}
+/* Settings and the manual stay pinned above the version in both rail modes. */
+.sidebar .sidebar-bottom{height:auto;min-height:121px;flex-shrink:0;flex-direction:column;align-items:stretch;gap:10px;padding:10px 0 0;border-top:1px solid var(--line)}
+.sidebar-utilities{display:flex;flex-direction:column;gap:4px}
+.sidebar-utilities .nav-item{min-height:36px;padding:8px 12px;gap:12px;white-space:nowrap;overflow:hidden;border-radius:0;width:100%;background:transparent}
+.sidebar-utilities .nav-item:hover,.sidebar-utilities .nav-item.selected{background:transparent}
+.sidebar-utilities .nav-item>svg{display:block;width:22px;height:20px;flex-shrink:0}
+.sidebar-utility-label{font-size:11px;opacity:0;transform:translateX(-5px);transition:opacity .15s ease,transform .22s ease;min-width:145px}
+.sidebar.is-expanded .sidebar-utility-label{opacity:1;transform:none;transition-delay:.05s}
+.sidebar-utilities .nav-item:after{content:'';position:absolute;left:1px;top:8px;bottom:8px;width:1px;background:var(--accent-text);opacity:0;transform:scaleY(.4);transition:opacity .15s ease,transform .22s ease;pointer-events:none}
+.sidebar-utilities .nav-item:hover:after,.sidebar-utilities .nav-item:focus-visible:after{opacity:.45;transform:scaleY(1)}
+.sidebar-utilities .nav-item.selected:after{opacity:.85;transform:scaleY(1)}
+.sidebar .sidebar-bottom .version{flex-shrink:0;min-height:13px;align-items:center}

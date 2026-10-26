@@ -1,3 +1,6 @@
+import { guideMessages } from './guide.mjs';
+import { sidebarMessages } from './sidebar.mjs';
+import { watchAccuracyMessages } from './watch-accuracy.mjs';
 import { expandedJourneyMessages } from './time-machine-expansion.mjs';
 import { receptionLabMessages } from './reception-lab.mjs';
 import { lightTravelMessages } from './light-travel.mjs';
@@ -6291,4 +6294,4 @@ const coreMessages = {
   }
 };
 
-export const messages = { ...coreMessages, ...lightTravelMessages, ...receptionLabMessages, ...expandedJourneyMessages };
+export const messages = { ...coreMessages, ...lightTravelMessages, ...receptionLabMessages, ...expandedJourneyMessages, ...watchAccuracyMessages, ...sidebarMessages, ...guideMessages };
