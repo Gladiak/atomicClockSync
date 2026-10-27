@@ -6,6 +6,7 @@ Updated in place on 27 October 2026: the same 1.11.0 package filenames now inclu
 
 - One compact Bluetooth button and a dialog translated into English, Italian, French, German, Spanish and Japanese.
 - **Pulse Sync** logo in the compact/expanded sidebar and Settings, following the selected theme accent, with a matching lime-on-dark app icon and macOS Dock icon.
+- All **84 offline Guide screenshots** refreshed in the six interface languages with Rainbow, Pulse Sync and the current sidebar, using illustrative local data.
 - Fifteen themes in **Settings → Theme**, including **Soft Sage**, **Powder Blue**, **Soft Lavender**, **Warm Sand**, **Rainbow** and **Rainbow Soft**. All six additions retain the original dark base. Rainbow assigns blue to actions, violet to data, mint to the reference and confirmations, orange to transmission/progress and pink to errors, with lighter text variants for readability.
 - Always-available **Open logs** popup with refresh and **Copy log**, during attempts and after success or failure. The last 400 technical events remain in memory until the app closes; device addresses, settings payloads and raw driver messages are excluded.
 - Unified synchronization history includes persistent Bluetooth attempts with watch/model/module, duration, time reference and distinct sent/failed/cancelled/uncertain outcomes. Bluetooth details are read-only and remain separate from radio GET/ERR statistics. Interrupted pending attempts are preserved on restart.

@@ -150,10 +150,7 @@ app.whenReady().then(async () => {
     await navigate('guide');
     await run("document.querySelector('[data-chapter=bluetooth]').click()");
     await until("document.querySelector('.manual-figure img').complete");
-    // Show the freshly captured Bluetooth view in this documentation preview;
-    // leave the six-language offline manual's bundled image files untouched.
-    const screenshot = fs.readFileSync(path.join(output, 'bluetooth.png')).toString('base64');
-    await run(`document.querySelector('.manual-figure img').src=${JSON.stringify('data:image/png;base64,' + screenshot)};document.getElementById('manual-reader').scrollTop=0`);
+    await run("document.getElementById('manual-reader').scrollTop=0");
     await until("document.querySelector('.manual-figure img').complete&&document.querySelector('.manual-figure img').naturalWidth>0");
     await capture('guide');
 

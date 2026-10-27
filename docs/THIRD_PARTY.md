@@ -209,7 +209,7 @@ npm run test:iss
 
 ## Application manual screenshots
 
-`assets/guide/` contains original screenshots of this application's interface: fourteen views in each of the six supported languages. They are captured by `scripts/capture-manual.cjs` using an isolated temporary profile, synthetic watch/history/accuracy records and the repository's ISS fixture; no user records are included. Bluetooth detections are simulated for illustration; no physical reception is implied. Screenshots are examples, not evidence of physical reception. Interface artwork, map data and fonts retain their existing licenses and attribution documented above.
+`assets/guide/` contains original screenshots of this application's interface: fourteen views in each of the six supported languages, with Rainbow, Pulse Sync and the compact sidebar. They are captured by `scripts/capture-manual.cjs` using an isolated temporary profile, synthetic watch/history/accuracy records and the repository's ISS fixture, with a reference clock inside that snapshot's validity window; no user records are included. Bluetooth detections are simulated for illustration; no physical reception is implied. Screenshots are examples, not evidence of physical reception. Interface artwork, map data and fonts retain their existing licenses and attribution documented above.
 
 ## Bluetooth runtime and protocol
 
