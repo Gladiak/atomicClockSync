@@ -1,4 +1,5 @@
-import { STATIONS, getStation, stationTime, stationFrameAt, audioEnvelope, symbolLabel, symbolDescription } from './stations.mjs';
+import { STATIONS, getStation, stationTime, stationFrameAt, symbolLabel, symbolDescription } from './stations.mjs';
+import { createWaveform } from './waveform.mjs';
 import { SignalEngine, testOutput } from './audio-engine.mjs';
 import { THEMES, applyTheme } from './themes.mjs';
 import { createWorldView } from './world-view.mjs';
@@ -36,6 +37,7 @@ $('theme-select').addEventListener('change', event => {
   persist('atomic.theme', id);
 });
 const preferences = normalizePreferences(readSaved('atomic.preferences', DEFAULTS));
+const waveform = createWaveform({ svg: $('waveform'), getNow: now, getSettings: () => preferences });
 let profiles = normalizeProfiles(readSaved('atomic.profiles', []));
 let activeProfileId = readSaved('atomic.activeProfile', null);
 if (!profiles.some(p => p.id === activeProfileId)) activeProfileId = null;
@@ -158,6 +160,7 @@ function navigate(page) {
     else button.removeAttribute('aria-current');
   });
   sidebar.revealSelection(previousPage !== $(`page-${page}`));
+  waveform.setVisible(page === 'sync');
   $('page-title').replaceChildren(document.createTextNode(titles[page][0]), Object.assign(document.createElement('span'), { textContent: '.' }));
   $('page-subtitle').textContent = titles[page][1];
   worldView.setVisible(page === 'world');
@@ -534,26 +537,6 @@ function renderFrame(epoch) {
   });
 }
 
-function drawWave(epoch) {
-  const id = preferences.stationId;
-  const windowStart = Math.floor(epoch / 12000) * 12000;
-  const width = 640 / 12;
-  let frame = currentFrame;
-  let path = '';
-  for (let i = 0; i < 12; i++) {
-    const stamp = windowStart + i * 1000;
-    if (stamp < frame.start || stamp >= frame.start + frame.duration * 1000) frame = stationFrameAt(id, stamp);
-    const second = Math.floor((stamp - frame.start) / 1000);
-    for (let j = 0; j < 10; j++) {
-      const x = (i + j / 10) * width;
-      const y = 12 + (1 - audioEnvelope(frame, second, j / 10 + 0.00001, preferences.wave)) * 50;
-      path += `${i || j ? 'L' : 'M'}${x} ${y} H${(i + (j + 1) / 10) * width} `;
-    }
-  }
-  $('wave-path').setAttribute('d', path);
-  $('wave-cursor').setAttribute('d', `M${(epoch - windowStart) / 12000 * 640} 0 V80`);
-}
-
 function update() {
   const epoch = now();
   const secondKey = Math.floor(epoch / 1000);
@@ -605,7 +588,6 @@ function update() {
     lastWallCheck = { wall, mono };
     lastSecond = secondKey;
   }
-  if (currentFrame) drawWave(epoch);
 }
 
 async function refreshDevices() {

@@ -494,6 +494,9 @@ h1>span {
   display:block;
   opacity:.8;
 }
+@media(prefers-reduced-motion:reduce) {
+  #wave-cursor-trail,.wave-cursor-halo { display:none; }
+}
 .wave-labels {
   display:flex;
   justify-content:space-between;
