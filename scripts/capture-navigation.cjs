@@ -13,12 +13,16 @@ module.exports = async function prepareCaptureNavigation(window) {
   })()`);
 
   return async function showSelectedNavigation() {
-    // A modal uses the navigation state prepared immediately before it opens.
-    if (await run("Boolean(document.querySelector('dialog[open]'))")) return;
-    window.webContents.sendInputEvent({ type:'mouseMove', x:4, y:100 });
-    await pause(75);
+    // Modal focus can collapse the rail; restore it programmatically without
+    // sending pointer input through the dialog's inert background.
+    const modalOpen = await run("Boolean(document.querySelector('dialog[open]'))");
+    if (!modalOpen) {
+      window.webContents.sendInputEvent({ type:'mouseMove', x:4, y:100 });
+    }
+    await pause(250);
     await run(`(() => {
       const sidebar=document.querySelector('.sidebar');
+      if(${modalOpen}&&sidebar.dataset.expanded==='true')document.getElementById('sidebar-toggle').click();
       if(sidebar.dataset.expanded!=='true')document.getElementById('sidebar-toggle').click();
       const selected=sidebar.querySelector('[aria-current="page"]');
       if(!selected)throw Error('No active menu item for documentation capture');

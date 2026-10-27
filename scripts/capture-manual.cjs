@@ -55,7 +55,7 @@ app.whenReady().then(async()=>{
     if(route==='sync'){
      await run("document.getElementById('bluetooth-button').click()");
      await until("document.getElementById('bluetooth-dialog').open&&!document.getElementById('bluetooth-update').disabled");
-     await run("document.activeElement.blur()");await pause(150);
+     await run("document.activeElement.blur()");await pause(150);await showNavigation();
      fs.writeFileSync(path.join(output,'bluetooth.jpg'),(await win.webContents.capturePage()).toJPEG(85));
      await run("document.getElementById('bluetooth-close').click()");
      await until("!document.getElementById('bluetooth-button').disabled");
