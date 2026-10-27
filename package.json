@@ -9,6 +9,7 @@
   "scripts": {
     "start": "electron .",
     "start:debug": "node scripts/debug.cjs",
+    "build:icon": "node scripts/create-icon.cjs",
     "test": "node --test test/*.test.*",
     "build:bluetooth": "node scripts/build-bluetooth.cjs",
     "test:bluetooth": "electron scripts/bluetooth-smoke.cjs",

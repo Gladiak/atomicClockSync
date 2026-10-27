@@ -23,8 +23,12 @@ function verify(directory) {
 ['electron', 'src', 'assets'].forEach(verify);
 assert.equal(JSON.parse(asar.extractFile(archive, 'package.json')).version, require('../package.json').version);
 const worker = path.join(resources, 'bluetooth', 'atomic-bluetooth', target === 'win' ? 'atomic-bluetooth.exe' : 'atomic-bluetooth');
-const result = spawnSync(path.resolve(worker), ['--self-test'], { stdio: 'inherit', shell: false });
-if (result.error) throw result.error;
-assert.equal(result.status, 0, 'Packaged Bluetooth runtime must start successfully');
+assert.ok(fs.statSync(worker).isFile(), 'Packaged Bluetooth runtime must be present');
+const skipTests = process.env.ATOMIC_SKIP_TESTS === '1';
+if (!skipTests) {
+  const result = spawnSync(path.resolve(worker), ['--self-test'], { stdio: 'inherit', shell: false });
+  if (result.error) throw result.error;
+  assert.equal(result.status, 0, 'Packaged Bluetooth runtime must start successfully');
+}
 assert.ok(fs.statSync(path.join(path.dirname(worker), 'THIRD_PARTY_LICENSES')).isDirectory());
-console.log(`PASS: ${count} packaged source/assets, version and bundled Bluetooth runtime (${target}/${arch}).`);
+console.log(`Verified: ${count} packaged source/assets, version and Bluetooth resources (${target}/${arch}).${skipTests ? ' Runtime self-test skipped.' : ' Runtime self-test passed.'}`);

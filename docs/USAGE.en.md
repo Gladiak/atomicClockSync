@@ -8,7 +8,7 @@ AtomicClockSync is a **JavaScript and Electron desktop app** that synchronizes c
 
 ## Ready-to-use applications
 
-Current version: **1.11.0**, refreshed on 27 October 2026 to include six additional themes. Download the individual packages and updated checksums from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0); the filenames and version number are unchanged.
+Current version: **1.11.0**, refreshed on 27 October 2026 to include six additional themes and the Pulse Sync logo/app icon. Download the individual packages and updated checksums from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0); the filenames and version number are unchanged.
 
 - macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.11.0-arm64-mac.zip`.
 - Windows x64 portable: `release/AtomicClockSync-1.11.0-windows-x64-portable.exe`.

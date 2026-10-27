@@ -1,4 +1,4 @@
-"""Stage this exact build in an existing draft; never publish a release."""
+"""Stage a draft, or explicitly refresh an existing published release in place."""
 from pathlib import Path
 import hashlib
 import json
@@ -19,8 +19,9 @@ if tag != 'v' + version:
 if output('git', 'rev-parse', tag + '^{}') != output('git', 'rev-parse', 'HEAD'):
     raise SystemExit('Release tag must point to the exact workflow commit.')
 release = json.loads(output('gh', 'release', 'view', tag, '--json', 'isDraft,tagName'))
-if not release['isDraft'] or release['tagName'] != tag:
-    raise SystemExit('Only an existing matching draft release can be updated.')
+replace_published = os.environ.get('REPLACE_PUBLISHED_RELEASE') == '1'
+if release['tagName'] != tag or (not release['isDraft'] and not replace_published):
+    raise SystemExit('Published releases require explicit REPLACE_PUBLISHED_RELEASE=1.')
 prefix = 'AtomicClockSync-' + version
 names = {prefix + suffix for suffix in (
     '-arm64-mac.zip', '-windows-x64-portable.exe', '-linux-x86_64.AppImage',
@@ -28,10 +29,25 @@ names = {prefix + suffix for suffix in (
 files = {file.name for file in Path('release').iterdir() if file.is_file()}
 if files != names | {'SHA256SUMS.txt'}:
     raise SystemExit('Expected exactly five individual packages and checksum manifest.')
+checksums = {}
 for line in Path('release/SHA256SUMS.txt').read_text().splitlines():
     digest, name = line.split('  ', 1)
-    if name not in names or hashlib.sha256(Path('release', name).read_bytes()).hexdigest() != digest:
+    if name not in names or name in checksums:
+        raise SystemExit('Unexpected or duplicate checksum entry: ' + name)
+    actual = hashlib.sha256()
+    with Path('release', name).open('rb') as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            actual.update(chunk)
+    if actual.hexdigest() != digest:
         raise SystemExit('Checksum mismatch: ' + name)
+    checksums[name] = digest
+if set(checksums) != names:
+    raise SystemExit('Checksum manifest must cover all five platform packages.')
 subprocess.run(['gh', 'release', 'upload', tag, *[str(Path('release', name)) for name in sorted(names)],
-                'release/SHA256SUMS.txt', '--clobber'], check=True)
-print('All five packages and checksums staged; release remains a draft.')
+                '--clobber'], check=True)
+subprocess.run(['gh', 'release', 'upload', tag, 'release/SHA256SUMS.txt', '--clobber'], check=True)
+if replace_published and not release['isDraft']:
+    subprocess.run(['gh', 'release', 'edit', tag, '--notes-file', 'docs/RELEASE_CURRENT.md'], check=True)
+    print('Existing published release refreshed with five packages, checksums and notes.')
+else:
+    print('All five packages and checksums staged; release remains a draft.')

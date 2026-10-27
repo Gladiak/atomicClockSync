@@ -4,7 +4,9 @@
 
 Released on 27 October 2026.
 
-Updated in place on 27 October 2026: the downloadable 1.11.0 packages and SHA-256 checksums are refreshed with the six new themes, keeping the same filenames and version number.
+Updated in place on 27 October 2026: the downloadable 1.11.0 packages and SHA-256 checksums are refreshed with the six new themes and Pulse Sync identity, keeping the same filenames and version number.
+
+- Applied the Pulse Sync clock-and-radio-pulse mark to the compact/expanded sidebar and Settings, with theme-aware accents, a matching 1024 px lime app icon and the macOS Dock icon. The icon is regenerated from the shared SVG mark with `npm run build:icon`. This branding-only package refresh skips test suites and runtime self-tests, while retaining packaged-file and checksum checks.
 
 - Added Soft Sage, Powder Blue, Soft Lavender and Warm Sand pastel accents on the original dark surfaces, plus Rainbow and Rainbow Soft with stable color roles for actions, data, reference/confirmation, transmission/progress and errors. All fifteen themes are localized, persist independently of watch settings and can change during transmission. Desktop checks cover contrast, dark surfaces, semantic colors, offline reference state, GET/ERR history and muted audio isolation.
 

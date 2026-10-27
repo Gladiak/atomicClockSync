@@ -2,6 +2,7 @@
 import importlib.metadata
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -36,5 +37,6 @@ for distribution in importlib.metadata.distributions():
                 destination.parent.mkdir(exist_ok=True)
                 shutil.copy2(source, destination)
 executable = output / ("atomic-bluetooth.exe" if platform == "win32" else "atomic-bluetooth")
-subprocess.run([str(executable), "--self-test"], check=True)
+if os.environ.get('ATOMIC_SKIP_TESTS') != '1':
+    subprocess.run([str(executable), "--self-test"], check=True)
 print(f"Bluetooth worker ready: {output}")

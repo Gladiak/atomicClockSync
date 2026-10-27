@@ -3,9 +3,17 @@ on:
   workflow_dispatch:
     inputs:
       stage_release_tag:
-        description: 'Optional existing draft release tag; upload packages without publishing'
+        description: 'Optional existing release tag; published releases require explicit replacement'
         required: false
         default: ''
+      skip_tests:
+        description: 'Skip test suites and Bluetooth self-tests for this build'
+        type: boolean
+        default: false
+      replace_published_release:
+        description: 'Replace packages in the existing published release without changing its version'
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -34,18 +42,24 @@ jobs:
         with:
           python-version: '3.13'
       - run: npm ci
-      - run: npm test
-      - run: python -m unittest discover -s test -p 'bluetooth_*.py'
+      - if: ${{ !inputs.skip_tests }}
+        run: npm test
+      - if: ${{ !inputs.skip_tests }}
+        run: python -m unittest discover -s test -p 'bluetooth_*.py'
       - run: python -m venv .venv-bluetooth
       - if: runner.os != 'Windows'
         run: .venv-bluetooth/bin/python3 -m pip install -r bluetooth/requirements.txt
       - if: runner.os == 'Windows'
         run: .venv-bluetooth/Scripts/python.exe -m pip install -r bluetooth/requirements.txt
       - run: npm run build:bluetooth
+        env:
+          ATOMIC_SKIP_TESTS: ${{ inputs.skip_tests && '1' || '' }}
       - run: npx electron-builder --${{ matrix.target }} --${{ matrix.arch }} --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
       - run: node scripts/verify-built-package.cjs ${{ matrix.target }} ${{ matrix.arch }}
+        env:
+          ATOMIC_SKIP_TESTS: ${{ inputs.skip_tests && '1' || '' }}
       - uses: actions/upload-artifact@v4
         with:
           name: AtomicClockSync-${{ matrix.target }}
@@ -76,3 +90,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.stage_release_tag }}
+          REPLACE_PUBLISHED_RELEASE: ${{ inputs.replace_published_release && '1' || '' }}

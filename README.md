@@ -184,7 +184,7 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **1.11.0**, refreshed on 27 October 2026 with six additional themes. The individual packages and updated checksums are available in [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0), under the same filenames and version number. The 1.11.0 packages are:
+Current version: **1.11.0**, refreshed on 27 October 2026 with six additional themes and the Pulse Sync logo/app icon. The individual packages and updated checksums are available in [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0), under the same filenames and version number. The 1.11.0 packages are:
 
 | Package | Contents | Status |
 | --- | --- | --- |
@@ -302,6 +302,8 @@ ISS source data are cached separately in `iss-cache.json` inside the same app da
 NTP checks contact `ptbtime1.ptb.de`, `ptbtime2.ptb.de` and `time.cloudflare.com`. They adjust the time reference inside the app, not the operating system clock. NTP uses UDP/123 without NTS authentication. Offline use is available with the system clock.
 
 ## Project structure
+
+The Pulse Sync identity combines a clock and a radio pulse. The sidebar and Settings use `assets/brand-mark.svg` in the selected theme accent; the app icon keeps its lime-on-dark palette. Run `npm run build:icon` to regenerate `assets/icon.svg` and the 1024 × 1024 `assets/icon.png` from that shared vector mark using the project's Electron runtime.
 
 ```text
 electron/   Native window, isolated preload, lifecycle and NTP

@@ -166,9 +166,14 @@ button,a,input,select,summary {
   letter-spacing:-1.5px;
 }
 .brand-mark {
-  font-size:35px;
+  display:inline-block;
+  width:40px;
+  height:40px;
+  flex-shrink:0;
   color:var(--accent-text);
-  line-height:1;
+  background-color:currentColor;
+  -webkit-mask:url('../assets/brand-mark.svg') center/contain no-repeat;
+  mask:url('../assets/brand-mark.svg') center/contain no-repeat;
 }
 .brand-sub {
   display:block;
@@ -1173,7 +1178,8 @@ input::placeholder,textarea::placeholder { color:var(--faint); opacity:1; }
   align-items:center;
 }
 .about-panel .brand-mark {
-  font-size:29px;
+  width:32px;
+  height:32px;
 }
 .about-panel p {
   color:var(--muted);
@@ -1209,7 +1215,7 @@ input::placeholder,textarea::placeholder { color:var(--faint); opacity:1; }
 .sidebar.is-expanded{width:236px;background:color-mix(in srgb,var(--bg),var(--panel) 20%);box-shadow:18px 0 45px -22px #0008}
 main{margin-left:72px;width:calc(100% - 72px)}
 .sidebar .brand{height:44px;min-height:44px;padding:0;gap:10px;overflow:hidden;white-space:nowrap}
-.sidebar .brand-mark{min-width:47px;text-align:center;font-size:35px;flex-shrink:0}
+.sidebar .brand-mark{width:47px;min-width:47px;height:44px;-webkit-mask-size:40px 40px;mask-size:40px 40px}
 .sidebar .brand>span:last-child{opacity:0;transform:translateX(-7px);transition:opacity .16s ease,transform .22s ease;min-width:135px;font-size:25px}
 .sidebar.is-expanded .brand>span:last-child{opacity:1;transform:none;transition-delay:.06s}
 .sidebar .brand-sub{font-size:7px;letter-spacing:2px}

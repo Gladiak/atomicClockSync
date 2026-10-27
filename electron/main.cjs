@@ -150,6 +150,7 @@ if (!app.requestSingleInstanceLock()) app.quit();
 else {
   app.on('second-instance', () => { if (mainWindow) { mainWindow.restore(); mainWindow.focus(); } });
   app.whenReady().then(() => {
+    if (process.platform === 'darwin') app.dock.setIcon(path.join(__dirname, '../assets/icon.png'));
     applyMenu();
     createWindow();
     powerMonitor.on('suspend', () => interrupt('Computer going to sleep. Restart transmission.'));

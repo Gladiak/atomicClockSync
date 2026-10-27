@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="AtomicClockSync — Pulse Sync">
+  <defs>
+    <radialGradient id="surface" cx="40%" cy="25%" r="85%"><stop stop-color="#23261D"/><stop offset="1" stop-color="#10110E"/></radialGradient>
+    <linearGradient id="edge" x2=".8" y2="1"><stop stop-color="#4B5140"/><stop offset="1" stop-color="#25291F"/></linearGradient>
+  </defs>
+  <rect x="36" y="36" width="952" height="952" rx="214" fill="url(#surface)"/>
+  <rect x="38" y="38" width="948" height="948" rx="212" fill="none" stroke="url(#edge)" stroke-width="3"/>
+  <svg x="208" y="208" color="#D5FF40" xmlns="http://www.w3.org/2000/svg" width="608" height="608" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Pulse Sync">
+  <path d="M42.8 14.1A22 22 0 1 0 42.8 49.9"/>
+  <path d="M30 20v12l-8 5"/>
+  <path d="M40 32h6l3-7 5 14 3-7h5"/>
+</svg>
+</svg>
