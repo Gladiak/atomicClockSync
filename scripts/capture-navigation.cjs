@@ -3,10 +3,19 @@
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 module.exports = async function prepareCaptureNavigation(window) {
+  // Keep native input from changing the selected page or closing navigation
+  // while documentation is being captured; scripted DOM/input calls still work.
+  window.setIgnoreMouseEvents(true);
+  window.setFocusable(false);
   window.setContentSize(1264, 740);
   await window.webContents.insertCSS('main{margin-left:236px!important;width:calc(100% - 236px)!important}');
   const run = code => window.webContents.executeJavaScript(code, true);
   await run(`(() => {
+    // Hover and pointer-leave are irrelevant to documentation framing. Native
+    // pointer retargeting can still arrive when the window ignores mouse input.
+    for(const type of ['pointermove','pointerdown','pointerenter','pointerleave']) {
+      document.addEventListener(type,event=>event.stopImmediatePropagation(),true);
+    }
     const sidebar=document.querySelector('.sidebar'),handle=document.getElementById('sidebar-toggle');
     if(sidebar.dataset.expanded==='true')handle.click();
     handle.click();
