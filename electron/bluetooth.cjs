@@ -2,6 +2,7 @@ const { spawn } = require('node:child_process');
 const { existsSync } = require('node:fs');
 const path = require('node:path');
 const { performance } = require('node:perf_hooks');
+const { createDiagnosticLog } = require('./bluetooth-diagnostics.cjs');
 
 const fail = code => Object.assign(new Error(code), { code });
 const codes = new Set(['busy', 'cancelled', 'uncertain', 'protocol', 'timeout', 'bluetooth', 'unsupported', 'offset']);
@@ -20,9 +21,11 @@ function helperCommand({ packaged, resourcesPath, root, platform = process.platf
   throw fail('unavailable');
 }
 
-function createBluetoothService({ command, synchronize, onEvent = () => {}, spawnProcess = spawn, monotonic = () => performance.now() }) {
+function createBluetoothService({ command, synchronize, onEvent = () => {}, spawnProcess = spawn, monotonic = () => performance.now(), version = '' }) {
   let worker = null, operation = null, closing = null, sequence = 0;
   let devices = new Map();
+  const diagnostics = createDiagnosticLog({ version });
+  const record = (event, fields = {}) => { diagnostics.record(event, fields); trace(event, fields); };
 
   async function stopWorker() {
     if (!worker) return closing;
@@ -64,7 +67,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
       // Long model-specific handshakes must not age the internet reference.
       // Request it only after the watch is ready for the single time write.
       const ref = await synchronize();
-      trace('ntp-ready', { uncertaintyMs: ref.uncertaintyMs });
+      record('ntp-ready', { uncertaintyMs: ref.uncertaintyMs });
       if (op.cancelled || operation !== op || worker !== instance || !op.pending) return;
       const age = monotonic() - ref.monotonicMs;
       if (![ref.epochMs, ref.offsetMs, ref.monotonicMs, ref.uncertaintyMs].every(Number.isFinite) ||
@@ -81,7 +84,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
   async function ensureWorker() {
     if (worker) return worker.ready;
     const spec = command();
-    trace('worker-start', { executable: spec.executable });
+    record('worker-start');
     const child = spawnProcess(spec.executable, spec.args, { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false });
     let readyResolve, readyReject;
     const ready = new Promise((resolve, reject) => { readyResolve = resolve; readyReject = reject; });
@@ -102,10 +105,10 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
       }
     };
     child.on('error', lost);
-    child.on('close', (code, signal) => { trace('worker-close', { code, signal }); lost(); });
+    child.on('close', (code, signal) => { record('worker-close', { code: String(code), signal }); lost(); });
     child.stdin.on('error', lost);
     // Consume diagnostics without exposing addresses/driver-specific text to UI.
-    child.stderr.on('data', chunk => { if (process.env.ATOMIC_BLUETOOTH_DEBUG === '1') process.stderr.write(chunk); });
+    child.stderr.on('data', chunk => { diagnostics.stderr(chunk); if (process.env.ATOMIC_BLUETOOTH_DEBUG === '1') process.stderr.write(chunk); });
     child.stdout.on('data', chunk => {
       buffer += chunk.toString();
       if (buffer.length > 32768) { readyReject(fail('protocol')); stopWorker(); return; }
@@ -117,7 +120,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
         if (!value || typeof value !== 'object') continue;
         if (!value.event) child.emit('message-finished');
         if (worker !== instance) continue;
-        if (value.event === 'ready' && value.version === 1) { clearTimeout(timer); readyResolve(); continue; }
+        if (value.event === 'ready' && value.version === 1) { record('worker-ready'); clearTimeout(timer); readyResolve(); continue; }
         const op = operation;
         if (!op || value.id !== op.id || op.cancelled) continue;
         if (value.event === 'device' && op.kind === 'scan') {
@@ -131,9 +134,11 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
             device.instructions = ['ga', 'gwg', 'gst'].includes(item.instructions) ? item.instructions : 'manual';
           }
           devices.set(item.id, device); onEvent({ type: 'device', device });
+          record('scan-found', { model: device.model });
         } else if (value.event === 'stage' && op.kind === 'sync' && ['connecting', 'reading', 'sending'].includes(value.stage)) {
           if (value.stage === 'sending') op.writing = true;
           onEvent({ type: 'stage', stage: value.stage });
+          record('stage', { stage: value.stage });
         } else if (value.event === 'clock') {
           void provideClock(op, instance);
         } else if (!value.event && op.pending) {
@@ -163,15 +168,16 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
     if (operation || closing) return { ok: false, code: 'busy' };
     const op = { kind, id: ++sequence, cancelled: false, pending: null, writing: false };
     operation = op;
-    trace('operation-start', { operation: kind, id: op.id });
+    record('operation-start', { operation: kind, id: op.id });
     try {
       await ensureWorker();
       if (op.cancelled) throw fail('cancelled');
       const result = await action(op);
       if (op.cancelled) throw fail(op.writing ? 'uncertain' : 'cancelled');
+      record('operation-complete', { operation: kind, ok: true });
       return { ok: true, ...result };
     } catch (error) {
-      trace('operation-failure', { operation: kind, code: error.code || 'bluetooth' });
+      record('operation-failure', { operation: kind, code: error.code || 'bluetooth' });
       // The helper already disconnected before reporting missing offset.
       // Keep the selected opaque token so an explicit-offset retry is usable.
       if (error.code !== 'offset') await stopWorker();
@@ -183,6 +189,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
 
   return {
     get active() { return Boolean(operation || closing); },
+    diagnostics: () => diagnostics.text(),
     scan: () => run('scan', async op => {
       devices.clear();
       await request(op);

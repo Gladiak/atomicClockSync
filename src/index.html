@@ -266,7 +266,7 @@
     </div>
     <div class="rl-footnote"><span>Local observations, not measured signal strength. Results depend on your hardware and conditions.</span><button class="text-button" data-goto="history">Update GET / ERR in History ↗</button></div>
   </section>
-  <section id="page-history" class="page" aria-label="History" hidden><section class="history-section panel"><div class="section-heading"><h2>All trials <span class="muted-text" id="history-count"></span></h2><button id="clear-history" class="text-button" hidden>Clear</button></div><div id="history-list" class="history-list"></div><div class="pagination"><button id="history-prev" class="secondary-button">← Previous</button><span id="history-page" class="muted-text"></span><button id="history-next" class="secondary-button">Next →</button></div><p class="muted-text">Outcomes entered by you · 8 trials per page · local archive.</p></section></section>
+  <section id="page-history" class="page" aria-label="History" hidden><section class="history-section panel"><div class="section-heading"><h2>All trials <span class="muted-text" id="history-count"></span></h2><button id="clear-history" class="text-button" hidden>Clear</button></div><div id="history-list" class="history-list"></div><div class="pagination"><button id="history-prev" class="secondary-button">← Previous</button><span id="history-page" class="muted-text"></span><button id="history-next" class="secondary-button">Next →</button></div><p class="muted-text">Radio outcomes entered by you · Bluetooth outcomes recorded by the app · 8 per page.</p></section></section>
   <section id="page-trial" class="page" aria-label="Trial details" hidden>
     <section class="panel trial-panel"><div class="section-heading"><h2 id="trial-title">Trial details</h2><div><button class="text-button" data-goto="reception-lab">Reception Lab ↗</button> <button class="text-button" data-goto="history">← History</button></div></div><div id="trial-facts" class="trial-facts"></div><p id="trial-position" class="trial-note"></p><p id="trial-events" class="trial-note"></p><div class="trial-outcome"><label for="trial-outcome">Outcome on your Casio</label><select id="trial-outcome"><option value="unverified">Not verified</option><option value="get">GET · reception successful</option><option value="err">ERR · reception failed</option></select><button id="trial-save-outcome" class="secondary-button">Save outcome</button><button id="trial-accuracy" class="text-button">Track accuracy ↗</button><button id="trial-restore" class="primary-button">Use these settings</button></div><p class="muted-text">You confirm the outcome. You can update it after transmission has finished.</p></section>
   </section>
@@ -359,6 +359,7 @@
   <p id="bluetooth-profile" class="bt-scope"></p>
   <label id="bluetooth-offset-field" class="bt-offset" hidden><span>Current watch UTC offset (including summer time)</span><select id="bluetooth-offset" aria-label="Current watch UTC offset (including summer time)"><option value="">Choose an offset</option></select><small>Reconnect the watch before updating. This value is used only to calculate its local time.</small></label>
   <p id="bluetooth-status" class="bt-status" role="status" aria-live="polite"></p>
+  <button id="bluetooth-logs" class="text-button bt-log-trigger" aria-haspopup="dialog" aria-controls="bluetooth-log-dialog">Open logs</button>
   <div class="bt-scope">
     <div class="bt-info" role="note">
       <p id="bluetooth-instructions">GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.</p>
@@ -366,6 +367,14 @@
     </div>
   </div>
   <div class="bt-actions"><button id="bluetooth-search" class="text-button">Search again</button><button id="bluetooth-close" class="secondary-button">Close</button><button id="bluetooth-update" class="primary-button" disabled>Update time</button></div>
+</dialog>
+<dialog id="bluetooth-log-dialog" class="bt-dialog bt-log-dialog" aria-labelledby="bluetooth-log-title" aria-describedby="bluetooth-log-intro">
+  <span class="tiny-label">BLUETOOTH · <span>Diagnostics</span></span>
+  <h2 id="bluetooth-log-title">Bluetooth logs</h2>
+  <p id="bluetooth-log-intro">Recent attempts, successful or unsuccessful. Kept in memory until you quit the app. Device addresses and settings values are excluded.</p>
+  <textarea id="bluetooth-log-text" readonly spellcheck="false" translate="no" aria-label="Bluetooth diagnostic log"></textarea>
+  <p id="bluetooth-log-feedback" role="status" aria-live="polite"></p>
+  <div class="bt-actions"><button id="bluetooth-log-refresh" class="text-button">Refresh log</button><button id="bluetooth-log-close" class="secondary-button">Close</button><button id="bluetooth-log-copy" class="primary-button">Copy log</button></div>
 </dialog>
 </body>
 </html>

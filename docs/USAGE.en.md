@@ -75,6 +75,18 @@ Closing, locking, suspending or quitting cancels Bluetooth. Radio transmission
 and Bluetooth are mutually exclusive. Bluetooth does not create radio GET trials
 or journal measurements automatically.
 
+Bluetooth **Update time** attempts now appear in **History** alongside radio
+trials. Details show model/module, duration, reference and the app's outcome:
+sent, failed, cancelled or uncertain. These records survive restarting the app;
+an interrupted pending update becomes uncertain. Bluetooth entries do not count
+toward Reception Lab's radio GET/ERR rates. Clear/undo covers both types.
+
+**Open logs** is always available in the Bluetooth dialog, including after a
+successful update. Its popup keeps the last 400 technical events for the current
+app session. Use **Refresh log** or **Copy log** to inspect or share the report;
+closing it leaves Bluetooth running. Addresses and setting payloads are excluded.
+The report is cleared when you quit the app and is never uploaded automatically.
+
 The support is experimental and independent of Casio. GA-B2100C, GWG-B1000 and GST-B1000
 have physical time-update confirmations on macOS; other profiles still need
 watch tests. Wear OS is excluded. Unknown models need an actual writable

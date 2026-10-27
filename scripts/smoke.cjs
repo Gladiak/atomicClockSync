@@ -168,7 +168,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.querySelectorAll('.history-row').length"), 8);
     await assertFits();
     const stationRows=await run("[...document.querySelectorAll('.history-row')].map(row=>row.children[1].textContent.split(' · ')[0])");
-    assert.deepEqual(stationRows.slice(0,5), ['DCF77','MSF','WWVB','JJY','BPC']);
+    assert.deepEqual(stationRows, ['DCF77','DCF77','MSF','MSF','WWVB','WWVB','JJY','BPC']);
     await run("localStorage.setItem('atomic.history','[]')");
     window.webContents.reload();
     await new Promise(resolve => window.webContents.once('did-finish-load', resolve));

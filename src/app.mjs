@@ -13,6 +13,7 @@ import { createGuide } from './guide.mjs';
 import { createSidebar } from './sidebar.mjs';
 import { createSectionTransitions } from './section-transitions.mjs';
 import { createBluetoothSync } from './bluetooth-sync.mjs';
+import { BLUETOOTH_HISTORY_KEY, BLUETOOTH_OUTCOMES, normalizeBluetoothHistory, mergeSynchronizationHistory } from './bluetooth-history.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, getLanguage, setLanguage, onLanguageChange, localizeDocument, localizeStoredMessage } from './i18n.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
 
@@ -40,6 +41,7 @@ let activeProfileId = readSaved('atomic.activeProfile', null);
 if (!profiles.some(p => p.id === activeProfileId)) activeProfileId = null;
 let editingProfileId = activeProfileId;
 let history = normalizeHistory(readSaved('atomic.history', []));
+let bluetoothHistory = normalizeBluetoothHistory(readSaved(BLUETOOTH_HISTORY_KEY, []));
 let historyPage = 0;
 let selectedTrialId = null;
 let anchor = { epoch: Date.now(), mono: performance.now() };
@@ -97,6 +99,12 @@ const accuracyView = createWatchAccuracy({
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 const bluetoothView = createBluetoothSync({ desktop,
+  getNow: now,
+  recordAttempt: attempt => {
+    const index = bluetoothHistory.findIndex(item => item.id === attempt.id);
+    if (index < 0) bluetoothHistory.unshift(attempt); else bluetoothHistory[index] = attempt;
+    historyPage = 0; persist(BLUETOOTH_HISTORY_KEY, bluetoothHistory); renderHistory();
+  },
   getLocked: () => Boolean(session) || busy || syncing,
   setBusy: active => { bluetoothBusy = active; setControls(); },
   acceptReference: value => {
@@ -280,27 +288,30 @@ async function stop(status = 'stopped', reason = '') {
 
 function renderHistory() {
   receptionLab.refresh();
+  const all = mergeSynchronizationHistory(history, bluetoothHistory);
   $('history-list').replaceChildren();
-  $('clear-history').hidden = !history.length;
-  historyPage = Math.max(0, Math.min(historyPage, Math.ceil(history.length / 8) - 1));
-  $('history-count').textContent = `· ${history.length}`;
+  $('clear-history').hidden = !all.length;
+  historyPage = Math.max(0, Math.min(historyPage, Math.ceil(all.length / 8) - 1));
+  $('history-count').textContent = `· ${all.length}`;
   $('history-prev').disabled = historyPage === 0;
-  $('history-next').disabled = (historyPage + 1) * 8 >= history.length;
-  $('history-page').textContent = `${historyPage + 1} / ${Math.max(1, Math.ceil(history.length / 8))}`;
-  if (!history.length) {
+  $('history-next').disabled = (historyPage + 1) * 8 >= all.length;
+  $('history-page').textContent = `${historyPage + 1} / ${Math.max(1, Math.ceil(all.length / 8))}`;
+  if (!all.length) {
     const p = document.createElement('p');
     p.className = 'empty-history';
-    p.textContent = t("No trials yet. Start your first transmission to build your history.");
+    p.textContent = t('No synchronizations yet. Start a radio or Bluetooth attempt.');
     $('history-list').append(p);
   }
   const statuses = { confirmed: t("Outcome not verified"), complete: t("Finished · check reception"), interrupted: t("Interrupted by audio or system"), stopped: t("Stopped manually") };
-  for (const item of history.slice(historyPage * 8, (historyPage + 1) * 8)) {
+  for (const item of all.slice(historyPage * 8, (historyPage + 1) * 8)) {
+    const bluetooth = item.type === 'bluetooth';
     const row = document.createElement('div');
     row.className = 'history-row';
+    row.dataset.type = bluetooth ? 'bluetooth' : 'radio';
     for (const [value, className] of [[historyFormatter.format(item.at), 'history-date'],
-      [`${STATIONS.find(station => station.id === item.stationId)?.name || 'DCF77'} · ${Math.floor(item.seconds / 60)}m ${pad(item.seconds % 60)}s`, ''],
-      [item.snapshot?.watch.name || t("Custom settings"), 'history-watch'],
-      [item.outcome === 'get' ? t("✓ Reception confirmed by you") : item.outcome === 'err' ? t("ERR · reception failed") : statuses[item.status], `history-status ${item.outcome === 'get' ? 'confirmed' : item.status}`]]) {
+      [`${bluetooth ? 'Bluetooth' : STATIONS.find(station => station.id === item.stationId)?.name || 'DCF77'} · ${Math.floor(item.seconds / 60)}m ${pad(item.seconds % 60)}s`, ''],
+      [bluetooth ? item.watch.name || item.watch.model : item.snapshot?.watch.name || t("Custom settings"), 'history-watch'],
+      [bluetooth ? t(BLUETOOTH_OUTCOMES[item.outcome]) : item.outcome === 'get' ? t("✓ Reception confirmed by you") : item.outcome === 'err' ? t("ERR · reception failed") : statuses[item.status], `history-status ${item.outcome === 'get' ? 'confirmed' : item.status || item.outcome}`]]) {
       const span = document.createElement('span');
       span.textContent = value;
       span.className = className;
@@ -397,9 +408,30 @@ function rememberSuccess(trial) {
 }
 
 function openTrial(id) {
-  const trial = history.find(t => t.id === id);
+  const trial = history.find(t => t.id === id) || bluetoothHistory.find(t => t.id === id);
   if (!trial) return;
   selectedTrialId = id;
+  const bluetooth = trial.type === 'bluetooth';
+  const panel = $('page-trial').querySelector('.trial-panel');
+  panel.querySelector('.trial-outcome').hidden = bluetooth;
+  panel.querySelector('[data-goto="reception-lab"]').hidden = bluetooth;
+  panel.lastElementChild.hidden = bluetooth;
+  if (bluetooth) {
+    $('trial-title').textContent = `Bluetooth · ${historyFormatter.format(trial.at)}`;
+    fillFacts($('trial-facts'), [
+      [t('Watch'), trial.watch.name || trial.watch.model],
+      [t('Model / module'), [trial.watch.model,trial.watch.module].filter(Boolean).join(' · ')],
+      [t('Connection'), 'Bluetooth'],
+      [t('Duration'), `${Math.floor(trial.seconds / 60)}m ${pad(trial.seconds % 60)}s`],
+      [t('Bluetooth result'), t(BLUETOOTH_OUTCOMES[trial.outcome])],
+      [t('Time source'), trial.reference?.host || t('Not recorded')],
+      [t('NTP offset / uncertainty'), trial.reference ? `${decimal(trial.reference.offsetMs,1)} ms / ±${Math.ceil(trial.reference.uncertaintyMs)} ms` : t('Not recorded')],
+      [t('Diagnostic code'), trial.code || '—'],
+    ]);
+    $('trial-position').textContent = t('Bluetooth results describe the app operation. Check the watch to confirm the displayed date and time.');
+    $('trial-events').textContent = '';
+    setControls(); navigate('trial'); return;
+  }
   const snapshot = trial.snapshot, settings = snapshot?.settings;
   const volume = settings ? `${settings.volume}%${trial.endVolume != null && trial.endVolume !== settings.volume ? ` → ${trial.endVolume}%` : ''}` : t("Not recorded");
   $('trial-title').textContent = t("Trial on {0}", historyFormatter.format(trial.at));
@@ -699,12 +731,14 @@ $('trial-restore').addEventListener('click', () => {
 });
 $('clear-history').addEventListener('click', () => {
   const old = history;
-  history = []; persist('atomic.history', history); renderHistory();
+  const oldBluetooth = bluetoothHistory;
+  history = []; bluetoothHistory = [];
+  persist('atomic.history', history); persist(BLUETOOTH_HISTORY_KEY,bluetoothHistory); renderHistory();
   clearTimeout(toastTimer);
   $('toast').replaceChildren(document.createTextNode(t("History cleared. ")));
   const undo = document.createElement('button');
   undo.className = 'text-button'; undo.textContent = t("Undo");
-  undo.onclick = () => { history = [...old, ...history].sort((a, b) => b.at - a.at); persist('atomic.history', history); renderHistory(); $('toast').hidden = true; };
+  undo.onclick = () => { history = [...old, ...history].sort((a, b) => b.at - a.at); bluetoothHistory=[...oldBluetooth,...bluetoothHistory].sort((a,b)=>b.at-a.at); persist('atomic.history', history); persist(BLUETOOTH_HISTORY_KEY,bluetoothHistory); renderHistory(); $('toast').hidden = true; };
   $('toast').append(undo); $('toast').classList.remove('error'); $('toast').hidden = false;
   toastTimer = setTimeout(() => { $('toast').hidden = true; }, 8000);
 });
@@ -761,6 +795,7 @@ $('station-select').addEventListener('change', event => {
 renderStation();
 showProfile(activeProfileId);
 persist('atomic.history', history);
+persist(BLUETOOTH_HISTORY_KEY, bluetoothHistory);
 renderHistory(); renderReference(); setControls(); update(); refreshDevices(); syncClock(true);
 setInterval(update, 100);
 setInterval(() => { if (!session && !busy && (!reference || now() - reference.nowMs > 15 * 60000)) syncClock(true); }, 60000);

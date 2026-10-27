@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, powerSaveBlocker, powerMonitor, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, powerSaveBlocker, powerMonitor, shell, clipboard } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const { performance } = require('node:perf_hooks');
@@ -18,6 +18,7 @@ let blocker = null;
 let syncing = null;
 let issData;
 const bluetooth = createBluetoothService({
+  version: app.getVersion(),
   command: () => helperCommand({ packaged: app.isPackaged, resourcesPath: process.resourcesPath, root: path.join(__dirname, '..') }),
   synchronize,
   onEvent: value => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('bluetooth:event', value); },
@@ -124,6 +125,13 @@ ipcMain.handle('bluetooth:sync', (event, deviceId, offsetMinutes) => {
   return bluetooth.sync(deviceId, offsetMinutes);
 });
 ipcMain.handle('bluetooth:cancel', event => bluetoothClient(event) ? bluetooth.cancel() : { ok: false, code: 'client' });
+ipcMain.handle('bluetooth:diagnostics', event => bluetoothClient(event) ? { ok: true, text: bluetooth.diagnostics() } : { ok: false, code: 'client' });
+ipcMain.handle('bluetooth:copy-diagnostics', event => {
+  if (!bluetoothClient(event)) return { ok: false, code: 'client' };
+  const text = bluetooth.diagnostics();
+  try { clipboard.writeText(text); return { ok: true, text }; }
+  catch { return { ok: false, code: 'clipboard' }; }
+});
 ipcMain.handle('iss:refresh', async event => {
   if(event.sender!==mainWindow?.webContents)throw Error('Unknown ISS client');
   issData ||= createIssDataService({storagePath:path.join(app.getPath('userData'),'iss-cache.json')});

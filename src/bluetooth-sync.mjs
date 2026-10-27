@@ -1,4 +1,5 @@
 import { t, onLanguageChange } from './i18n.mjs';
+import { createBluetoothAttempt, finishBluetoothAttempt } from './bluetooth-history.mjs';
 
 const STATUS = {
   scanning: 'Looking for Casio watches…',
@@ -30,9 +31,11 @@ const INSTRUCTIONS = {
   manual: 'GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.',
 };
 
-export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReference, notify }) {
+export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReference, notify, getNow = Date.now, recordAttempt = () => {} }) {
   const $ = id => document.getElementById(id);
   const dialog = $('bluetooth-dialog');
+  const logDialog = $('bluetooth-log-dialog');
+  let logRequest = 0;
   let devices = new Map(), selected = '', pending = false, status = '', error = false, generation = 0;
   let needsOffset = false;
   for (let minutes = -720; minutes <= 840; minutes += 15) {
@@ -73,6 +76,25 @@ export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReferen
     if (focused) [...$('bluetooth-devices').querySelectorAll('input')].find(input => input.value === focused)?.focus();
   }
 
+  async function loadLog(copy = false) {
+    const request = ++logRequest;
+    $('bluetooth-log-feedback').textContent = '';
+    try {
+      const result = await (copy ? desktop.bluetoothCopyDiagnostics() : desktop.bluetoothDiagnostics());
+      if (request !== logRequest || !logDialog.open) return;
+      if (!result.ok || typeof result.text !== 'string') throw Error('diagnostics');
+      $('bluetooth-log-text').value = result.text;
+      $('bluetooth-log-text').scrollTop = $('bluetooth-log-text').scrollHeight;
+      if (copy) $('bluetooth-log-feedback').textContent = t('Log copied');
+    } catch {
+      if (request === logRequest && logDialog.open) {
+        $('bluetooth-log-feedback').textContent = t(copy ? 'Copy failed. Select the log and copy it manually.' : 'Could not load the diagnostic log. Try again.');
+        if (copy) { $('bluetooth-log-text').focus(); $('bluetooth-log-text').select(); }
+      }
+    }
+  }
+  function closeLog() { ++logRequest; logDialog.close(); $('bluetooth-logs').focus(); }
+
   async function search() {
     if (pending || getLocked()) return;
     const token = ++generation;
@@ -92,10 +114,14 @@ export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReferen
 
   async function update() {
     if (pending || getLocked() || !devices.has(selected)) return;
+    const attempt = createBluetoothAttempt(devices.get(selected), getNow());
+    const started = performance.now();
+    recordAttempt(attempt);
     const token = ++generation;
     pending = true; error = false; status = 'connecting'; setBusy(true); render();
     try {
       const result = await desktop.bluetoothSync(selected, needsOffset && $('bluetooth-offset').value !== '' ? Number($('bluetooth-offset').value) : undefined);
+      recordAttempt(finishBluetoothAttempt(attempt, result, getNow(), (performance.now()-started)/1000));
       if (token !== generation) {
         if (result.code === 'uncertain' || result.sent) notify(t(ERRORS.uncertain), true);
         return;
@@ -106,12 +132,16 @@ export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReferen
         else { devices.clear(); selected = ''; needsOffset = false; }
       }
       else { status = 'sent'; acceptReference(result.reference); }
-    } catch { if (token === generation) { status = 'bluetooth'; error = true; } }
+    } catch {
+      recordAttempt(finishBluetoothAttempt(attempt,{ok:false,code:'uncertain'},getNow(),(performance.now()-started)/1000));
+      if (token === generation) { status = 'bluetooth'; error = true; }
+    }
     finally { if (token === generation) { pending = false; setBusy(false); render(); } }
   }
 
   async function close() {
     if (!dialog.open) return;
+    if (logDialog.open) closeLog();
     ++generation;
     dialog.close();
     pending = true; setBusy(true);
@@ -126,6 +156,12 @@ export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReferen
   $('bluetooth-search').addEventListener('click', search);
   $('bluetooth-update').addEventListener('click', update);
   $('bluetooth-offset').addEventListener('change', render);
+  $('bluetooth-logs').addEventListener('click', () => { if (!logDialog.open) { logDialog.showModal(); loadLog(); } });
+  $('bluetooth-log-refresh').addEventListener('click', () => loadLog());
+  $('bluetooth-log-copy').addEventListener('click', () => loadLog(true));
+  $('bluetooth-log-close').addEventListener('click', closeLog);
+  logDialog.addEventListener('cancel', event => { event.preventDefault(); closeLog(); });
+  logDialog.addEventListener('keydown', event => { if (event.key === 'Escape') event.stopPropagation(); });
   $('bluetooth-close').addEventListener('click', close);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
   desktop.onBluetoothEvent(event => {

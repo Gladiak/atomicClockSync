@@ -121,6 +121,16 @@ check the watch before retrying. Closing, reloading, suspending, locking or
 quitting stops the worker. Radio and Bluetooth operations are mutually exclusive.
 Bluetooth results do not create radio GET trials or accuracy measurements.
 
+Each **Update time** attempt is recorded in **History**, alongside radio trials,
+with model/module, duration, NTP reference and the app outcome (sent, failed,
+cancelled or uncertain). The Bluetooth archive is saved locally under
+`atomic.bluetooth.history.v1`; radio records keep their existing storage.
+Scans alone are not synchronization attempts. A pending attempt survives an app
+restart as uncertain, asking you to check the watch. Bluetooth details are
+read-only; they do not restore audio settings or change Reception Lab statistics.
+History clear/undo includes both types. Older Bluetooth attempts made before
+this feature cannot be reconstructed automatically.
+
 ## Native backends and distribution
 
 The UI remains in Electron. A local worker uses **Bleak 3.0.2**, which selects
@@ -169,6 +179,17 @@ only to an existing draft whose tag matches the exact workflow commit. It never
 publishes the draft.
 
 ## Verification and sources
+
+**Open logs** is always available in the Bluetooth dialog, before, during and
+after an operation, whether it succeeds or fails. The popup shows the last 400
+technical events from the current app session. Choose **Refresh log** to update
+the snapshot or **Copy log** to copy the current report for diagnostics. Closing
+the popup leaves Bluetooth running. Events survive new attempts until you quit
+the app; they are kept in memory, not saved automatically. Reports include app
+version, platform, UTC timestamps, procedure/register names and outcome codes.
+Device addresses, setting payloads, executable paths and raw driver messages
+are excluded. Protocol event names stay in English for support; controls use
+the selected app language. Opening/copying a report does not send it anywhere.
 
 For a real-device failure, quit the running app and launch `npm run start:debug`.
 Retry the Bluetooth operation. The console and a timestamped file under

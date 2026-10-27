@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('desktop', {
   bluetoothScan: () => ipcRenderer.invoke('bluetooth:scan'),
   bluetoothSync: (deviceId, offsetMinutes) => ipcRenderer.invoke('bluetooth:sync', deviceId, offsetMinutes),
   bluetoothCancel: () => ipcRenderer.invoke('bluetooth:cancel'),
+  bluetoothDiagnostics: () => ipcRenderer.invoke('bluetooth:diagnostics'),
+  bluetoothCopyDiagnostics: () => ipcRenderer.invoke('bluetooth:copy-diagnostics'),
   onBluetoothEvent: callback => {
     const handler = (_event, value) => callback(value);
     ipcRenderer.on('bluetooth:event', handler);

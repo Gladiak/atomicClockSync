@@ -3,6 +3,8 @@ Release 1.11.0 · 27 October 2026
 AtomicClockSync 1.11.0 adds **Bluetooth time synchronization** beside radio transmission in **Synchronize**.
 
 - One compact Bluetooth button and a dialog translated into English, Italian, French, German, Spanish and Japanese.
+- Always-available **Open logs** popup with refresh and **Copy log**, during attempts and after success or failure. The last 400 technical events remain in memory until the app closes; device addresses, settings payloads and raw driver messages are excluded.
+- Unified synchronization history includes persistent Bluetooth attempts with watch/model/module, duration, time reference and distinct sent/failed/cancelled/uncertain outcomes. Bluetooth details are read-only and remain separate from radio GET/ERR statistics. Interrupted pending attempts are preserved on restart.
 - Date/time updates only: model-specific procedures preserve existing time configuration; fresh NTP time is obtained immediately before the write. No automatic retries after an uncertain write.
 - Explicit Casio model profiles, including **GA-B2100 / 5689**, **Mudmaster GWG-B1000 / 5713** and **GST-B1000D / 5748**. Wear OS is excluded.
 - GST-B1000 / 5748 initialization avoids the city-name register rejected by a real device; the corrected procedure completed a time update and the user confirmed OK on macOS.
@@ -14,6 +16,6 @@ AtomicClockSync 1.11.0 adds **Bluetooth time synchronization** beside radio tran
 
 **Downloads:** macOS Apple Silicon ZIP, Windows 11 x64 portable EXE, Linux x64 AppImage/DEB/RPM. Packages are unsigned or locally ad-hoc signed and the macOS app is not notarized. Verify downloads with **SHA256SUMS.txt**.
 
-**Validation:** 98 JavaScript tests and 28 Python Bluetooth tests; native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Bluetooth UI/protocol tests substitute hardware; physical validation is limited to the watch updates reported above.
+**Validation:** 105 JavaScript tests and 28 Python Bluetooth tests; native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Bluetooth UI/protocol tests substitute hardware; physical validation is limited to the watch updates reported above.
 
 See the [Bluetooth guide](https://github.com/Gladiak/atomicClockSync/blob/main/docs/BLUETOOTH.md), [model catalogue](https://github.com/Gladiak/atomicClockSync/blob/main/docs/BLUETOOTH_MODELS.md) and [changelog](https://github.com/Gladiak/atomicClockSync/blob/main/docs/RELEASE_NOTES.md).

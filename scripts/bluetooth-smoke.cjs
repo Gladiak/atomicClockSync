@@ -1,5 +1,5 @@
 // Real Electron/DOM/preload; only Bluetooth hardware and NTP are substituted.
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, clipboard } = require('electron');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -24,6 +24,9 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const errors = [];
 
 app.whenReady().then(async () => {
+  // Exercise the real diagnostics/copy IPC without changing the user's clipboard.
+  const copied = [], originalCopy = clipboard.writeText;
+  clipboard.writeText = text => copied.push(text);
   const window = BrowserWindow.getAllWindows()[0]; window.hide(); window.webContents.setAudioMuted(true);
   window.webContents.on('console-message', details => { if (details.level === 'error') errors.push(details.message); });
   const run = script => window.webContents.executeJavaScript(script, true);
@@ -54,12 +57,32 @@ app.whenReady().then(async () => {
     fs.writeFileSync(path.join(__dirname, '../artifacts', name), (await window.webContents.capturePage()).toPNG());
     window.hide();
   }
+  async function checkLog(copy = false) {
+    const cancellations = cancelCount;
+    assert.equal(await run("document.getElementById('bluetooth-logs').disabled"), false);
+    await run("document.getElementById('bluetooth-logs').click()");
+    await until("document.getElementById('bluetooth-log-dialog').open && document.getElementById('bluetooth-log-text').value.startsWith('AtomicClockSync')");
+    assert.equal(await run("(() => {const r=document.getElementById('bluetooth-log-dialog').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()"),true);
+    if (copy) {
+      await run("document.getElementById('bluetooth-log-copy').click()");
+      await until("document.getElementById('bluetooth-log-feedback').textContent.length>0");
+      assert.equal(copied.at(-1),await run("document.getElementById('bluetooth-log-text').value"));
+      assert.ok(!await run("document.getElementById('bluetooth-log-feedback').textContent.includes('failed')"));
+    }
+    await run("document.getElementById('bluetooth-log-refresh').click()");
+    window.webContents.sendInputEvent({type:'keyDown',keyCode:'Escape'});
+    window.webContents.sendInputEvent({type:'keyUp',keyCode:'Escape'});
+    await until("!document.getElementById('bluetooth-log-dialog').open");
+    assert.equal(await run("document.getElementById('bluetooth-dialog').open"),true);
+    assert.equal(cancelCount,cancellations,'Log popup must not cancel Bluetooth');
+  }
   try {
     if (window.webContents.isLoading()) await new Promise(resolve => window.webContents.once('did-finish-load', resolve));
     await until("document.getElementById('hours').textContent !== '--' && !document.getElementById('start-button').disabled");
     const originalHistory = await run("localStorage.getItem('atomic.history')");
     await capture('bluetooth-button.png');
     await open();
+    await checkLog(true);
     assert.equal(await run("document.getElementById('start-button').disabled && document.getElementById('sync-button').disabled"), true);
     await selectWatch();
     await capture('bluetooth-dialog.png');
@@ -68,8 +91,11 @@ app.whenReady().then(async () => {
     window.webContents.send('bluetooth:event', { type: 'stage', stage: 'reading' });
     finishSync({ ok: true, sent: true, reference: reference() });
     await until("document.getElementById('bluetooth-status').textContent.startsWith('Time sent.')");
+    await checkLog(true);
     assert.equal(await run("document.getElementById('bluetooth-update').disabled"), true);
     assert.equal(await run("localStorage.getItem('atomic.history')"), originalHistory);
+    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.bluetooth.history.v1')).length"),1);
+    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.bluetooth.history.v1'))[0].outcome"),'sent');
     await run("document.getElementById('bluetooth-close').click()");
     await until("!document.getElementById('bluetooth-dialog').open && !document.getElementById('bluetooth-button').disabled");
 
@@ -120,6 +146,7 @@ app.whenReady().then(async () => {
         await run("document.getElementById('bluetooth-update').click()");
         await pause(50); finishSync({ ok: false, code: 'offset' });
         await until("!document.getElementById('bluetooth-offset-field').hidden");
+        await checkLog(true);
         assert.equal(await run(`(() => {const r=document.getElementById('bluetooth-dialog').getBoundingClientRect();return r.left>=0 && r.top>=0 && r.right<=innerWidth && r.bottom<=innerHeight;})()`), true);
         assert.equal(await run("document.querySelector('#bluetooth-dialog img') === null"), true);
         if (language !== 'en') assert.notEqual(await run("document.getElementById('bluetooth-title').textContent"), 'Update time via Bluetooth');
@@ -132,9 +159,36 @@ app.whenReady().then(async () => {
     scanError = 'unavailable';
     await run("document.getElementById('bluetooth-button').click()");
     await until("document.getElementById('bluetooth-status').classList.contains('bt-error')");
+    await checkLog(true);
     assert.equal(await run("document.getElementById('bluetooth-update').disabled"), true);
     await run("document.getElementById('bluetooth-close').click()");
     await until("!document.getElementById('start-button').disabled");
+    const savedBluetooth = await run("localStorage.getItem('atomic.bluetooth.history.v1')");
+    assert.ok(JSON.parse(savedBluetooth).some(entry=>entry.outcome==='failed'));
+    assert.ok(JSON.parse(savedBluetooth).some(entry=>entry.outcome==='uncertain'));
+    await run("localStorage.setItem('atomic.history',JSON.stringify([{id:'radio-fixture',at:Date.now()-86400000,seconds:60,status:'confirmed',stationId:'dcf77',outcome:'get'}]))");
+    window.webContents.reload();
+    await new Promise(resolve=>window.webContents.once('did-finish-load',resolve));
+    await until("!document.getElementById('start-button').disabled");
+    assert.deepEqual(await run("JSON.parse(localStorage.getItem('atomic.bluetooth.history.v1'))"),JSON.parse(savedBluetooth));
+    for(const language of ['en','it','fr','de','es','ja']) {
+      await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'));document.querySelector('[data-page=history]').click()`);
+      assert.ok(await run("document.querySelectorAll('.history-row[data-type=bluetooth]').length>0"));
+      assert.equal(await run("[...document.querySelectorAll('.history-row[data-type=bluetooth]')].every(row=>row.children[1].textContent.startsWith('Bluetooth'))"),true);
+      await run("document.querySelector('.history-row[data-type=bluetooth] button').click()");
+      assert.equal(await run("document.querySelector('.trial-outcome').hidden"),true);
+      assert.equal(await run("document.getElementById('trial-restore').disabled"),true);
+      assert.equal(await run("document.getElementById('trial-facts').textContent.includes('DCF77')"),false);
+      assert.equal(await run("document.getElementById('trial-facts').textContent.includes('Bluetooth')"),true);
+    }
+    await run("document.querySelector('[data-page=history]').click();document.getElementById('clear-history').click()");
+    assert.equal(await run("document.querySelectorAll('.history-row').length"),0);
+    await run("document.querySelector('#toast button').click()");
+    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.bluetooth.history.v1')).length"),JSON.parse(savedBluetooth).length);
+    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.history')).length"),1);
+    await run("document.querySelector('[data-page=reception-lab]').click()");
+    assert.equal(await run("document.getElementById('rl-rate').textContent"),'100%');
+    await run("document.querySelector('[data-page=sync]').click()");
     await run("document.getElementById('start-button').click()");
     await until("document.getElementById('start-button').classList.contains('running')");
     assert.equal(await run("document.getElementById('bluetooth-button').disabled"), true);
@@ -143,7 +197,8 @@ app.whenReady().then(async () => {
     await run("document.getElementById('start-button').click()");
     await until("!document.getElementById('start-button').disabled");
     assert.deepEqual(errors, []);
-    console.log('PASS: Bluetooth button/dialog, Mudmaster and GST-B1000 model instructions, explicit-offset retry, preload, selection, NTP reference, exclusive controls, cancellation/late replies, unavailable backend, six languages and light/dark layouts. Hardware substituted; no Bluetooth adapter accessed.');
+    console.log('PASS: Bluetooth dialog, confirmed GST-B1000, always-available diagnostics/copy/Escape, persistent Bluetooth and radio history with clear/undo, read-only Bluetooth details and isolated radio statistics, six languages, light/dark layouts, offset retry, NTP and audio isolation. Hardware substituted; no Bluetooth adapter accessed.');
     app.exit(0);
   } catch (error) { console.error(error); app.exit(1); }
+  finally { clipboard.writeText = originalCopy; }
 });

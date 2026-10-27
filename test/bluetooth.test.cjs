@@ -146,3 +146,22 @@ test('protocol rejection does not request internet time or authorize a write', a
   assert.equal(checks, 0);
   assert.equal(h.clock, null);
 });
+
+test('diagnostics remain available before, during and after successful and unsuccessful attempts', async () => {
+  for (const options of [{}, {syncCode:'protocol'}]) {
+    const h=setup(options);
+    assert.equal(h.children.length,0);
+    assert.match(h.service.diagnostics(),/Bluetooth diagnostics/);
+    assert.equal(h.children.length,0);
+    await h.service.scan();
+    h.children[0].stderr.emit('data', Buffer.from('[Bluetooth] {"event":"read","register":"1d00","address":"private-address"}\n'));
+    await h.service.sync(id);
+    assert.match(h.service.diagnostics(),/1d00/);
+    assert.match(h.service.diagnostics(),options.syncCode?/operation-failure/:/"operation":"sync","ok":true/);
+    assert.ok(!h.service.diagnostics().includes('private-address'));
+    await h.service.cancel();
+    await h.service.scan();
+    assert.match(h.service.diagnostics(),/1d00/,'New scan retains previous attempt');
+    await h.service.cancel();
+  }
+});

@@ -43,7 +43,7 @@ export const MANUAL_CHAPTERS = [
     "purpose": "Update a compatible Casio watch’s date and time over Bluetooth from the Synchronize screen. This mode is independent of audio transmission.",
     "note": "Bluetooth support is experimental and excludes Wear OS. “Time sent” means the write completed; check the watch. Cancelled writes can be uncertain, so check before retrying.",
     "body": [
-      "Stop radio transmission, open Bluetooth and disconnect CASIO WATCHES. Put the watch in connection mode, select it as soon as it appears and choose Update time. Model-specific instructions and physical-validation status appear after selection.",
+      "Stop radio transmission, open Bluetooth and disconnect CASIO WATCHES. Put the watch in connection mode, select it as soon as it appears and choose Update time. Model-specific instructions and physical-validation status appear after selection. Open logs is always available, before or after any result. Read the recent session events, refresh them or choose Copy log to share a diagnostic report.",
       "The app reads the watch’s existing time configuration and obtains fresh NTP time immediately before sending date and time. Home City, DST rules, alarms and other settings are preserved. If the current watch UTC offset is unavailable, confirm its current offset including summer time, reconnect and update again."
     ],
     "example": "GA-B2100 / 5689: hold C for at least three seconds until CNCT flashes. GWG-B1000 / 5713: hold B for at least five seconds. GST-B1000D / 5748: hold B for at least 2.5 seconds until R. GW-9500 / 3553 has no Bluetooth; use radio synchronization.",
@@ -113,7 +113,7 @@ export const MANUAL_CHAPTERS = [
     "purpose": "Review immutable transmission snapshots and record what actually happened on the watch.",
     "note": "Profiles can change while earlier snapshots remain intact. Clearing history offers an immediate undo. A reported GET does not prove a zero-offset accuracy reading.",
     "body": [
-      "History preserves the circumstances of each transmission, rather than just its final label. Opening a trial reveals the settings used, actual duration, reference information and any interruption or live volume changes. Earlier snapshots stay intact when a profile changes.",
+      "History preserves the circumstances of each transmission, rather than just its final label. Opening a trial reveals the settings used, actual duration, reference information and any interruption or live volume changes. Earlier snapshots stay intact when a profile changes. Bluetooth attempts appear in the same timeline with model, module, duration, NTP reference and the app’s result. Sent, failed, cancelled and uncertain are distinct; Bluetooth entries do not contribute to radio GET/ERR statistics.",
       "The outcome belongs to your observation of the watch. You can record GET, ERR or leave it unverified, including after transmission has ended. Those choices feed Reception Lab. A linked GET can also propose an accuracy correction event for you to review before saving."
     ],
     "example": "If you notice GET only after the transmission finishes, open that trial and update its outcome. The laboratory recomputes the rate; the original audio settings and duration remain unchanged.",

@@ -14,6 +14,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 
 - **Bluetooth time update (experimental):** one compact button in Synchronize supports explicit Casio family profiles, including GA-B2100 / 5689 and Mudmaster GWG-B1000 / 5713, with standard, analogue and dedicated time procedures. Only date/time is updated; Wear OS is excluded. GA-B2100C, GWG-B1000 and GST-B1000 time updates are physically confirmed on macOS; other models and SP/MIP firmware have validation limits. See [compatibility, setup and builds](docs/BLUETOOTH.md).
 - **Watch Accuracy:** per-watch offset journal, segmented drift graphs, local/UTC references, correction events and JSON/CSV exports.
+- **Bluetooth diagnostics and history:** always-available log viewer with refresh/copy, plus persistent Bluetooth attempts alongside radio history. Sent, failed, cancelled and uncertain results stay distinct from radio GET/ERR outcomes.
 - **Reception Lab:** per-watch GET/ERR statistics, recorded-configuration groups, A/B comparison and preparation of a trial changing one audio setting.
 - **Light Travel:** a cinematic offline Solar System, nine light sources, date-dependent travel times, departure/reception clocks and a controllable photon journey.
 - **Moon Observatory:** offline lunar phases, illumination, distance, local moonrise/moonset, upcoming quarters and an independent timeline shared with your World View city.

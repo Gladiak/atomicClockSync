@@ -528,6 +528,12 @@ h1>span {
 .bt-dialog .bt-scope { border-top:1px solid var(--line); padding-top:12px; font-size:11px; }
 .bt-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:20px; }
 .bt-actions .text-button { margin-right:auto; }
+.bt-log-trigger { display:block; margin:0 0 10px auto; padding:4px 0; font-size:11px; }
+.bt-log-dialog { width:min(680px,calc(100vw - 60px)); }
+.bt-log-dialog textarea { display:block; box-sizing:border-box; width:100%; height:min(330px,44vh); resize:none; overflow:auto; padding:12px; border:1px solid var(--border-control); border-radius:6px; background:var(--surface-secondary); color:var(--text); font:11px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace; white-space:pre; }
+.bt-log-dialog #bluetooth-log-feedback { min-height:19px; margin:8px 0 0; color:var(--accent-text); }
+@media (prefers-reduced-motion:no-preference) { .bt-log-dialog[open] { animation:bt-log-enter 180ms ease-out; } }
+@keyframes bt-log-enter { from { opacity:0; transform:translateY(8px) scale(.985); } to { opacity:1; transform:none; } }
 .primary-button {
   display:flex;
   align-items:center;

@@ -26,6 +26,7 @@ app.whenReady().then(async()=>{
   const history=[0,1,2,3].map((n)=>({id:'manual-trial-'+n,at:now-(n+1)*day,endedAt:now-(n+1)*day+600000,seconds:600,status:'stopped',outcome:n===1?'err':n===3?'unverified':'get',stationId:'dcf77',snapshot:{profileId:'manual-watch',settings:{...settings,volume:n===1?25:30},watch,deviceLabel:'Default system output'},volumeChanges:[],endVolume:n===1?25:30}));
   const entries=[0,2,5,9].map((n,i)=>({id:'manual-reading-'+i,profileId:'manual-watch',watchName:watch.name,type:'measurement',at:now-(10-n)*day,offsetSeconds:3+n*.8+(i===2?.2:0),readingStep:1,method:'manual-offset',reference:{kind:'manual'},conditions:{wear:'resting',position:'Dial up',temperature:21},note:''}));
   await run(`localStorage.setItem('atomic.profiles',JSON.stringify(${JSON.stringify(profiles)}));localStorage.setItem('atomic.activeProfile',JSON.stringify('manual-watch'));localStorage.setItem('atomic.history',JSON.stringify(${JSON.stringify(history)}));localStorage.setItem('atomic.accuracy.v1',JSON.stringify({version:1,entries:${JSON.stringify(entries)}}));`);
+  await run(`localStorage.setItem('atomic.bluetooth.history.v1',JSON.stringify([{id:'manual-bluetooth',type:'bluetooth',at:${now-day/2},endedAt:${now-day/2+5000},seconds:5,outcome:'sent',code:'',watch:{name:'CASIO GST-B1000',model:'GST-B1000',module:'5748'},reference:{host:'Reference · sample',offsetMs:0,uncertaintyMs:12,synchronizedAt:${now-day/2+4000}}}]))`);
   win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
   const routes=['sync','reception-lab','signal','profiles','watch-accuracy','history','world','moon','iss','light-travel','time-machine','back-in-time','settings'];
   for(const language of ['en','it','fr','de','es','ja']){
@@ -33,7 +34,8 @@ app.whenReady().then(async()=>{
    await change('language-select',language);await run("document.fonts.ready.then(()=>true)");
    if(language==='ja')await run("document.fonts.load('12px \"Atomic Noto Sans JP\"','日本語').then(()=>true)");
    const output=path.join(__dirname,'../assets/guide',language);fs.mkdirSync(output,{recursive:true});
-   for(const route of routes){
+   const selectedRoutes=process.env.ATOMIC_CAPTURE_ROUTES?routes.filter(route=>process.env.ATOMIC_CAPTURE_ROUTES.split(',').includes(route)):routes;
+   for(const route of selectedRoutes){
     await run(`document.querySelector('[data-page="${route}"]').click()`);
     if(route==='world')await until("document.getElementById('world-loading').hidden");
     if(route==='time-machine')await run("document.querySelector('[data-event=einstein-gravity]').click()");
@@ -61,7 +63,7 @@ app.whenReady().then(async()=>{
     await run("document.getElementById('manual-reader').scrollTop=0;document.activeElement.blur()");await pause(250);
     fs.writeFileSync(path.join(__dirname,'../docs/images/guide.png'),(await win.webContents.capturePage()).toPNG());
    }
-   console.log('Captured 14 real manual screenshots: '+language+' (Bluetooth detection simulated)');
+   console.log('Captured '+(selectedRoutes.length+(selectedRoutes.includes('sync')?1:0))+' real manual screenshots: '+language+' (Bluetooth detection simulated)');
   }
   app.exit(0);
  }catch(error){console.error(error.stack);app.exit(1);}
