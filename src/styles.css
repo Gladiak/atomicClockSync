@@ -497,6 +497,25 @@ h1>span {
   display:flex;
   gap:8px;
 }
+#bluetooth-button { display:flex; align-items:center; justify-content:center; gap:5px; }
+#bluetooth-button svg { width:14px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; }
+.bt-dialog { width:min(470px,calc(100vw - 60px)); padding:25px; border:1px solid var(--border-control); border-radius:10px; background:var(--panel); color:var(--text); box-shadow:0 24px 90px #0008; }
+.bt-dialog::backdrop { background:#0009; }
+.bt-dialog { max-height:90vh; overflow:auto; }
+.bt-offset:not([hidden]) { display:grid; gap:8px; font-size:12px; margin:12px 0; }
+.bt-offset select { width:100%; padding:8px; color:var(--text); background:var(--surface-secondary); border:1px solid var(--border-control); border-radius:5px; }
+.bt-offset small { color:var(--muted); line-height:1.5; }
+.bt-dialog h2 { margin:12px 0; font-size:21px; letter-spacing:-.5px; }
+.bt-dialog p { font-size:12px; line-height:1.65; color:var(--muted); }
+.bt-devices { max-height:145px; overflow:auto; display:grid; gap:6px; margin:16px 0; }
+.bt-devices:empty { display:none; }
+.bt-devices label { display:flex; align-items:center; gap:10px; padding:11px; border:1px solid var(--border-control); border-radius:5px; background:var(--surface-secondary); font-size:12px; color:var(--text); overflow-wrap:anywhere; }
+.bt-devices input { width:15px; height:15px; margin:0; accent-color:var(--accent); }
+.bt-dialog .bt-status { min-height:40px; color:var(--accent-text); }
+.bt-dialog .bt-error { color:var(--text); }
+.bt-dialog .bt-scope { border-top:1px solid var(--line); padding-top:12px; font-size:11px; }
+.bt-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:20px; }
+.bt-actions .text-button { margin-right:auto; }
 .primary-button {
   display:flex;
   align-items:center;

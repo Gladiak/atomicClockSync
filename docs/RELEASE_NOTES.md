@@ -1,5 +1,14 @@
 # Release notes
 
+## Unreleased — Bluetooth time update
+
+- Added one Bluetooth button beside radio transmission and a compact translated dialog for explicit Casio family profiles, including GA-B2100 / 5689 and GWG-B1000 / 5713. Discovery ends as soon as a supported watch appears; detected watches are immediately selectable instead of waiting for the scan timeout.
+- Added a native local BLE worker for macOS, Windows 11 and Linux. The time-only allowlist reads and echoes existing time configuration byte-for-byte before writing date/time; fresh NTP is required. Writes are not retried automatically, and uncertain outcomes ask the user to check the watch.
+- Added standard two/six-slot, no-city, analogue/second-dial and dedicated current-time adapters; SP/MIP requires complete unchanged settings snapshots and refuses unsupported firmware. Wear OS is excluded. Unknown models can only use an actual dedicated time service. The dialog shows physical-validation status and asks for the watch’s current UTC offset only when it cannot be read.
+- Moved the NTP check to the end of watch initialization so longer handshakes do not age the reference.
+- Added GST-B1000D / 5748 instructions (B for 2.5 seconds; C for 0.5 seconds for immediate time correction) and prefer its dedicated writable current-time service when exposed. Its standard full-protocol fallback remains physically unverified; the upstream 5631 module attribution is not used.
+- Added worker packaging, platform build checks, dependency notices, a three-platform build workflow and Bluetooth setup documentation. A user confirmed a GA-B2100C / 5689 time update on macOS on 27 October 2026; full settings-preservation and native Windows validation remain pending.
+
 ## 1.10.0 — Watch Accuracy, illustrated Guide and 96 historical journeys
 
 Updated in place on 26 October 2026: this version keeps the same package filenames; the downloadable builds and SHA-256 checksums are replaced with the refreshed application.

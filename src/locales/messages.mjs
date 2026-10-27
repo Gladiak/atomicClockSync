@@ -4,6 +4,7 @@ import { watchAccuracyMessages } from './watch-accuracy.mjs';
 import { expandedJourneyMessages } from './time-machine-expansion.mjs';
 import { receptionLabMessages } from './reception-lab.mjs';
 import { lightTravelMessages } from './light-travel.mjs';
+import { bluetoothMessages } from './bluetooth.mjs';
 // Offline interface messages. English source text is the stable lookup key.
 const coreMessages = {
   "YOUR TIME, PRECISELY.": {
@@ -6294,4 +6295,4 @@ const coreMessages = {
   }
 };
 
-export const messages = { ...coreMessages, ...lightTravelMessages, ...receptionLabMessages, ...expandedJourneyMessages, ...watchAccuracyMessages, ...sidebarMessages, ...guideMessages };
+export const messages = { ...coreMessages, ...bluetoothMessages, ...lightTravelMessages, ...receptionLabMessages, ...expandedJourneyMessages, ...watchAccuracyMessages, ...sidebarMessages, ...guideMessages };

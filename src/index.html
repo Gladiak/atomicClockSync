@@ -62,7 +62,7 @@
           <div class="panel-top"><span class="tiny-label"><span class="signal-dot muted" id="transmit-dot"></span>SIGNAL TIME</span><span id="status-badge" class="status-badge">IDLE</span></div>
           <div class="clock-area"><div id="clock" class="clock" aria-label="Signal time"><span id="hours">--</span><span class="colon">:</span><span id="minutes">--</span><span class="clock-seconds" id="seconds">--</span></div><div class="clock-date"><span id="date">—</span><span>/</span><span id="zone">CET · UTC+1</span></div></div>
           <div class="signal-visual"><svg id="waveform" viewBox="0 0 640 80" preserveAspectRatio="none" aria-label="Simulated envelope"><defs><pattern id="wave-grid" width="53.333" height="20" patternUnits="userSpaceOnUse"><path d="M53.333 0H0V20" fill="none" stroke="var(--line)" stroke-width="0.7"/></pattern></defs><rect width="640" height="80" fill="url(#wave-grid)"/><path id="wave-path" d="M0 40H640" fill="none" stroke="var(--accent)" stroke-width="1.5"/><path id="wave-cursor" d="M0 0V80" stroke="var(--text)" stroke-width="1"/></svg><div class="wave-labels"><span id="wave-label">DCF77 ENVELOPE · SIMULATION</span><span id="pulse-label">100 / 200 ms</span></div></div>
-          <div class="transmit-controls"><button id="start-button" class="primary-button"><span id="start-symbol">▶</span><span id="start-label">Start transmission</span></button><button id="confirmed-button" class="secondary-button" hidden>My Casio received ✓</button></div>
+          <div class="transmit-controls"><button id="start-button" class="primary-button"><span id="start-symbol">▶</span><span id="start-label">Start transmission</span></button><button id="confirmed-button" class="secondary-button" hidden>My Casio received ✓</button><button id="bluetooth-button" class="secondary-button" aria-haspopup="dialog" aria-controls="bluetooth-dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10-5 4V3l5 4L7 17"/></svg>Bluetooth</button></div>
           <p class="transmit-note" id="transmit-note">Start manual reception on your Casio and transmit for 5–10 minutes.</p>
           <div class="clock-card-footer"><span><span class="signal-dot" id="source-dot"></span><span id="source-label">System time</span></span><button class="text-button" id="sync-button">Check time ↻</button></div>
         </section>
@@ -351,5 +351,16 @@
   <footer class="app-footer"><span>MADE FOR THE TIME THAT MATTERS.</span><span id="footer-station">DCF77 ＋ MAINFLINGEN</span></footer>
 </main>
 </div><div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<dialog id="bluetooth-dialog" class="bt-dialog" aria-labelledby="bluetooth-title" aria-describedby="bluetooth-intro">
+  <span class="tiny-label">CASIO · <span>Experimental</span></span>
+  <h2 id="bluetooth-title">Update time via Bluetooth</h2>
+  <p id="bluetooth-intro">Enable the watch’s Bluetooth connection mode. GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.</p>
+  <div id="bluetooth-devices" class="bt-devices" role="group" aria-label="Bluetooth watches"></div>
+  <p id="bluetooth-profile" class="bt-scope"></p>
+  <label id="bluetooth-offset-field" class="bt-offset" hidden><span>Current watch UTC offset (including summer time)</span><select id="bluetooth-offset" aria-label="Current watch UTC offset (including summer time)"><option value="">Choose an offset</option></select><small>Reconnect the watch before updating. This value is used only to calculate its local time.</small></label>
+  <p id="bluetooth-status" class="bt-status" role="status" aria-live="polite"></p>
+  <p class="bt-scope">Only date and time are updated. The watch’s time zone and other settings stay as configured.</p>
+  <div class="bt-actions"><button id="bluetooth-search" class="text-button">Search again</button><button id="bluetooth-close" class="secondary-button">Close</button><button id="bluetooth-update" class="primary-button" disabled>Update time</button></div>
+</dialog>
 </body>
 </html>

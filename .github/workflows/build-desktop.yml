@@ -1,0 +1,45 @@
+name: Desktop packages with Bluetooth
+on: workflow_dispatch
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            target: mac
+          - os: windows-latest
+            target: win
+          - os: ubuntu-22.04
+            target: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - run: npm test
+      - run: python -m unittest discover -s test -p 'bluetooth_*.py'
+      - run: python -m venv .venv-bluetooth
+      - if: runner.os != 'Windows'
+        run: .venv-bluetooth/bin/python3 -m pip install -r bluetooth/requirements.txt
+      - if: runner.os == 'Windows'
+        run: .venv-bluetooth/Scripts/python.exe -m pip install -r bluetooth/requirements.txt
+      - run: npm run build:bluetooth
+      - run: npx electron-builder --${{ matrix.target }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AtomicClockSync-${{ matrix.target }}
+          path: |
+            release/*.zip
+            release/*.exe
+            release/*.AppImage
+            release/*.deb
+            release/*.rpm
