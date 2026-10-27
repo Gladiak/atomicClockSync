@@ -73,7 +73,7 @@ app.whenReady().then(async()=>{
       }
       await capture('light-travel-'+language);
     }
-    for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','atlantic']){
+    for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){
       await change('theme-select',theme);await fits('theme '+theme);
     }
     await capture('light-travel-atlantic');await change('theme-select','cyan');await change('language-select','it');
@@ -86,6 +86,6 @@ app.whenReady().then(async()=>{
     assert.equal(await run("localStorage.getItem('atomic.preferences')"),preferences);
     assert.equal(await run("document.getElementById('start-button').classList.contains('running')"),true);
     assert.deepEqual(errors,[]);
-    console.log('PASS: nine offline sources, UTC previews, month-end bounds, fixed replay, pause/resume/speed changes, lunar arrival, hidden-page pause, dialog Escape, six languages, nine themes, reduced motion and muted transmission isolation.');app.exit(0);
+    console.log('PASS: nine offline sources, UTC previews, month-end bounds, fixed replay, pause/resume/speed changes, lunar arrival, hidden-page pause, dialog Escape, six languages, fifteen themes, reduced motion and muted transmission isolation.');app.exit(0);
   }catch(error){console.error(error.stack);console.error(errors);await capture('failure');app.exit(1);}
 });

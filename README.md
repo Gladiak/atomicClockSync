@@ -29,7 +29,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 - **Left, right or both audio channels:** includes a low-volume 440 Hz output test.
 - **Complete trial history:** immutable snapshots of the settings used, live volume changes and manual GET/ERR outcomes, with pagination and settings restore.
 - **Live signal view:** inspect the time code, current symbol, fields and parity checks.
-- **Nine themes:** eight dark palettes and one light palette, saved independently of watch profiles.
+- **Fifteen themes:** fourteen dark palettes and one light palette, saved independently of watch profiles.
 - **Compact desktop interface:** a fixed 1100 × 740 window with separate views.
 - **Illustrated application Guide:** 17 narrative chapters, practical examples and 84 real UI screenshots across six languages, with image zoom and contextual help. Settings and Guide stay pinned above the sidebar version.
 - **Minimal sidebar:** a compact icon rail expands on hover or keyboard focus, overlaying the page without moving its content. Three animated groups keep navigation compact and remember the open theme.
@@ -107,7 +107,7 @@ Open **Reception Lab** to learn from the trials already stored on this device. F
 
 **Next trial** starts from a stable historical snapshot and changes one audio setting: app volume, channel, waveform or selected duration. Preparing applies the proposed audio settings and opens Synchronize without starting transmission or overwriting saved profile settings. Check the physical watch, placement and system volume against the reference. Unavailable outputs and removed profiles cannot silently fall back to a different configuration.
 
-Legacy trials without snapshots, interrupted sessions and sessions with live volume changes are excluded from configuration groups and baseline selection; their manually entered outcomes remain in the overall rate. These are local observations, not signal-strength measurements or proof that a setting caused a result. The default output can resolve to different physical hardware, and the app cannot verify manual notes. The laboratory works offline in all six languages and nine themes.
+Legacy trials without snapshots, interrupted sessions and sessions with live volume changes are excluded from configuration groups and baseline selection; their manually entered outcomes remain in the overall rate. These are local observations, not signal-strength measurements or proof that a setting caused a result. The default output can resolve to different physical hardware, and the app cannot verify manual notes. The laboratory works offline in all six languages and fifteen themes.
 
 ## World View
 
@@ -148,7 +148,7 @@ See the [ISS user guide](docs/USAGE.en.md#iss-orbital-observatory) and [source/l
 
 Follow a fixed observation at **1×, 10×, 100× or 1000×**, or choose an overview lasting at most twelve seconds. Pause, resume and change speed without losing progress. Select a UTC date from 1900 through 2100, jump six months or return to **Live** to explore changing distances. Leaving the section or hiding the window pauses playback.
 
-Astronomy Engine calculates the source's earlier position relative to Earth at reception, entirely offline. Distances use body centres; the diagram compresses orbits and illustrates planet sizes. For reflected light, the displayed journey begins at the Moon or planet and excludes the earlier Sun-to-object leg. This is an educational light-time reconstruction, not a visibility forecast. It supports all six languages, nine themes and reduced motion, independently of watch transmission.
+Astronomy Engine calculates the source's earlier position relative to Earth at reception, entirely offline. Distances use body centres; the diagram compresses orbits and illustrates planet sizes. For reflected light, the displayed journey begins at the Moon or planet and excludes the earlier Sun-to-object leg. This is an educational light-time reconstruction, not a visibility forecast. It supports all six languages, fifteen themes and reduced motion, independently of watch transmission.
 
 ## Moon Observatory
 
@@ -184,7 +184,7 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Source version: **1.11.0**. Its release packages are not published yet. [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest) contains the previous published version. The 1.11.0 build targets are:
+Current version: **1.11.0**, refreshed on 27 October 2026 with six additional themes. The individual packages and updated checksums are available in [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0), under the same filenames and version number. The 1.11.0 packages are:
 
 | Package | Contents | Status |
 | --- | --- | --- |
@@ -225,9 +225,9 @@ Sessions contain 5, 10 or 15 complete minutes, with an initial alignment interva
 
 ## Themes
 
-Lime Green · Cyan Blue · Fuchsia Pink · Ruby Red · Champagne Gold · Seafoam Teal · Amethyst Purple · Lava Orange · Atlantic Blue
+Lime Green · Cyan Blue · Fuchsia Pink · Ruby Red · Champagne Gold · Seafoam Teal · Amethyst Purple · Lava Orange · Soft Sage · Powder Blue · Soft Lavender · Warm Sand · Rainbow · Rainbow Soft · Atlantic Blue
 
-Choose a palette in **Settings → Theme**. The choice persists across launches and can change during transmission without changing audio settings.
+The four pastel themes change only the accent color, preserving the original dark background and panels. Rainbow and Rainbow Soft share this dark base and assign blue to actions, violet to data, mint to the reference and confirmations, orange to transmission/progress and pink to errors. Choose a palette in **Settings → Theme**. The choice persists across launches and can change during transmission without changing audio settings.
 
 ![Atlantic Blue theme in Settings](docs/images/settings-atlantic.png)
 
@@ -277,7 +277,7 @@ npm run checksums -- --github # Use GitHub download filenames in the published m
 
 The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run checksums` generates `SHA256SUMS.txt` for the current-version individual packages available in `release/`; use `-- --github` before uploading that manifest because GitHub replaces filename spaces with dots. Electron Builder additionally supports Snap, Flatpak, Pacman and archive targets; AppImage, DEB and RPM are configured here. The DEB/RPM payloads match the application tested on Ubuntu; installation and desktop integration on other distributions remain untested.
 
-The unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. Bluetooth adds protocol/worker tests and desktop checks for immediate selection, exclusive controls, cancellation and ambiguous outcomes. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
+The unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. Bluetooth adds protocol/worker tests and desktop checks for immediate selection, exclusive controls, cancellation and ambiguous outcomes. The desktop suites check six languages, fifteen themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 

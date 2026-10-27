@@ -208,9 +208,10 @@ function setControls() {
 
 function renderReference() {
   const fresh = reference && now() - reference.nowMs < 30 * 60000;
-  $('source-dot').style.backgroundColor = fresh ? 'var(--accent)' : 'var(--muted)';
+  $('source-dot').style.backgroundColor = fresh ? 'var(--reference-accent, var(--accent))' : 'var(--muted)';
   $('source-label').textContent = reference ? `${fresh ? t("NTP verified") : t("NTP check needed")} · ${reference.host}` : t("System clock · not verified");
   $('ntp-chip').textContent = reference ? (fresh ? t("NTP VERIFIED") : t("CHECK NEEDED")) : t("SYSTEM");
+  $('ntp-chip').dataset.state = fresh ? 'verified' : reference ? 'stale' : 'system';
   $('ntp-source').textContent = reference?.host || t("System clock");
   $('ntp-offset').textContent = reference ? `${reference.offsetMs >= 0 ? '+' : ''}${decimal(reference.offsetMs, 1)} ms` : t("Unavailable");
   $('ntp-uncertainty').textContent = reference ? `± ${Math.ceil(reference.uncertaintyMs)} ms` : t("Unavailable");
@@ -308,6 +309,7 @@ function renderHistory() {
     const row = document.createElement('div');
     row.className = 'history-row';
     row.dataset.type = bluetooth ? 'bluetooth' : 'radio';
+    row.dataset.outcome = item.outcome;
     for (const [value, className] of [[historyFormatter.format(item.at), 'history-date'],
       [`${bluetooth ? 'Bluetooth' : STATIONS.find(station => station.id === item.stationId)?.name || 'DCF77'} · ${Math.floor(item.seconds / 60)}m ${pad(item.seconds % 60)}s`, ''],
       [bluetooth ? item.watch.name || item.watch.model : item.snapshot?.watch.name || t("Custom settings"), 'history-watch'],

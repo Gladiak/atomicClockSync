@@ -45,7 +45,7 @@ app.whenReady().then(async()=>{
    }
   }
   const settings=await run("localStorage.getItem('atomic.preferences')");
-  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','atlantic']){await change('theme-select',theme);for(const chapter of ['sync','privacy','light-travel']){await run(`document.querySelector('[data-chapter="${chapter}"]').click()`);await fits(theme+' '+chapter);}}
+  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){await change('theme-select',theme);for(const chapter of ['sync','privacy','light-travel']){await run(`document.querySelector('[data-chapter="${chapter}"]').click()`);await fits(theme+' '+chapter);}}
   assert.equal(await run("localStorage.getItem('atomic.preferences')"),settings);
   await click('manual-previous');assert.equal(await run("document.querySelector('.manual-chapter[aria-current]').dataset.chapter"),'iss');await click('manual-next');
   await run("document.querySelector('.manual-preview-trigger').click()");await until("document.getElementById('manual-preview-image').complete");assert.equal(await run("document.getElementById('manual-preview').open"),true);
@@ -55,6 +55,6 @@ app.whenReady().then(async()=>{
   await run("document.querySelector('[data-chapter=privacy]').click()");await click('start-button');await until("!document.getElementById('start-button').disabled");
   win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");await go('guide');assert.equal(await run("document.querySelector('.manual-chapter[aria-current]').dataset.chapter"),'privacy');
   assert.deepEqual(errors,[]);
-  console.log('PASS: three groups and pinned Settings/Guide, 17 narrative chapters, all 85 prose passages and 84 real screenshots in six languages, zoom/Escape audio isolation, nine themes, fixed layout, context links and chapter persistence.');app.exit(0);
+  console.log('PASS: three groups and pinned Settings/Guide, 17 narrative chapters, all 85 prose passages and 84 real screenshots in six languages, zoom/Escape audio isolation, fifteen themes, fixed layout, context links and chapter persistence.');app.exit(0);
  }catch(error){console.error(error.stack,errors);await capture('failure');app.exit(1)}
 });

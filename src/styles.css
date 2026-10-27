@@ -69,6 +69,11 @@
   --text:#F7F4E8; --muted:#D3DBCB; --faint:#B5C3AD;
   --accent:#F27D16; --accent-text:#FFB66D; --accent-secondary:#6B854A; --on-accent:#160D04;
 }
+/* Pastel accents inherit the original dark surfaces, text and controls. */
+:root[data-theme=soft-sage] { --accent:#B8C8A0; }
+:root[data-theme=powder-blue] { --accent:#A9C9E8; }
+:root[data-theme=soft-lavender] { --accent:#C4B5E2; }
+:root[data-theme=warm-sand] { --accent:#D8C7AB; }
 :root[data-theme=atlantic] {
   --bg:#D9DBDA; --panel:#F1F3F2; --line:#A0A9AD;
   --text:#1A344D; --muted:#344A5A; --faint:#4F5254;

@@ -4,6 +4,10 @@
 
 Released on 27 October 2026.
 
+Updated in place on 27 October 2026: the downloadable 1.11.0 packages and SHA-256 checksums are refreshed with the six new themes, keeping the same filenames and version number.
+
+- Added Soft Sage, Powder Blue, Soft Lavender and Warm Sand pastel accents on the original dark surfaces, plus Rainbow and Rainbow Soft with stable color roles for actions, data, reference/confirmation, transmission/progress and errors. All fifteen themes are localized, persist independently of watch settings and can change during transmission. Desktop checks cover contrast, dark surfaces, semantic colors, offline reference state, GET/ERR history and muted audio isolation.
+
 - Updated Synchronize and Bluetooth screenshots, the six-language offline Guide, README and user guide for the new Bluetooth mode.
 - Added one Bluetooth button beside radio transmission and a compact translated dialog for explicit Casio family profiles, including GA-B2100 / 5689 and GWG-B1000 / 5713. Discovery ends as soon as a supported watch appears; detected watches are immediately selectable instead of waiting for the scan timeout.
 - Added a native local BLE worker for macOS, Windows 11 and Linux. The time-only allowlist reads and echoes existing time configuration byte-for-byte before writing date/time; fresh NTP is required. Writes are not retried automatically, and uncertain outcomes ask the user to check the watch.

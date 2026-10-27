@@ -50,7 +50,7 @@ app.whenReady().then(async()=>{
     await run("document.querySelector('.world-result').click();document.querySelector('[data-page=moon]').click()");
     assert.match(await run("document.getElementById('moon-observer').textContent"),/Tokyo/);
     assert.equal(await run("document.getElementById('moon-zone').textContent"),'Asia/Tokyo');
-    for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','atlantic']){
+    for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){
       await change('theme-select',theme);await fits();
       await run("document.querySelector('[data-page=time-machine]').click()");await fits();
       for(const id of ['flight','sputnik','gagarin','apollo','footstep','voyager','web']){await run(`document.querySelector('[data-event=${id}]').click()`);await fits();}
@@ -122,6 +122,6 @@ app.whenReady().then(async()=>{
     assert.equal(await run("localStorage.getItem('atomic.preferences')"),preferences);
     await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");
     assert.deepEqual(errors,[]);
-    console.log('PASS: offline Moon phases, local rise/set, UTC preview and shared observer; 96 sourced historical events, five categories, illustrated scenes and precision-aware counters; personal CRUD, capsule reveal and persistence; nine themes, fixed layout, expanded sidebar space and live muted AudioWorklet isolation.');app.exit(0);
+    console.log('PASS: offline Moon phases, local rise/set, UTC preview and shared observer; 96 sourced historical events, five categories, illustrated scenes and precision-aware counters; personal CRUD, capsule reveal and persistence; fifteen themes, fixed layout, expanded sidebar space and live muted AudioWorklet isolation.');app.exit(0);
   }catch(error){console.error(error.stack);console.error(errors);await capture('observatory-failure.png');app.exit(1);}
 });

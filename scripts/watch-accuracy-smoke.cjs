@@ -79,7 +79,7 @@ app.whenReady().then(async()=>{
   }
   // Rendering changes never silently rewrite the saved profile/audio settings.
   assert.deepEqual(await run("JSON.parse(localStorage.getItem('atomic.profiles'))"),profiles.filter(p=>p.id!=='p1'));
-  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','atlantic']){await change('theme-select',theme);await click('wa-tab-overview');await fits(theme);}
+  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){await change('theme-select',theme);await click('wa-tab-overview');await fits(theme);}
   assert.equal(await run("document.getElementById('start-button').classList.contains('running')"),true);
   await click('wa-lab');assert.equal(await run("document.getElementById('rl-watch').value"),'p1');
   await go('sync');await click('start-button');await until("!document.getElementById('start-button').disabled");
@@ -87,6 +87,6 @@ app.whenReady().then(async()=>{
   assert.ok(await run("document.getElementById('wa-records').textContent.includes('元の試行')"));await click('wa-lab');assert.equal(await run("document.getElementById('rl-watch').value"),'p1');assert.equal(await run("document.getElementById('rl-verified').textContent"),'0');
   assert.deepEqual(errors,[]);
   await run("localStorage.setItem('atomic.accuracy.v1',JSON.stringify({version:999,entries:[]}))");await reload();await go('watch-accuracy');assert.equal(await run("document.getElementById('wa-save').disabled"),true);assert.equal(await run("JSON.parse(localStorage.getItem('atomic.accuracy.v1')).version"),999);await download('wa-recover',jsonPath);assert.equal(JSON.parse(fs.readFileSync(jsonPath)).version,999);
-  console.log('PASS: manual offsets and UTC, NTP capture/backdated provenance, honest segmented drift, validation, edit/delete/undo, personal text, GET linking without zero assumptions, per-watch JSON/CSV, rename/archive persistence, six languages, nine themes, fixed layout and continuous muted audio.');app.exit(0);
+  console.log('PASS: manual offsets and UTC, NTP capture/backdated provenance, honest segmented drift, validation, edit/delete/undo, personal text, GET linking without zero assumptions, per-watch JSON/CSV, rename/archive persistence, six languages, fifteen themes, fixed layout and continuous muted audio.');app.exit(0);
  }catch(error){console.error(error.stack,errors);await capture('failure');app.exit(1);}
 });

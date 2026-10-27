@@ -41,7 +41,7 @@ app.whenReady().then(async()=>{
   await run("document.getElementById('iss-footprint').click();document.getElementById('iss-track-toggle').click()");
   assert.equal(await run("document.getElementById('iss-footprint').getAttribute('aria-pressed')"),'false');
   await run("document.getElementById('iss-footprint').click();document.getElementById('iss-track-toggle').click()");
-  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','atlantic']){
+  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){
    await change('theme-select',theme);
    for(const tab of ['tracking','passes','station','time']){await run(`document.querySelector('[data-iss-tab=${tab}]').click()`);await fits();}
   }
@@ -65,6 +65,6 @@ app.whenReady().then(async()=>{
   await run("document.querySelector('[data-page=iss]').click();document.querySelector('[data-iss-tab=tracking]').click()");await change('iss-preview','60','input');await pause(1500);
   assert.equal(await run("document.getElementById('status-badge').textContent"),'TRANSMITTING');
   await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");
-  assert.deepEqual(errors,[]);console.log('PASS: ISS tracking, network/cache/stale states, observer sharing, orbital preview, visible passes and sky plot, four tabs in nine themes, fixed window/sidebar, educational relativity and real muted AudioWorklet isolation. No external network used.');app.exit(0);
+  assert.deepEqual(errors,[]);console.log('PASS: ISS tracking, network/cache/stale states, observer sharing, orbital preview, visible passes and sky plot, four tabs in fifteen themes, fixed window/sidebar, educational relativity and real muted AudioWorklet isolation. No external network used.');app.exit(0);
  }catch(error){console.error(error.stack);console.error(errors);await capture('iss-failure.png');app.exit(1);}
 });

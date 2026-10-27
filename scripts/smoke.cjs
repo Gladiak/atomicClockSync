@@ -70,7 +70,10 @@ app.whenReady().then(async () => {
 
     }
     const themes = await run("[...document.getElementById('theme-select').options].map(option=>option.value)");
-    assert.equal(themes.length, 9);
+    assert.equal(themes.length, 15);
+    const pastelThemes = ['soft-sage','powder-blue','soft-lavender','warm-sand'];
+    const rainbowThemes = ['rainbow','rainbow-soft'];
+    for (const theme of [...pastelThemes,...rainbowThemes]) assert.ok(themes.includes(theme));
     assert.equal(await run("document.documentElement.dataset.theme"), 'lime');
     await until("localStorage.getItem('atomic.preferences') !== null");
     const originalPreferences = await run("localStorage.getItem('atomic.preferences')");
@@ -94,18 +97,50 @@ app.whenReady().then(async () => {
         const hover=getComputedStyle(probe).backgroundColor;probe.remove();
         return {text:ratio(root.color,panel.backgroundColor),faint:ratio(faint,panel.backgroundColor),
           input:ratio(input.color,input.backgroundColor),accent:ratio(secondary.color,secondary.backgroundColor),
-          primary:ratio(button.color,button.backgroundColor),hover:ratio(button.color,hover),scheme:root.colorScheme};
+          primary:ratio(button.color,button.backgroundColor),hover:ratio(button.color,hover),scheme:root.colorScheme,
+          data:ratio(style('#station-card-frequency').color,panel.backgroundColor),
+          seconds:ratio(style('#seconds').color,panel.backgroundColor),
+          session:ratio(style('#remaining').color,panel.backgroundColor),
+          error:ratio(root.getPropertyValue('--rainbow-error').trim() || root.color,panel.backgroundColor),
+          wave:ratio(style('#wave-path').stroke,panel.backgroundColor),waveOpacity:Number(style('#waveform').opacity)};
       })()`);
-      for (const key of ['text','faint','input','accent','primary','hover']) assert.ok(ratios[key]>=4.5, `${theme} ${key}: contrast ${ratios[key]}`);
+      for (const key of ['text','faint','input','accent','primary','hover','data','seconds','session','error']) assert.ok(ratios[key]>=4.5, `${theme} ${key}: contrast ${ratios[key]}`);
       assert.equal(ratios.scheme, theme==='atlantic'?'light':'dark');
+      if (pastelThemes.includes(theme)) {
+        const surfaces = await run(`(() => {
+          const style = getComputedStyle(document.documentElement);
+          return ['--bg','--panel','--line','--text','--muted','--faint','--on-accent'].map(name => style.getPropertyValue(name).trim());
+        })()`);
+        assert.deepEqual(surfaces, ['#10110E','#1A1B17','#34362F','#FFFFFF','#C0C2B8','#96998E','#10110E'], `${theme} preserves the original dark base`);
+      }
+      if (rainbowThemes.includes(theme)) {
+        assert.ok(ratios.wave>=3,`${theme} waveform: contrast ${ratios.wave}`);
+        assert.equal(ratios.waveOpacity,1,'Waveform retains its full graphic contrast');
+        const roles = await run(`(() => {
+          const root = getComputedStyle(document.documentElement);
+          const color = selector => getComputedStyle(document.querySelector(selector)).color;
+          const shape = selector => getComputedStyle(document.querySelector(selector)).stroke;
+          return {base:['--bg','--panel','--line','--text','--muted','--faint'].map(name => root.getPropertyValue(name).trim()),
+            action:getComputedStyle(document.getElementById('start-button')).backgroundColor,
+            data:color('#station-card-frequency'),wave:shape('#wave-path'),seconds:color('#seconds'),session:shape('#progress-ring')};
+        })()`);
+        assert.deepEqual(roles.base, ['#10110E','#1A1B17','#34362F','#FFFFFF','#C0C2B8','#96998E']);
+        assert.deepEqual([roles.action,roles.data,roles.wave,roles.seconds,roles.session], theme === 'rainbow'
+          ? ['rgb(69, 93, 220)','rgb(201, 160, 255)','rgb(150, 70, 239)','rgb(67, 209, 167)','rgb(255, 134, 46)']
+          : ['rgb(169, 184, 240)','rgb(196, 181, 226)','rgb(196, 181, 226)','rgb(168, 213, 186)','rgb(231, 185, 155)']);
+        await run("document.querySelector('[data-page=sync]').click()");
+        await capture(`theme-${theme}-sync.png`);
+        await run("document.querySelector('[data-page=settings]').click()");
+      }
       assert.equal(await run("localStorage.getItem('atomic.preferences')"), originalPreferences, 'Theme must not alter signal settings');
       await capture(`theme-${theme}.png`);
     }
+    await run("document.getElementById('theme-select').value='rainbow-soft';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
     window.webContents.reload();
     await new Promise(resolve => window.webContents.once('did-finish-load', resolve));
     await until("!document.getElementById('start-button').disabled");
-    assert.equal(await run('document.documentElement.dataset.theme'), 'atlantic');
-    assert.equal(await run("document.getElementById('theme-select').value"), 'atlantic');
+    assert.equal(await run('document.documentElement.dataset.theme'), 'rainbow-soft');
+    assert.equal(await run("document.getElementById('theme-select').value"), 'rainbow-soft');
     await run("localStorage.setItem('atomic.theme',JSON.stringify('invalid-theme'))");
     window.webContents.reload();
     await new Promise(resolve => window.webContents.once('did-finish-load', resolve));
@@ -126,8 +161,15 @@ app.whenReady().then(async () => {
     await until("document.getElementById('start-button').classList.contains('running')");
     assert.equal(await run("document.getElementById('wave-type').disabled"), true);
     assert.equal(await run("document.getElementById('theme-select').disabled"), false);
-    await run("document.getElementById('theme-select').value='cyan';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
-    assert.equal(await run("document.getElementById('start-button').classList.contains('running')"), true);
+    for (const theme of rainbowThemes) {
+      await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);
+      assert.equal(await run("document.getElementById('start-button').classList.contains('running')"), true);
+      const runningUsesSession = await run(`(() => {
+        const button=getComputedStyle(document.getElementById('start-button'));
+        return button.color === getComputedStyle(document.getElementById('remaining')).color;
+      })()`);
+      assert.equal(runningUsesSession,true,'Running transmission uses the session accent');
+    }
     await run("document.getElementById('theme-select').value='lime';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
     await pause(2500);
     assert.equal(await run("document.getElementById('status-badge').textContent"), 'TRANSMITTING');
@@ -229,6 +271,10 @@ app.whenReady().then(async () => {
     await new Promise(resolve => window.webContents.once('did-finish-load', resolve));
     await until("!document.getElementById('start-button').disabled");
     assert.match(await run("document.getElementById('source-label').textContent"), /System clock/);
+    await run("document.getElementById('theme-select').value='rainbow';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
+    assert.equal(await run("document.getElementById('ntp-chip').dataset.state"), 'system');
+    assert.equal(await run("getComputedStyle(document.getElementById('source-dot')).backgroundColor"), 'rgb(192, 194, 184)');
+    await run("document.getElementById('theme-select').value='lime';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
     await run("document.querySelector('[data-page=history]').click()");
     await assertFits();
     await run("document.querySelector('[data-page=sync]').click()");
@@ -313,6 +359,12 @@ app.whenReady().then(async () => {
     await change('trial-outcome', 'err');
     await run("document.getElementById('trial-save-outcome').click()");
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.history'))[0].outcome"), 'err');
+    for (const theme of rainbowThemes) {
+      await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);
+      assert.equal(await run("getComputedStyle(document.querySelector('.history-row[data-outcome=err] .history-status')).color"),
+        theme === 'rainbow' ? 'rgb(247, 52, 99)' : 'rgb(227, 180, 198)');
+    }
+    await run("document.getElementById('theme-select').value='lime';document.getElementById('theme-select').dispatchEvent(new Event('change'))");
     await assertFits();
     await run("document.querySelector('[data-goto=history]').click();document.querySelectorAll('.history-row button')[1].click()");
     assert.match(await run("document.getElementById('trial-facts').textContent"), /My GW-6900/);
@@ -386,7 +438,7 @@ app.whenReady().then(async () => {
     assert.match(await run("document.getElementById('toast').textContent"), /Saved output unavailable/);
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].settings.deviceId"), 'unavailable-test-output');
     if (errors.length) throw new Error(errors.join('\n'));
-    console.log('PASS: nine themes, text contrast >=4.5, theme persistence/fallback/isolation/live change, Electron, five station codecs, fixed 1100x740 window, all views without overflow, profiles CRUD and restore, channel routing, immutable paginated history, migration, NTP fallback, real worklet and interruptions. Audio muted.');
+    console.log('PASS: fifteen themes, text contrast >=4.5, theme persistence/fallback/isolation/live change, Electron, five station codecs, fixed 1100x740 window, all views without overflow, profiles CRUD and restore, channel routing, immutable paginated history, migration, NTP fallback, real worklet and interruptions. Audio muted.');
     app.exit(0);
   } catch (error) {
     console.error('DESKTOP TEST FAILED:', error.stack);

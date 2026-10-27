@@ -2,7 +2,10 @@ Release 1.11.0 · 27 October 2026
 
 AtomicClockSync 1.11.0 adds **Bluetooth time synchronization** beside radio transmission in **Synchronize**.
 
+Updated in place on 27 October 2026: the same 1.11.0 package filenames now include six additional themes. Download the refreshed packages and verify them with the updated **SHA256SUMS.txt**.
+
 - One compact Bluetooth button and a dialog translated into English, Italian, French, German, Spanish and Japanese.
+- Fifteen themes in **Settings → Theme**, including **Soft Sage**, **Powder Blue**, **Soft Lavender**, **Warm Sand**, **Rainbow** and **Rainbow Soft**. All six additions retain the original dark base. Rainbow assigns blue to actions, violet to data, mint to the reference and confirmations, orange to transmission/progress and pink to errors, with lighter text variants for readability.
 - Always-available **Open logs** popup with refresh and **Copy log**, during attempts and after success or failure. The last 400 technical events remain in memory until the app closes; device addresses, settings payloads and raw driver messages are excluded.
 - Unified synchronization history includes persistent Bluetooth attempts with watch/model/module, duration, time reference and distinct sent/failed/cancelled/uncertain outcomes. Bluetooth details are read-only and remain separate from radio GET/ERR statistics. Interrupted pending attempts are preserved on restart.
 - Date/time updates only: model-specific procedures preserve existing time configuration; fresh NTP time is obtained immediately before the write. No automatic retries after an uncertain write.
@@ -16,6 +19,6 @@ AtomicClockSync 1.11.0 adds **Bluetooth time synchronization** beside radio tran
 
 **Downloads:** macOS Apple Silicon ZIP, Windows 11 x64 portable EXE, Linux x64 AppImage/DEB/RPM. Packages are unsigned or locally ad-hoc signed and the macOS app is not notarized. Verify downloads with **SHA256SUMS.txt**.
 
-**Validation:** 105 JavaScript tests and 28 Python Bluetooth tests; native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Bluetooth UI/protocol tests substitute hardware; physical validation is limited to the watch updates reported above.
+**Validation:** 105 JavaScript tests and 28 Python Bluetooth tests; native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Theme checks cover all fifteen palettes, text contrast, persistence, offline reference state, radio outcomes and uninterrupted muted transmission. Bluetooth UI/protocol tests substitute hardware; physical validation is limited to the watch updates reported above.
 
 See the [Bluetooth guide](https://github.com/Gladiak/atomicClockSync/blob/main/docs/BLUETOOTH.md), [model catalogue](https://github.com/Gladiak/atomicClockSync/blob/main/docs/BLUETOOTH_MODELS.md) and [changelog](https://github.com/Gladiak/atomicClockSync/blob/main/docs/RELEASE_NOTES.md).

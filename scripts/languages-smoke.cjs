@@ -94,7 +94,7 @@ app.whenReady().then(async () => {
       assert.equal(await run("localStorage.getItem('atomic.preferences')"),prefs);
     }
     await click('settings');
-    for(const language of ['de','ja']) for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','atlantic']) {
+    for(const language of ['de','ja']) for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']) {
       await change('language-select',language); await change('theme-select',theme); await fits(language,'settings-'+theme);
     }
     await capture('ja-settings-atlantic');
@@ -109,6 +109,6 @@ app.whenReady().then(async () => {
     fs.writeFileSync('artifacts/languages/layout.json',JSON.stringify(layout,null,2));
     fs.writeFileSync('artifacts/languages/untranslated.json',JSON.stringify(untranslated,null,2));
     assert.deepEqual(layout,[],'Localized layout overflow'); assert.deepEqual(untranslated,[],'Untranslated interface messages'); assert.deepEqual(errors,[]);
-    console.log('PASS: six languages, all sections, 96 journeys, long translations, Japanese glyphs, nine themes, local persistence, native menu, unsaved personal text and continuous muted transmission.'); app.exit(0);
+    console.log('PASS: six languages, all sections, 96 journeys, long translations, Japanese glyphs, fifteen themes, local persistence, native menu, unsaved personal text and continuous muted transmission.'); app.exit(0);
   } catch(error) { fs.mkdirSync('artifacts/languages',{recursive:true}); fs.writeFileSync('artifacts/languages/layout.json',JSON.stringify(layout,null,2)); console.error(error.stack);console.error(errors); await capture('failure'); app.exit(1); }
 });

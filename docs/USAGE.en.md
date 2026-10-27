@@ -8,7 +8,7 @@ AtomicClockSync is a **JavaScript and Electron desktop app** that synchronizes c
 
 ## Ready-to-use applications
 
-Source version: **1.11.0**. Release packages are not published yet; the filenames below describe the build targets.
+Current version: **1.11.0**, refreshed on 27 October 2026 to include six additional themes. Download the individual packages and updated checksums from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0); the filenames and version number are unchanged.
 
 - macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.11.0-arm64-mac.zip`.
 - Windows x64 portable: `release/AtomicClockSync-1.11.0-windows-x64-portable.exe`.
@@ -203,7 +203,7 @@ The selected city's clock, sunrise, sunset and daylight duration follow its loca
 
 City selection is local to World View and does not set the Casio's Home City or modify a watch profile. The city, coverage mode and twilight-line setting persist. Preview time and playback do not persist; reopening the app starts in Live mode.
 
-The approximately 20 MB search catalog is separate from the 18,650 geographically grouped light points. Lights appear gradually through twilight and stay amber in all nine themes. Their intensity is an illustration based on settlement population, not measured urban brightness or a real-time observation.
+The approximately 20 MB search catalog is separate from the 18,650 geographically grouped light points. Lights appear gradually through twilight and stay amber in all fifteen themes. Their intensity is an illustration based on settlement population, not measured urban brightness or a real-time observation.
 
 ### Stations and range rings
 
@@ -310,9 +310,15 @@ Choose a palette in **Settings → Theme**:
 | Seafoam Teal | `#7BA7AF` | Dark gray green and teal |
 | Amethyst Purple | `#9A6FB7` | Dark purple, cream and pink |
 | Lava Orange | `#F27D16` | Dark forest green, moss and orange |
+| Soft Sage | `#B8C8A0` | Original dark base with pastel sage accents |
+| Powder Blue | `#A9C9E8` | Original dark base with pastel blue accents |
+| Soft Lavender | `#C4B5E2` | Original dark base with pastel lavender accents |
+| Warm Sand | `#D8C7AB` | Original dark base with pastel sand accents |
+| Rainbow | `#455DDC` + violet, mint, orange, pink | Original dark base with functional color roles |
+| Rainbow Soft | `#A9B8F0` + pastel violet, mint, peach, rose | Original dark base with softer functional accents |
 | Atlantic Blue | `#1A344D` | Light seafoam gray and blue |
 
-Palettes cover backgrounds, panels, text, fields, buttons, indicators and graphs. Some accents have a lighter text variant to retain contrast at small sizes. Select arrows follow the palette and keep their right-side spacing. The theme applies immediately, is saved separately under `atomic.theme`, and is restored before the page paints. It can change during transmission without changing audio settings. The application icon retains its original lime color.
+Palettes cover backgrounds, panels, text, fields, buttons, indicators and graphs. The four pastel themes preserve the original dark background, panels, text and borders, changing only the accent color. Rainbow and Rainbow Soft keep that same dark base, using blue for actions, violet for data/graphs, mint for the reference and confirmations, orange for transmission/progress and pink for errors. Labels still distinguish confirmed reception, sent Bluetooth writes and uncertain outcomes. Some accents have a lighter text variant to retain contrast at small sizes. Select arrows follow the palette and keep their right-side spacing. The theme applies immediately, is saved separately under `atomic.theme`, and is restored before the page paints. It can change during transmission without changing audio settings. The application icon retains its original lime color.
 
 The window cannot be resized, maximized or switched to full screen. Separate views keep content compact:
 
@@ -386,7 +392,7 @@ npm run test:accuracy     # Offset measurements, period boundaries, GET links, e
 npm run test:reception-lab # Honest rates, filtering, A/B, preparation, languages and themes
 npm run test:languages   # Six languages, layout, Japanese font, persistence and live audio
 npm run test:world       # Offline atlas, search worker, timeline and audio isolation
-npm run test:iss         # ISS network states, passes, nine themes and audio isolation
+npm run test:iss         # ISS network states, passes, fifteen themes and audio isolation
 npm run test:light-travel # JPL-referenced light times, replay, previews, languages and themes
 npm run test:observatory  # Moon phases, historical journeys, capsules, themes and audio isolation
 npm run test:back-in-time # Movie dates, jumps, layout, reduced motion and audio isolation
@@ -401,9 +407,9 @@ npm run checksums        # Hash current-version individual packages; requires Py
 npm run checksums -- --github # Match GitHub's download filenames in SHA256SUMS.txt
 ```
 
-The desktop test uses a temporary profile. It checks all nine themes, selected text contrast ratios of at least 4.5:1, persistence, invalid saved-theme fallback, live theme changes and separation from audio settings. It also verifies isolation, fixed window size, all views and FAQs without overflow, the five station selections, channel/profile locking, profile CRUD and undo, settings restore, immutable history, GET/ERR updates, legacy migration, output tests, volume changes, offline fallback, window closing and sleep interruption.
+The desktop test uses a temporary profile. It checks all fifteen themes, selected text contrast ratios of at least 4.5:1, persistence, invalid saved-theme fallback, live theme changes and separation from audio settings. It also verifies isolation, fixed window size, all views and FAQs without overflow, the five station selections, channel/profile locking, profile CRUD and undo, settings restore, immutable history, GET/ERR updates, legacy migration, output tests, volume changes, offline fallback, window closing and sleep interruption.
 
-Screenshots are written to `artifacts/`. The previous app and Bluetooth worker were checked on macOS; the Linux worker was also built and self-tested in Docker. The 1.11.0 downloadable package set has not been published. Native Windows builds use the manual GitHub workflow. Linux desktop audio hardware and native RPM installation have not been tested.
+Screenshots are written to `artifacts/`. The app and Bluetooth worker were checked on macOS; the Linux worker was also built and self-tested in Docker. The 1.11.0 downloadable package set is published on GitHub Releases and refreshed with the new themes. Native platform builds use the manual GitHub workflow, which checks packaged source/assets and the bundled Bluetooth runtime on each OS. Linux desktop audio hardware and native RPM installation have not been tested.
 
 ## Technical references
 

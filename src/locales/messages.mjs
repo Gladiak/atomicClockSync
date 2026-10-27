@@ -4676,6 +4676,48 @@ const coreMessages = {
     "es": "Naranja lava",
     "ja": "ラバオレンジ"
   },
+  "Soft Sage": {
+    "it": "Salvia tenue",
+    "fr": "Sauge doux",
+    "de": "Sanftes Salbeigrün",
+    "es": "Salvia suave",
+    "ja": "ソフトセージ"
+  },
+  "Powder Blue": {
+    "it": "Azzurro polvere",
+    "fr": "Bleu poudré",
+    "de": "Puderblau",
+    "es": "Azul empolvado",
+    "ja": "パウダーブルー"
+  },
+  "Soft Lavender": {
+    "it": "Lavanda tenue",
+    "fr": "Lavande douce",
+    "de": "Sanftes Lavendel",
+    "es": "Lavanda suave",
+    "ja": "ソフトラベンダー"
+  },
+  "Warm Sand": {
+    "it": "Sabbia calda",
+    "fr": "Sable chaud",
+    "de": "Warmes Sandbeige",
+    "es": "Arena cálida",
+    "ja": "ウォームサンド"
+  },
+  "Rainbow": {
+    "it": "Arcobaleno",
+    "fr": "Arc-en-ciel",
+    "de": "Regenbogen",
+    "es": "Arcoíris",
+    "ja": "レインボー"
+  },
+  "Rainbow Soft": {
+    "it": "Arcobaleno tenue",
+    "fr": "Arc-en-ciel doux",
+    "de": "Sanfter Regenbogen",
+    "es": "Arcoíris suave",
+    "ja": "レインボーソフト"
+  },
   "Atlantic Blue": {
     "it": "Blu Atlantico",
     "fr": "Bleu Atlantique",

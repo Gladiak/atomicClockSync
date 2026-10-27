@@ -45,7 +45,7 @@ app.whenReady().then(async () => {
       assert.equal(await run(`document.querySelector('[data-destination=${id}]').getAttribute('aria-pressed')`), 'true');
       await fits();
     }
-    for (const theme of ['lime', 'cyan', 'fuchsia', 'ruby', 'gold', 'aqua', 'amethyst', 'lava', 'atlantic']) {
+    for (const theme of ['lime', 'cyan', 'fuchsia', 'ruby', 'gold', 'aqua', 'amethyst', 'lava', 'soft-sage', 'powder-blue', 'soft-lavender', 'warm-sand', 'rainbow', 'rainbow-soft', 'atlantic']) {
       await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);
       await fits();
     }
@@ -85,6 +85,6 @@ app.whenReady().then(async () => {
     await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");
     await until("!document.getElementById('start-button').disabled");
     assert.deepEqual(errors, []);
-    console.log('PASS: five movie destinations, live elapsed counters, nine themes, fixed-window layout, jump/return/cancellation, keyboard focus, reduced motion and real muted AudioWorklet isolation.'); app.exit(0);
+    console.log('PASS: five movie destinations, live elapsed counters, fifteen themes, fixed-window layout, jump/return/cancellation, keyboard focus, reduced motion and real muted AudioWorklet isolation.'); app.exit(0);
   } catch (error) { console.error(error.stack); console.error(errors); await capture('back-in-time-failure.png'); app.exit(1); }
 });

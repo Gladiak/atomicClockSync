@@ -59,7 +59,7 @@ app.whenReady().then(async()=>{
     await run("document.getElementById('world-now').click()");assert.equal(await run("document.getElementById('world-mode').textContent"),'LIVE');
     await run("document.getElementById('world-city-search').focus()");await change('world-city-search','Roma','input');
     await until("document.querySelector('.world-result strong')?.textContent==='Rome'");await run("document.querySelector('.world-result').click()");
-    for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','atlantic']){
+    for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){
       await change('theme-select',theme);await fits();
     }
     await change('theme-select','cyan');
@@ -85,6 +85,6 @@ app.whenReady().then(async()=>{
     assert.equal(await run("document.getElementById('world-coverage').value"),'all');
     assert.equal(await run("document.getElementById('world-mode').textContent"),'LIVE');
     await fits();assert.deepEqual(errors,[]);
-    console.log('PASS: offline map and 171,637-city worker search, native aliases, keyboard selection, five station markers, coverage controls, seasonal events, independent preview/playback, nine themes, persistence, fixed layout and live AudioWorklet isolation.');app.exit(0);
+    console.log('PASS: offline map and 171,637-city worker search, native aliases, keyboard selection, five station markers, coverage controls, seasonal events, independent preview/playback, fifteen themes, persistence, fixed layout and live AudioWorklet isolation.');app.exit(0);
   }catch(error){console.error(error.stack);console.error(errors);await capture('world-failure.png');app.exit(1);}
 });

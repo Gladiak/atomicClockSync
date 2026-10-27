@@ -7,6 +7,12 @@ export const THEMES = Object.freeze([
   { id: 'aqua', name: 'Seafoam Teal' },
   { id: 'amethyst', name: 'Amethyst Purple' },
   { id: 'lava', name: 'Lava Orange' },
+  { id: 'soft-sage', name: 'Soft Sage' },
+  { id: 'powder-blue', name: 'Powder Blue' },
+  { id: 'soft-lavender', name: 'Soft Lavender' },
+  { id: 'warm-sand', name: 'Warm Sand' },
+  { id: 'rainbow', name: 'Rainbow' },
+  { id: 'rainbow-soft', name: 'Rainbow Soft' },
   { id: 'atlantic', name: 'Atlantic Blue' },
 ].map(Object.freeze));
 

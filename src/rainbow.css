@@ -1,0 +1,94 @@
+/* Both palettes inherit the original dark surfaces and neutral text.
+   Saturated fills use separate, lighter text colors where needed. */
+:root[data-theme=rainbow] {
+  --accent:#455DDC;
+  --accent-text:#A8B4FF;
+  --accent-secondary:#9646EF;
+  --on-accent:#FFFFFF;
+  --rainbow-data:#9646EF;
+  --rainbow-data-text:#C9A0FF;
+  --reference-accent:#43D1A7;
+  --rainbow-session:#FF862E;
+  --rainbow-error:#F73463;
+}
+:root[data-theme=rainbow-soft] {
+  --accent:#A9B8F0;
+  --accent-text:#A9B8F0;
+  --accent-secondary:#C4B5E2;
+  --on-accent:#10110E;
+  --rainbow-data:#C4B5E2;
+  --rainbow-data-text:#C4B5E2;
+  --reference-accent:#A8D5BA;
+  --rainbow-session:#E7B99B;
+  --rainbow-error:#E3B4C6;
+}
+
+/* Data marks and code diagrams contain no primary action buttons. */
+:root[data-theme^=rainbow] :is(.signal-visual,.station-art,.telegram,.wa-plot,.wa-plot-empty,.rl-instrument) {
+  --accent:var(--rainbow-data);
+  --accent-text:var(--rainbow-data-text);
+}
+:root[data-theme^=rainbow] #waveform { opacity:1; }
+:root[data-theme^=rainbow] :is(
+  .station-card h2 small,.settings-facts strong,.wa-stats strong,
+  .rl-stat:first-child strong,.rl-group-result,.rl-prep-delta,
+  .iss-metric-strip strong,.iss-fact-grid strong,.iss-time-net strong,
+  .iss-time-equivalent strong,.iss-aces-chips span,.iss-atom,
+  .moon-illumination>span,.moon-quarter>span,.tm-story strong,.tm-event span,
+  .world-place-time span,.lt-distance strong
+) { color:var(--rainbow-data-text); }
+:root[data-theme^=rainbow] .moon-quarter>span {
+  --accent-text:var(--rainbow-data-text);
+  border-color:var(--rainbow-data-text);
+}
+
+/* Mint denotes the reference and explicit confirmations. Unverified or stale
+   references keep their neutral/warning presentation. */
+:root[data-theme^=rainbow] :is(.clock-seconds,#confirmed-button) { color:var(--reference-accent); }
+:root[data-theme^=rainbow] #ntp-chip[data-state=verified] {
+  color:var(--reference-accent);
+  border-color:color-mix(in srgb,var(--reference-accent) 40%,var(--line));
+}
+:root[data-theme^=rainbow] .history-row[data-outcome=get] .history-status { color:var(--reference-accent); }
+
+/* Orange identifies transmission and progress, without recoloring idle dots. */
+:root[data-theme^=rainbow] :is(#remaining,.session-stats strong,.status-badge.transmitting,#ntp-chip[data-state=stale],.lt-progress-row>span) {
+  color:var(--rainbow-session);
+}
+:root[data-theme^=rainbow] :is(#transmit-dot.active,#session-dot.signal-dot,.lt-progress>span) {
+  background:var(--rainbow-session);
+  box-shadow:none;
+}
+:root[data-theme^=rainbow] .ring-value { stroke:var(--rainbow-session); }
+:root[data-theme^=rainbow] .status-badge.transmitting {
+  border-color:color-mix(in srgb,var(--rainbow-session) 40%,var(--line));
+  background:color-mix(in srgb,var(--rainbow-session) 5%,var(--panel));
+}
+:root[data-theme^=rainbow] #start-button.running {
+  color:var(--rainbow-session);
+  border-color:color-mix(in srgb,var(--rainbow-session) 50%,var(--line));
+  background:color-mix(in srgb,var(--rainbow-session) 8%,var(--panel));
+}
+:root[data-theme^=rainbow] .history-row:is([data-outcome=pending],[data-outcome=uncertain]) .history-status {
+  color:var(--rainbow-session);
+}
+
+/* Preserve the existing labels: ERR, failed and validation errors remain
+   distinguishable from successful writes and unverified reception. */
+:root[data-theme^=rainbow] :is(.bt-dialog .bt-error,.wa-form-status.error,.toast.error),
+:root[data-theme^=rainbow] .history-row:is([data-outcome=err],[data-outcome=failed]) .history-status {
+  color:var(--rainbow-error);
+}
+:root[data-theme^=rainbow] :is(.toast.error,.wa-form-status.error) { border-color:var(--rainbow-error); }
+
+/* Show all five accents in the existing Settings preview. */
+:root[data-theme^=rainbow] .theme-swatches i:first-child { background:var(--reference-accent); }
+:root[data-theme^=rainbow] .theme-swatches i:nth-child(4) { background:var(--rainbow-session); }
+:root[data-theme^=rainbow] .theme-swatches:after {
+  content:'';
+  width:10px;
+  height:10px;
+  border:1px solid var(--border-control);
+  border-radius:50%;
+  background:var(--rainbow-error);
+}
