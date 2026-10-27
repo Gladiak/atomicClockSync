@@ -6,6 +6,11 @@ require('../electron/main.cjs');
 ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:Date.now(),host:'Reference · sample',offsetMs:0,uncertaintyMs:6,synchronizedAt:Date.now()}));
 const {validateOrbit}=require('../electron/iss-data.cjs');const orbit=validateOrbit(JSON.parse(fs.readFileSync(path.join(__dirname,'../test/fixtures/iss-omm.json'))));
 ipcMain.removeHandler('iss:refresh');ipcMain.handle('iss:refresh',()=>({orbit,fix:null,connectivity:'online',lastSuccess:Date.now(),error:''}));
+// Documentation captures use a declared synthetic detection, never the user's
+// adapter, address, watch records or a claim of successful reception.
+const sampleWatch={id:'11111111-1111-1111-1111-111111111111',name:'CASIO GA-B2100',model:'GA-B2100',module:'5689',instructions:'ga',verified:true};
+ipcMain.removeHandler('bluetooth:scan');ipcMain.handle('bluetooth:scan',()=>({ok:true,devices:[sampleWatch]}));
+ipcMain.removeHandler('bluetooth:cancel');ipcMain.handle('bluetooth:cancel',()=>({ok:true}));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 app.whenReady().then(async()=>{
  const win=BrowserWindow.getAllWindows()[0];win.showInactive();win.webContents.setAudioMuted(true);const run=async code=>{try{return await win.webContents.executeJavaScript(code,true)}catch(error){throw Error(code+'\n'+error.message)}};
@@ -24,6 +29,7 @@ app.whenReady().then(async()=>{
   win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
   const routes=['sync','reception-lab','signal','profiles','watch-accuracy','history','world','moon','iss','light-travel','time-machine','back-in-time','settings'];
   for(const language of ['en','it','fr','de','es','ja']){
+   if(process.env.ATOMIC_CAPTURE_LANGUAGE&&language!==process.env.ATOMIC_CAPTURE_LANGUAGE)continue;
    await change('language-select',language);await run("document.fonts.ready.then(()=>true)");
    if(language==='ja')await run("document.fonts.load('12px \"Atomic Noto Sans JP\"','日本語').then(()=>true)");
    const output=path.join(__dirname,'../assets/guide',language);fs.mkdirSync(output,{recursive:true});
@@ -35,8 +41,27 @@ app.whenReady().then(async()=>{
     await run("document.getElementById('page-title').tabIndex=-1;document.getElementById('page-title').focus();document.activeElement.blur();document.getElementById('toast').hidden=true");
     win.webContents.sendInputEvent({type:'mouseMove',x:1050,y:90});await pause(550);
     fs.writeFileSync(path.join(output,route+'.jpg'),(await win.webContents.capturePage()).toJPEG(85));
+    if(language==='en'&&route==='sync'){
+     fs.mkdirSync(path.join(__dirname,'../docs/images'),{recursive:true});
+     fs.writeFileSync(path.join(__dirname,'../docs/images/synchronization.png'),(await win.webContents.capturePage()).toPNG());
+    }
+    if(route==='sync'){
+     await run("document.getElementById('bluetooth-button').click()");
+     await until("document.getElementById('bluetooth-dialog').open&&!document.getElementById('bluetooth-update').disabled");
+     await run("document.activeElement.blur()");await pause(150);
+     fs.writeFileSync(path.join(output,'bluetooth.jpg'),(await win.webContents.capturePage()).toJPEG(85));
+     if(language==='en')fs.writeFileSync(path.join(__dirname,'../docs/images/bluetooth.png'),(await win.webContents.capturePage()).toPNG());
+     await run("document.getElementById('bluetooth-close').click()");
+     await until("!document.getElementById('bluetooth-button').disabled");
+    }
    }
-   console.log('Captured 13 real manual screenshots: '+language);
+   if(language==='en'){
+    await run("document.querySelector('[data-page=guide]').click();document.querySelector('[data-chapter=bluetooth]').click()");
+    await until("document.querySelector('.manual-figure img').complete&&document.querySelector('.manual-figure img').naturalWidth>0");
+    await run("document.getElementById('manual-reader').scrollTop=0;document.activeElement.blur()");await pause(250);
+    fs.writeFileSync(path.join(__dirname,'../docs/images/guide.png'),(await win.webContents.capturePage()).toPNG());
+   }
+   console.log('Captured 14 real manual screenshots: '+language+' (Bluetooth detection simulated)');
   }
   app.exit(0);
  }catch(error){console.error(error.stack);app.exit(1);}

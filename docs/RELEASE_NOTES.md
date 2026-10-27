@@ -1,7 +1,10 @@
 # Release notes
 
-## Unreleased — Bluetooth time update
+## 1.11.0 — Bluetooth time synchronization
 
+Prepared on 27 October 2026; GitHub release and downloadable packages are not published yet.
+
+- Updated Synchronize and Bluetooth screenshots, the six-language offline Guide, README and user guide for the new Bluetooth mode.
 - Added one Bluetooth button beside radio transmission and a compact translated dialog for explicit Casio family profiles, including GA-B2100 / 5689 and GWG-B1000 / 5713. Discovery ends as soon as a supported watch appears; detected watches are immediately selectable instead of waiting for the scan timeout.
 - Added a native local BLE worker for macOS, Windows 11 and Linux. The time-only allowlist reads and echoes existing time configuration byte-for-byte before writing date/time; fresh NTP is required. Writes are not retried automatically, and uncertain outcomes ask the user to check the watch.
 - Added standard two/six-slot, no-city, analogue/second-dial and dedicated current-time adapters; SP/MIP requires complete unchanged settings snapshots and refuses unsupported firmware. Wear OS is excluded. Unknown models can only use an actual dedicated time service. The dialog shows physical-validation status and asks for the watch’s current UTC offset only when it cannot be read.

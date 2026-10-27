@@ -36,6 +36,20 @@ export const MANUAL_CHAPTERS = [
     "image": "sync"
   },
   {
+    "id": "bluetooth",
+    "title": "Bluetooth time update",
+    "group": "signals",
+    "route": "sync",
+    "purpose": "Update a compatible Casio watch’s date and time over Bluetooth from the Synchronize screen. This mode is independent of audio transmission.",
+    "note": "Bluetooth support is experimental and excludes Wear OS. “Time sent” means the write completed; check the watch. Cancelled writes can be uncertain, so check before retrying.",
+    "body": [
+      "Stop radio transmission, open Bluetooth and disconnect CASIO WATCHES. Put the watch in connection mode, select it as soon as it appears and choose Update time. Model-specific instructions and physical-validation status appear after selection.",
+      "The app reads the watch’s existing time configuration and obtains fresh NTP time immediately before sending date and time. Home City, DST rules, alarms and other settings are preserved. If the current watch UTC offset is unavailable, confirm its current offset including summer time, reconnect and update again."
+    ],
+    "example": "GA-B2100 / 5689: hold C for at least three seconds until CNCT flashes. GWG-B1000 / 5713: hold B for at least five seconds. GST-B1000D / 5748: hold B for at least 2.5 seconds until R. GW-9500 / 3553 has no Bluetooth; use radio synchronization.",
+    "image": "bluetooth"
+  },
+  {
     "id": "reception-lab",
     "title": "Reception Lab",
     "group": "signals",

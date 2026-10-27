@@ -1,6 +1,6 @@
 # AtomicClockSync
 
-Sync Casio Multiband 6 watches with simulated time signals through your speakers. Built with **JavaScript and Electron** for macOS, Windows and Linux.
+Sync compatible Casio watches through **Bluetooth** or simulated **Multiband 6 time signals** through your speakers. Built with **JavaScript and Electron** for macOS, Windows and Linux.
 
 ![Atomic Clock Sync — synchronization screen](docs/images/synchronization.png)
 
@@ -30,7 +30,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 - **Live signal view:** inspect the time code, current symbol, fields and parity checks.
 - **Nine themes:** eight dark palettes and one light palette, saved independently of watch profiles.
 - **Compact desktop interface:** a fixed 1100 × 740 window with separate views.
-- **Illustrated application Guide:** 16 narrative chapters, practical examples and 78 real UI screenshots across six languages, with image zoom and contextual help. Settings and Guide stay pinned above the sidebar version.
+- **Illustrated application Guide:** 17 narrative chapters, practical examples and 84 real UI screenshots across six languages, with image zoom and contextual help. Settings and Guide stay pinned above the sidebar version.
 - **Minimal sidebar:** a compact icon rail expands on hover or keyboard focus, overlaying the page without moving its content. Three animated groups keep navigation compact and remember the open theme.
 - **Fluid navigation:** directional section reveals, animated headings and a moving sidebar indicator, with instant reduced-motion navigation.
 - **Six interface languages:** offline translations of navigation, settings, notifications, astronomy, historical journeys and native menus, with a bundled Japanese font. Language changes preserve personal text and do not interrupt transmission.
@@ -40,7 +40,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 
 ![Application Guide — illustrated narrative with practical examples](docs/images/guide.png)
 
-**Settings** and **Guide** are always available at the foot of the sidebar, including as icons in compact mode. Guide opens an offline manual with sixteen chapters covering every section, reception problems and data management. Each chapter combines its purpose, explanatory prose, a practical example and a real screenshot in the selected language; click the screenshot to enlarge it. Images use illustrative sample data. The **?** button opens the chapter for the current view, and **Open section** returns to the actual tool. Reading, changing chapters or closing an image preview does not interrupt audio.
+**Settings** and **Guide** are always available at the foot of the sidebar, including as icons in compact mode. Guide opens an offline manual with seventeen chapters covering every section, reception problems and data management. Each chapter combines its purpose, explanatory prose, a practical example and a real screenshot in the selected language; click the screenshot to enlarge it. Images use illustrative sample data. The **?** button opens the chapter for the current view, and **Open section** returns to the actual tool. Reading, changing chapters or closing an image preview does not interrupt audio.
 
 ## Supported stations
 
@@ -53,6 +53,38 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 | BPC | Shangqiu, Henan, China | 68.5 kHz | 13,700 Hz | BJS / HKG |
 
 Station availability depends on the watch module and its home city. JJY currently supports the **60 kHz** station. BPC physical compatibility is experimental.
+
+## Bluetooth time synchronization
+
+![Bluetooth time update — illustrative detected GA-B2100](docs/images/bluetooth.png)
+
+Open **Synchronize → Bluetooth** with radio transmission stopped, disconnect
+CASIO WATCHES and enable the watch’s connection mode. Select the detected watch
+and choose **Update time**. The app checks internet time immediately before the
+update, preserves the watch’s current time configuration and disconnects.
+Bluetooth does not play an audio signal. The image uses a simulated detection;
+it is an interface example, not evidence of reception.
+
+| Watch | Connection action | Validation |
+| --- | --- | --- |
+| GA-B2100 / 5689 | Hold C at least 3 seconds, until CNCT flashes | Successful time update reported on GA-B2100C on macOS |
+| GWG-B1000 / 5713 | Hold B at least 5 seconds, until CNCT | Implemented; physical test pending |
+| GST-B1000D / 5748 | Hold B at least 2.5 seconds, until R; C about 0.5 seconds requests immediate time correction | Implemented; physical test pending |
+| GW-9500 / 3553 | Use the radio mode | This model has no Bluetooth |
+
+The registry has 129 model profiles with standard, analogue and dedicated-time
+procedures. Other profiles remain experimental; some SP/MIP firmware is refused
+when existing settings cannot be preserved completely. Wear OS is excluded.
+“Time sent” reports a completed Bluetooth write: check the watch itself. If the
+watch cannot report its UTC offset, the dialog asks you to confirm its current
+offset, including summer time; it never assumes the computer’s time zone.
+
+Packaged apps bundle the Bluetooth runtime. Targets are macOS, **Windows 11**
+and Linux with **BlueZ 5.55 or later**, D-Bus access and a working BLE adapter.
+Physical Bluetooth validation on Windows/Linux remains pending. See
+[compatibility and build details](docs/BLUETOOTH.md), the
+[model catalogue](docs/BLUETOOTH_MODELS.md) and the
+[1.11.0 changelog](docs/RELEASE_NOTES.md).
 
 ## Watch Accuracy
 
@@ -147,34 +179,34 @@ All circuits use **Hill Valley / Pacific time**. Jumping animates a cinematic pr
 
 A normal audio output cannot directly generate the longwave radio carrier expected by the watch. The app produces a lower-frequency audio tone and relies on harmonics and electromagnetic coupling from the speaker or earphone electronics.
 
-**Reception depends on the output hardware, placement and interference.** A valid generated time code does not guarantee reception. The app cannot read the watch display or automatically confirm synchronization; GET/ERR outcomes are entered by the user.
+**Reception depends on the output hardware, placement and interference.** A valid generated time code does not guarantee reception. The app cannot read the watch display or automatically confirm reception; GET/ERR outcomes are entered by the user.
 
 ## Downloads and platform status
 
-Current version: **1.10.0**. Download the apps from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest), or use the packages in the local `release/` directory:
+Source version: **1.11.0**. Its release packages are not published yet. [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/latest) contains the previous published version. The 1.11.0 build targets are:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `AtomicClockSync-1.10.0-arm64-mac.zip` | macOS app for Apple Silicon | Built and tested on macOS; local ad-hoc signature, not notarized |
-| `AtomicClockSync-1.10.0-windows-x64-portable.exe` | Windows x64 portable executable | Built and checked for package integrity; not run on Windows |
-| `AtomicClockSync-1.10.0-linux-x86_64.AppImage` | Portable Linux x64 application | Built on Ubuntu 22.04 in Docker; packaged UI and muted audio tested on a virtual display |
-| `AtomicClockSync-1.10.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Package metadata and contents verified against the tested application |
-| `AtomicClockSync-1.10.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Package metadata and contents verified against the tested application |
+| `AtomicClockSync-1.11.0-arm64-mac.zip` | macOS app for Apple Silicon | Build on macOS; local ad-hoc signature, not notarized |
+| `AtomicClockSync-1.11.0-windows-x64-portable.exe` | Windows 11 x64 portable executable | Build natively on Windows with bundled BLE worker; physical validation pending |
+| `AtomicClockSync-1.11.0-linux-x86_64.AppImage` | Portable Linux x64 application | Build on Ubuntu 22.04; physical Bluetooth validation pending |
+| `AtomicClockSync-1.11.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Same Linux application with bundled BLE worker |
+| `AtomicClockSync-1.11.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Same Linux application with bundled BLE worker |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
-Prebuilt apps include their runtime; **Node.js is not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
+Prebuilt apps include Electron and the Bluetooth/Python runtime; **Node.js and Python are not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
 
 On Linux x64, choose the AppImage for portable use, the DEB on Debian-based distributions, or the RPM on Fedora/openSUSE. The names `x86_64` and `amd64` both mean 64-bit Intel/AMD PCs. These builds do not target ARM64. From your download directory:
 
 ```sh
-chmod +x 'AtomicClockSync-1.10.0-linux-x86_64.AppImage'
-./'AtomicClockSync-1.10.0-linux-x86_64.AppImage'
+chmod +x 'AtomicClockSync-1.11.0-linux-x86_64.AppImage'
+./'AtomicClockSync-1.11.0-linux-x86_64.AppImage'
 # Alternatively, on Debian/Ubuntu/Mint:
-sudo apt install './AtomicClockSync-1.10.0-linux-amd64.deb'
+sudo apt install './AtomicClockSync-1.11.0-linux-amd64.deb'
 # Alternatively, on Fedora:
-sudo dnf install './AtomicClockSync-1.10.0-linux-x86_64.rpm'
+sudo dnf install './AtomicClockSync-1.11.0-linux-x86_64.rpm'
 # Or on openSUSE:
-sudo zypper install './AtomicClockSync-1.10.0-linux-x86_64.rpm'
+sudo zypper install './AtomicClockSync-1.11.0-linux-x86_64.rpm'
 ```
 
 Linux validation uses Ubuntu 22.04 x64 in Docker with a virtual display, muted audio and `--no-sandbox` for the container-only test. Normal launch commands retain Chromium's sandbox. Audio output and physical watch reception still need a real Linux desktop/hardware test. Release binaries are excluded from Git and are intended for GitHub Releases. Each platform package is distributed individually.

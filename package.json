@@ -1,8 +1,8 @@
 {
   "name": "atomic-clock-sync",
   "productName": "AtomicClockSync",
-  "version": "1.10.0",
-  "description": "Sync Casio Multiband 6 watches with simulated time signals through your speakers. A JavaScript and Electron desktop app for macOS, Windows and Linux.",
+  "version": "1.11.0",
+  "description": "Sync compatible Casio watches through Bluetooth or simulated Multiband 6 time signals. A JavaScript and Electron desktop app for macOS, Windows and Linux.",
   "homepage": "https://github.com/Gladiak/atomicClockSync",
   "main": "electron/main.cjs",
   "private": true,

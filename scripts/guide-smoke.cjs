@@ -25,7 +25,7 @@ app.whenReady().then(async()=>{
   if(win.webContents.isLoading())await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
   assert.equal(await run("document.querySelectorAll('[data-nav-group]').length"),3);assert.equal(await run("document.querySelectorAll('.sidebar-utilities [data-page]').length"),2);
   await go('settings');assert.equal(await run("document.querySelector('.sidebar .selected').dataset.page"),'settings');
-  await go('guide');assert.equal(await run("document.querySelectorAll('.manual-chapter').length"),16);assert.equal(await run("document.querySelector('.sidebar .selected').dataset.page"),'guide');
+  await go('guide');assert.equal(await run("document.querySelectorAll('.manual-chapter').length"),17);assert.equal(await run("document.querySelector('.sidebar .selected').dataset.page"),'guide');
   await click('start-button');await until("document.getElementById('start-button').classList.contains('running')");
   await run("document.querySelector('[data-chapter=watch-accuracy]').click()");assert.ok(await run("document.getElementById('manual-article').getAnimations().length>0"));
   win.webContents.debugger.attach('1.3');await win.webContents.debugger.sendCommand('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
@@ -55,6 +55,6 @@ app.whenReady().then(async()=>{
   await run("document.querySelector('[data-chapter=privacy]').click()");await click('start-button');await until("!document.getElementById('start-button').disabled");
   win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");await go('guide');assert.equal(await run("document.querySelector('.manual-chapter[aria-current]').dataset.chapter"),'privacy');
   assert.deepEqual(errors,[]);
-  console.log('PASS: three groups and pinned Settings/Guide, 16 narrative chapters, all 80 prose passages and 78 real screenshots in six languages, zoom/Escape audio isolation, nine themes, fixed layout, context links and chapter persistence.');app.exit(0);
+  console.log('PASS: three groups and pinned Settings/Guide, 17 narrative chapters, all 85 prose passages and 84 real screenshots in six languages, zoom/Escape audio isolation, nine themes, fixed layout, context links and chapter persistence.');app.exit(0);
  }catch(error){console.error(error.stack,errors);await capture('failure');app.exit(1)}
 });

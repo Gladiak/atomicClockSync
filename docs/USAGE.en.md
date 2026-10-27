@@ -4,24 +4,24 @@
 
 This guide is the English translation and update of the original Italian manual.
 
-AtomicClockSync is a **JavaScript and Electron desktop app** that helps synchronize Casio Multiband 6 watches by simulating the time codes of five stations through audio. It uses a fixed **1100 × 740** window with separate compact views. The interface supports English, Italian, French, German, Spanish and Japanese. This is an independent implementation inspired by [Clock Wave](https://cw.rzapps.com/).
+AtomicClockSync is a **JavaScript and Electron desktop app** that synchronizes compatible Casio watches through Bluetooth or by simulating the time codes of five stations through audio. It uses a fixed **1100 × 740** window with separate compact views. The interface supports English, Italian, French, German, Spanish and Japanese. This is an independent implementation inspired by [Clock Wave](https://cw.rzapps.com/).
 
 ## Ready-to-use applications
 
-Current version: **1.10.0**.
+Source version: **1.11.0**. Release packages are not published yet; the filenames below describe the build targets.
 
-- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.10.0-arm64-mac.zip`.
-- Windows x64 portable: `release/AtomicClockSync-1.10.0-windows-x64-portable.exe`.
-- Linux x64 portable: `release/AtomicClockSync-1.10.0-linux-x86_64.AppImage`.
-- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-1.10.0-linux-amd64.deb`.
-- Fedora/openSUSE x64: `release/AtomicClockSync-1.10.0-linux-x86_64.rpm`.
+- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.11.0-arm64-mac.zip`.
+- Windows x64 portable: `release/AtomicClockSync-1.11.0-windows-x64-portable.exe`.
+- Linux x64 portable: `release/AtomicClockSync-1.11.0-linux-x86_64.AppImage`.
+- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-1.11.0-linux-amd64.deb`.
+- Fedora/openSUSE x64: `release/AtomicClockSync-1.11.0-linux-x86_64.rpm`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
-The packaged apps do not require Node.js. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
+The packaged apps include Electron and the Bluetooth/Python runtime and do not require Node.js or Python. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
 
-The Windows build was produced on macOS. Its x64 architecture, embedded sources and archive integrity were checked, but it has not been run on Windows. It has no Windows digital signature. The portable executable requires no installation; profiles and history are stored in the local user profile rather than inside the executable.
+The Windows 11 x64 target requires a native Windows BLE worker built with the application on Windows. Physical Bluetooth and audio validation on a Windows desktop remain pending. It has no Windows digital signature. The portable executable requires no installation; profiles and history are stored in the local user profile rather than inside the executable.
 
-On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-1.10.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-1.10.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-1.10.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
+On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-1.11.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-1.11.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-1.11.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
 
 ## Stations
 
@@ -47,6 +47,40 @@ Available home cities and automatic station selection depend on the Casio module
 6. Check the result on the **watch display**. Click **My Casio received** only after successful reception. The app cannot determine reception automatically.
 
 During transmission, station, output device, waveform, channel, profiles and manual timing correction are locked. Volume remains adjustable once audio preparation finishes, and its changes are recorded in the trial. Press Escape to stop. Transmission can continue while navigating between views or using other applications.
+
+## Bluetooth synchronization
+
+Open **Synchronize → Bluetooth** with radio stopped. Keep the watch nearby,
+disconnect CASIO WATCHES and enable the connection mode described in its manual.
+Select the watch and press **Update time**. The app obtains fresh NTP time after
+preparing the watch, sends date/time once and disconnects. There is no audio.
+
+GA-B2100 / 5689: hold C at least 3 seconds until CNCT flashes. GWG-B1000 / 5713:
+hold B at least 5 seconds until CNCT. GST-B1000D / 5748: hold B at least 2.5
+seconds until R for the full connection, or C about 0.5 seconds for immediate
+time correction; the seconds hand moves to C on connection. Instructions and
+physical-validation status appear after selection. GW-9500 / 3553 has no BLE:
+use its Multiband 6 radio mode.
+
+Only date/time changes. Existing Home City, zones, DST rules, alarms, timers,
+reminders, sensor settings and location records are preserved by the protocol.
+If the watch’s current offset cannot be read, explicitly select its current UTC
+offset including active summer time, reconnect the watch and update again.
+The computer’s timezone is never silently substituted.
+
+Check the watch after “Time sent”: this reports transport completion, not a
+watch-level OK or accuracy measurement. An interrupted write can be ambiguous;
+check before trying again. The app never retries time writes automatically.
+Closing, locking, suspending or quitting cancels Bluetooth. Radio transmission
+and Bluetooth are mutually exclusive. Bluetooth does not create radio GET trials
+or journal measurements automatically.
+
+The support is experimental and independent of Casio. GA-B2100C has one physical
+time-update confirmation on macOS; GWG-B1000, GST-B1000D and other profiles still
+need watch tests. Wear OS is excluded. Unknown models need an actual writable
+dedicated time service; SP/MIP firmware that omits required settings snapshots
+is refused. See [full Bluetooth scope and requirements](BLUETOOTH.md) and the
+[129-profile model catalogue](BLUETOOTH_MODELS.md).
 
 ## Audio channels
 
@@ -83,13 +117,13 @@ Internal shortcuts select the destination group without forcing the rail open ov
 
 ## Application Guide
 
-Open **Guide** from the sidebar footer for the complete offline application manual. Its chapter index covers Getting started, Synchronize, Reception Lab, Inside the signal, My watches, Watch Accuracy, History, World View, Moon Observatory, ISS Observatory, Light Travel, Time Machine, Back in Time, Settings, Troubleshooting and Data & privacy.
+Open **Guide** from the sidebar footer for the complete offline application manual. Its chapter index covers Getting started, Synchronize, Bluetooth, Reception Lab, Inside the signal, My watches, Watch Accuracy, History, World View, Moon Observatory, ISS Observatory, Light Travel, Time Machine, Back in Time, Settings, Troubleshooting and Data & privacy.
 
 Chapters explain the purpose and meaning of a feature in connected prose, followed by a concrete example and practical limitations. A real example screenshot appears in the current interface language. Click it for a larger view; close with the image’s close button or Escape. Escape in this preview closes the image without stopping a transmission. The rest of the app retains its usual Escape-to-stop behavior.
 
 **Open section** navigates to the actual tool. The header’s **?** opens the chapter for the current section; trial details use the History chapter. Previous/Next and the chapter index support continuous reading. The last chapter is saved locally in `atomic.guide.chapter`; per-chapter scroll is remembered during the session. Language changes translate the whole explanation, examples, notes and screenshots, preserving the selected chapter. The reader and index scroll independently within the fixed window. Reduced motion is respected.
 
-The 78 screenshots are captured from the real app with an isolated sample profile, never the user's records. They are bundled for offline reading. Use `npm run capture:guide` after interface/version changes to regenerate all thirteen views in six languages.
+The 84 screenshots are captured from the real app with an isolated sample profile, never the user's records. They are bundled for offline reading. Use `npm run capture:guide` after interface/version changes to regenerate all fourteen views in six languages.
 
 ## Watch Accuracy
 
@@ -101,7 +135,7 @@ Create a profile in **My watches**, then open **Watch Accuracy** or press **Trac
 4. Return on another day. The app fits the period’s readings after at least two measurements spanning 24 hours. Seven days and three readings change the label from an early estimate to an observed trend, not to a confidence certificate. With three or more readings, scatter around the fit is shown; mixed reference checks are flagged.
 5. Record confirmed synchronization, manual adjustment, automatic radio/DST correction or battery/maintenance as a correction event. Each starts a new period with an unknown offset until measured. Select a period above the graph; open **Journal** to see all records for the watch. Clicking a graph point edits its observation. Removing an event merges adjacent periods, with explicit confirmation and an undo option.
 
-**Estimated now** is an extrapolation from the fitted line. It is available only for the latest period and no more than seven days after its latest reading; completed periods never project across a correction. Notes, human reading error and changing reference conditions limit interpretation. No automatic connection to the watch, watch-rate adjustment, condition-based recommendation or camera measurement is included.
+**Estimated now** is an extrapolation from the fitted line. It is available only for the latest period and no more than seven days after its latest reading; completed periods never project across a correction. Notes, human reading error and changing reference conditions limit interpretation. The journal does not automatically read the watch, adjust its rate, recommend conditions or measure it with a camera. Bluetooth time updates are a separate manual operation in Synchronize.
 
 For a linked GET in **History → Details**, **Track accuracy** pre-fills a synchronization event. Confirm the actual correction time before saving. GET is your reception report and never proves a zero-offset measurement. Repeated insertion of the same trial is blocked. **Reception Lab** opens filtered to the selected watch.
 
@@ -283,7 +317,7 @@ The window cannot be resized, maximized or switched to full screen. Separate vie
 - **Time Machine:** sourced historical journeys, personal memories and locally stored time capsules; also opens Back in Time.
 - **Back in Time:** movie time circuits, live elapsed counters and a cinematic 88 mph jump.
 - **Settings:** output device, test tone, waveform, manual timing correction, NTP diagnostics and theme selection.
-- **Guide:** sixteen illustrated narrative chapters, practical examples, contextual help and full text/screenshots in six languages.
+- **Guide:** seventeen illustrated narrative chapters, practical examples, contextual help and full text/screenshots in six languages.
 
 ## Running from source
 
@@ -357,7 +391,7 @@ npm run checksums -- --github # Match GitHub's download filenames in SHA256SUMS.
 
 The desktop test uses a temporary profile. It checks all nine themes, selected text contrast ratios of at least 4.5:1, persistence, invalid saved-theme fallback, live theme changes and separation from audio settings. It also verifies isolation, fixed window size, all views and FAQs without overflow, the five station selections, channel/profile locking, profile CRUD and undo, settings restore, immutable history, GET/ERR updates, legacy migration, output tests, volume changes, offline fallback, window closing and sleep interruption.
 
-Screenshots are written to `artifacts/`. macOS arm64 has been built and tested. Windows portable x64 has been built and checked for integrity, but not executed on Windows. Linux x64 AppImage, DEB and RPM packages have been built and checked; the packaged UI and muted audio transmission were tested on Ubuntu in Docker on a virtual display. Linux desktop audio hardware and native RPM installation have not been tested.
+Screenshots are written to `artifacts/`. The previous app and Bluetooth worker were checked on macOS; the Linux worker was also built and self-tested in Docker. The 1.11.0 downloadable package set has not been published. Native Windows builds use the manual GitHub workflow. Linux desktop audio hardware and native RPM installation have not been tested.
 
 ## Technical references
 

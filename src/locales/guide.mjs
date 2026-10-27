@@ -1,5 +1,49 @@
 // Original offline manual prose and interface text, in all supported languages.
 export const guideMessages = {
+
+  "Bluetooth time update": {
+    "it": "Aggiornamento ora Bluetooth",
+    "fr": "Mise à l’heure Bluetooth",
+    "de": "Bluetooth-Zeiteinstellung",
+    "es": "Actualización horaria Bluetooth",
+    "ja": "Bluetooth 時刻更新"
+  },
+  "Update a compatible Casio watch’s date and time over Bluetooth from the Synchronize screen. This mode is independent of audio transmission.": {
+    "it": "Aggiorna data e ora di un Casio compatibile via Bluetooth dalla schermata Sincronizzazione. Questa modalità è indipendente dalla trasmissione audio.",
+    "fr": "Réglez la date et l’heure d’une Casio compatible par Bluetooth depuis Synchroniser. Ce mode est indépendant de la transmission audio.",
+    "de": "Stelle Datum und Uhrzeit einer kompatiblen Casio per Bluetooth in Synchronisieren ein. Dieser Modus ist unabhängig von der Audioübertragung.",
+    "es": "Actualiza la fecha y la hora de un Casio compatible por Bluetooth desde Sincronizar. Este modo es independiente de la transmisión de audio.",
+    "ja": "同期画面から Bluetooth で対応する Casio の日付と時刻を更新します。このモードは音声送信とは独立しています。"
+  },
+  "Bluetooth support is experimental and excludes Wear OS. “Time sent” means the write completed; check the watch. Cancelled writes can be uncertain, so check before retrying.": {
+    "it": "Il supporto Bluetooth è sperimentale ed esclude Wear OS. “Ora inviata” indica il completamento della scrittura: controlla l’orologio. Una scrittura annullata può avere un esito incerto; controlla prima di riprovare.",
+    "fr": "Le Bluetooth est expérimental et exclut Wear OS. « Heure envoyée » indique la fin de l’écriture : vérifiez la montre. Une annulation peut laisser un résultat incertain ; vérifiez avant de réessayer.",
+    "de": "Bluetooth ist experimentell und schließt Wear OS aus. „Zeit gesendet“ bedeutet, dass der Schreibvorgang abgeschlossen ist; Uhr prüfen. Nach Abbruch kann das Ergebnis unklar sein, daher vor erneutem Versuch prüfen.",
+    "es": "El soporte Bluetooth es experimental y excluye Wear OS. «Hora enviada» indica que terminó la escritura; comprueba el reloj. Una escritura cancelada puede tener un resultado incierto; comprueba antes de reintentar.",
+    "ja": "Bluetooth は試験機能で、Wear OS は対象外です。「時刻を送信しました」は書き込み完了を意味します。時計を確認してください。中止した書き込みの結果が不明な場合は、再試行前に確認してください。"
+  },
+  "Stop radio transmission, open Bluetooth and disconnect CASIO WATCHES. Put the watch in connection mode, select it as soon as it appears and choose Update time. Model-specific instructions and physical-validation status appear after selection.": {
+    "it": "Ferma la trasmissione radio, apri Bluetooth e scollega CASIO WATCHES. Attiva la modalità di connessione dell’orologio, selezionalo appena compare e premi Aggiorna ora. Dopo la selezione compaiono istruzioni specifiche e stato della verifica sul dispositivo.",
+    "fr": "Arrêtez la transmission radio, ouvrez Bluetooth et déconnectez CASIO WATCHES. Activez le mode de connexion de la montre, sélectionnez-la dès son apparition et réglez l’heure. Les instructions et l’état de validation sur une montre apparaissent après sélection.",
+    "de": "Radioübertragung stoppen, Bluetooth öffnen und CASIO WATCHES trennen. Verbindungsmodus der Uhr aktivieren, sie sofort nach Erscheinen auswählen und Zeit stellen wählen. Danach erscheinen modellspezifische Hinweise und der Stand der Prüfung an einer Uhr.",
+    "es": "Detén la transmisión de radio, abre Bluetooth y desconecta CASIO WATCHES. Activa el modo de conexión del reloj, selecciónalo al aparecer y pulsa Actualizar hora. Se mostrarán instrucciones específicas y el estado de validación en un reloj.",
+    "ja": "電波送信を停止し、Bluetooth を開いて CASIO WATCHES を切断します。時計を接続モードにし、表示されたら選択して時刻を更新します。選択後に機種別の操作と実機確認状況が表示されます。"
+  },
+  "The app reads the watch’s existing time configuration and obtains fresh NTP time immediately before sending date and time. Home City, DST rules, alarms and other settings are preserved. If the current watch UTC offset is unavailable, confirm its current offset including summer time, reconnect and update again.": {
+    "it": "L’app legge la configurazione oraria dell’orologio e verifica l’ora NTP subito prima di inviare data e ora. Città principale, regole dell’ora legale, sveglie e altre impostazioni vengono conservate. Se lo scostamento UTC non è disponibile, conferma quello attuale inclusa l’ora legale, riconnetti e aggiorna ancora.",
+    "fr": "L’app lit la configuration horaire de la montre et vérifie NTP juste avant l’envoi. Ville de résidence, règles d’heure d’été, alarmes et autres réglages sont conservés. Si le décalage UTC est indisponible, confirmez sa valeur actuelle, heure d’été comprise, reconnectez la montre et réessayez.",
+    "de": "Die App liest die Zeitkonfiguration der Uhr und prüft NTP unmittelbar vor dem Senden. Heimatstadt, Sommerzeitregeln, Alarme und andere Einstellungen bleiben erhalten. Ist der UTC-Abstand unbekannt, seinen aktuellen Wert einschließlich Sommerzeit bestätigen, erneut verbinden und aktualisieren.",
+    "es": "La app lee la configuración horaria del reloj y verifica NTP justo antes de enviar la fecha y la hora. Conserva ciudad local, reglas de horario de verano, alarmas y otros ajustes. Si falta el desfase UTC, confirma el actual incluido el horario de verano, vuelve a conectar y actualiza otra vez.",
+    "ja": "アプリは時計の時刻設定を読み取り、日付と時刻を送る直前に NTP を確認します。ホーム都市、夏時間の規則、アラームなどの設定は維持されます。UTC 時差を取得できない場合は、夏時間を含む現在の時差を確認し、再接続して更新してください。"
+  },
+  "GA-B2100 / 5689: hold C for at least three seconds until CNCT flashes. GWG-B1000 / 5713: hold B for at least five seconds. GST-B1000D / 5748: hold B for at least 2.5 seconds until R. GW-9500 / 3553 has no Bluetooth; use radio synchronization.": {
+    "it": "GA-B2100 / 5689: tieni premuto C per almeno tre secondi finché lampeggia CNCT. GWG-B1000 / 5713: premi B per almeno cinque secondi. GST-B1000D / 5748: premi B per almeno 2,5 secondi fino a R. GW-9500 / 3553 non ha Bluetooth: usa la sincronizzazione radio.",
+    "fr": "GA-B2100 / 5689 : maintenez C trois secondes jusqu’au clignotement de CNCT. GWG-B1000 / 5713 : maintenez B cinq secondes. GST-B1000D / 5748 : maintenez B 2,5 secondes jusqu’à R. GW-9500 / 3553 n’a pas de Bluetooth : utilisez la radio.",
+    "de": "GA-B2100 / 5689: C mindestens drei Sekunden halten, bis CNCT blinkt. GWG-B1000 / 5713: B mindestens fünf Sekunden halten. GST-B1000D / 5748: B mindestens 2,5 Sekunden bis R halten. GW-9500 / 3553 hat kein Bluetooth; Radiosynchronisierung nutzen.",
+    "es": "GA-B2100 / 5689: mantén C al menos tres segundos hasta que parpadee CNCT. GWG-B1000 / 5713: mantén B cinco segundos. GST-B1000D / 5748: mantén B 2,5 segundos hasta R. GW-9500 / 3553 no tiene Bluetooth; usa radio.",
+    "ja": "GA-B2100 / 5689 は C を3秒以上押し CNCT の点滅を待ちます。GWG-B1000 / 5713 は B を5秒以上、GST-B1000D / 5748 は B を2.5秒以上押して R を待ちます。GW-9500 / 3553 は Bluetooth 非搭載のため電波同期を使用してください。"
+  }
+,
   "AtomicClockSync simulates station time codes through audio, records your watch experiments and explores time and space. No account is required.": {
     "it": "AtomicClockSync simula i codici orari delle stazioni tramite audio, registra gli esperimenti con i tuoi orologi ed esplora tempo e spazio. Non serve un account.",
     "fr": "AtomicClockSync simule les codes horaires par audio, conserve vos essais et explore le temps et l’espace. Aucun compte n’est nécessaire.",
