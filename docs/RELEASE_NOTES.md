@@ -11,10 +11,10 @@ Released on 27 October 2026.
 - Moved the NTP check to the end of watch initialization so longer handshakes do not age the reference.
 - Fixed the GWG-B1000 / 5713 profile to initialize home/world time only: the inherited six-clock sequence timed out on `1d02`. A real macOS debug run completed the corrected sequence and the user confirmed OK on the watch. Added opt-in `npm run start:debug` protocol logs for real-device diagnostics.
 - Added GST-B1000D / 5748 instructions (B for 2.5 seconds; C for 0.5 seconds for immediate time correction) and prefer its dedicated writable current-time service when exposed. The upstream 5631 module attribution is not used.
-- Corrected GST-B1000 / 5748 initialization after a live trace rejected the unsupported city-name register `1f00` with `ff81`. Its full profile now preserves the accepted DST and two zone records without querying city names; a regression test covers the rejection. A subsequent macOS device trace completed initialization and the time write without errors; watch-level OK/date/time confirmation remains pending.
+- Corrected GST-B1000 / 5748 initialization after a live trace rejected the unsupported city-name register `1f00` with `ff81`. Its full profile now preserves the accepted DST and two zone records without querying city names; a regression test covers the rejection. A subsequent macOS device trace completed initialization and the time write without errors; the user subsequently confirmed successful operation and OK on the watch.
 - Added worker packaging, platform build checks, dependency notices, a three-platform build workflow and Bluetooth setup documentation. A user confirmed a GA-B2100C / 5689 time update on macOS on 27 October 2026; full settings-preservation and native Windows validation remain pending.
 
-Validation: 98 JavaScript tests, 28 Python Bluetooth protocol/adapter tests and native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Bluetooth UI/protocol tests substitute hardware; the reported GA-B2100C and GWG-B1000 time updates provide separate physical evidence on macOS.
+Validation: 98 JavaScript tests, 28 Python Bluetooth protocol/adapter tests and native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Bluetooth UI/protocol tests substitute hardware; the reported GA-B2100C, GWG-B1000 and GST-B1000 time updates provide separate physical evidence on macOS.
 
 ## 1.10.0 — Watch Accuracy, illustrated Guide and 96 historical journeys
 

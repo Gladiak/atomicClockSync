@@ -56,9 +56,9 @@ register("GM-B2100 GBM-2100 MRG-B2100 GMC-B2100 GA-B001 GA-B010 GBA-400 GBA-800 
 # Casio's GST-B1000D support page links module 5748. Upstream also lists 5631,
 # which is GST-B300, not evidence of a GST-B1000 variant. A live 5748 trace
 # accepts 1d00 and 1e00/01 but rejects 1f00 (ff81); it has no city-name register.
-# Prefer a writable dedicated time service when exposed. A complete time
-# update with the restricted full profile still requires physical confirmation.
-register("GST-B1000", module="5748", instructions="gst", city_register=0, prefer_current_time=True)
+# Prefer a writable dedicated time service when exposed. The user confirmed a
+# successful time update with this restricted full profile on macOS.
+register("GST-B1000", module="5748", instructions="gst", city_register=0, prefer_current_time=True, verified=True)
 register("GBD-800 GMD-B800 GBD-100 GBD-200 GBD-300 GBX-100 GBD-H1000 GBX-H5600 GDG-B100 "
          "ABL-100 ABL-100WE F-B100W BSA-B100 EQB-500 EQB-501 EQB-510 EQB-600 EQB-700 EQB-800 "
          "EQB-900 EQB-1000 EQB-1100 EQB-1200 EQB-1300 EQB-2000", city_register=0)

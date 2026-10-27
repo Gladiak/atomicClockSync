@@ -82,6 +82,7 @@ class RegistryTests(unittest.TestCase):
             self.assertEqual((gst.model, gst.module, gst.instructions), ("GST-B1000", "5748", "gst"))
             self.assertTrue(gst.prefer_current_time)
             self.assertEqual(gst.city_register, 0)
+            self.assertTrue(gst.verified)
             self.assertFalse(gst.second_dial)
         self.assertEqual(resolve("GST-B100").model, "GST-B100")
         self.assertFalse(resolve("GST-B100").prefer_current_time)

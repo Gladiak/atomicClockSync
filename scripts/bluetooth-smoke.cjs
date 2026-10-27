@@ -104,10 +104,10 @@ app.whenReady().then(async () => {
     await until("!document.getElementById('bluetooth-button').disabled");
     expectedOffset = undefined;
 
-    device = { ...device, name: 'CASIO GST-B1000D', model: 'GST-B1000', module: '5748', instructions: 'gst', verified: false };
+    device = { ...device, name: 'CASIO GST-B1000D', model: 'GST-B1000', module: '5748', instructions: 'gst', verified: true };
     await open(); await selectWatch();
     assert.match(await run("document.getElementById('bluetooth-instructions').textContent"), /hold B.*2\.5 seconds.*hold C.*0\.5 seconds/);
-    assert.match(await run("document.getElementById('bluetooth-profile').textContent"), /5748.*awaiting/);
+    assert.match(await run("document.getElementById('bluetooth-profile').textContent"), /5748.*verified/);
     await run("document.getElementById('bluetooth-close').click()");
     await until("!document.getElementById('bluetooth-button').disabled");
 

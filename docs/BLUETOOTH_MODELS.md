@@ -5,7 +5,7 @@ are accepted after a known model; unknown numeric model extensions do not inheri
 a profile. Modules are shown only where identified for the user’s watches.
 See [procedure limits and hardware evidence](BLUETOOTH.md).
 
-**Physically reported:** GA-B2100C / 5689 and GWG-B1000 / 5713, macOS. All other entries await a watch test.
+**Physically reported:** GA-B2100C / 5689, GWG-B1000 / 5713 and GST-B1000 / 5748, macOS. All other entries await a watch test.
 **Excluded:** Wear OS (GSW/WSD). Unknown/older Casio models may use only an actual
 dedicated current-time service, not an inferred full-protocol sequence.
 
@@ -83,7 +83,7 @@ dedicated current-time service, not an inferred full-protocol sequence.
 | GR-B300 | — | Standard | 2 | Pending |
 | GSR-H1000 | — | Standard | 2 | Pending |
 | GST-B100 | — | Standard | 2 | Pending |
-| GST-B1000 (including GST-B1000D) | 5748 | Dedicated current-time service preferred; no city-name register in full mode | 2 zone records | Physical time write logged (macOS); watch OK confirmation pending |
+| GST-B1000 (including GST-B1000D) | 5748 | Dedicated current-time service preferred; no city-name register in full mode | 2 zone records | User-confirmed time update (macOS) |
 | GST-B200 | — | Standard | 2 | Pending |
 | GST-B300 | — | Standard | 2 | Pending |
 | GST-B400 | — | Standard | 2 | Pending |

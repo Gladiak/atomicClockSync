@@ -7,7 +7,7 @@ model registry and the services actually exposed by the watch; it does not send
 the GA-B2100 sequence indiscriminately to other models.
 
 **Hardware evidence:** a user confirmed successful time updates on GA-B2100C /
-5689 and **GWG-B1000 / 5713 (Mudmaster)** on macOS on 27 October 2026. The other
+5689, **GWG-B1000 / 5713 (Mudmaster)** and **GST-B1000 / 5748** on macOS on 27 October 2026. The other
 profiles are implemented and covered by synthetic GATT tests but still need
 physical acceptance. A registry entry is not certification of compatibility.
 Advertising identifies a family, not a verified module number or device identity.
@@ -45,8 +45,8 @@ path and continue to use the radio feature.
 ## Procedures and compatibility
 
 The complete explicit catalogue is in [BLUETOOTH_MODELS.md](BLUETOOTH_MODELS.md),
-generated from `bluetooth/models.py`. All profiles except the reported GA-B2100
-and GWG-B1000 remain experimental pending physical time-update tests. Complete
+generated from `bluetooth/models.py`. All profiles except the reported GA-B2100,
+GWG-B1000 and GST-B1000 remain experimental pending physical time-update tests. Complete
 settings-preservation acceptance remains pending on every family.
 
 **GST-B1000D / 5748:** Casio's product support links the 5748 manual. The
@@ -56,9 +56,9 @@ A live module 5748 trace on 27 October 2026 accepted `1d00` and `1e00/01`
 reads/unchanged echoes, then rejected the city-name query `1f00` with `ff81`.
 Its full profile now requests only those three accepted records, omitting city
 names. A subsequent real attempt completed the three reads/unchanged echoes,
-obtained fresh NTP, wrote time `09` and disconnected without errors. The watch’s
-OK indication and displayed date/time still need user confirmation,
-and prefer a writable dedicated current-time service when exposed, including
+obtained fresh NTP, wrote time `09` and disconnected without errors. The user
+subsequently confirmed successful operation and OK on the watch. We
+prefer a writable dedicated current-time service when exposed, including
 when the full service is present as well. Do not infer an MTG second-dial sequence
 from its analogue dial. Synthetic regression tests verify the restricted queries
 and unchanged echoes, not success on the physical watch.
