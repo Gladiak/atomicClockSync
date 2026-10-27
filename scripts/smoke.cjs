@@ -180,7 +180,7 @@ app.whenReady().then(async () => {
     await pause(200);
     await capture('desktop-settings.png');
     await run("document.querySelector('[data-page=guide]').click()");
-    assert.equal(await run("document.querySelectorAll('.manual-chapter').length"), 16);
+    assert.equal(await run("document.querySelectorAll('.manual-chapter').length"), 17);
     await pause(200);
     await capture('desktop-guide.png');
     await run("document.querySelector('[data-page=sync]').click(); document.getElementById('start-button').click()");

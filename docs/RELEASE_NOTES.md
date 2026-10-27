@@ -13,6 +13,8 @@ Released on 27 October 2026.
 - Added GST-B1000D / 5748 instructions (B for 2.5 seconds; C for 0.5 seconds for immediate time correction) and prefer its dedicated writable current-time service when exposed. Its standard full-protocol fallback remains physically unverified; the upstream 5631 module attribution is not used.
 - Added worker packaging, platform build checks, dependency notices, a three-platform build workflow and Bluetooth setup documentation. A user confirmed a GA-B2100C / 5689 time update on macOS on 27 October 2026; full settings-preservation and native Windows validation remain pending.
 
+Validation: 98 JavaScript tests, 28 Python Bluetooth protocol/adapter tests and native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Bluetooth UI/protocol tests substitute hardware; the reported GA-B2100C and GWG-B1000 time updates provide separate physical evidence on macOS.
+
 ## 1.10.0 — Watch Accuracy, illustrated Guide and 96 historical journeys
 
 Updated in place on 26 October 2026: this version keeps the same package filenames; the downloadable builds and SHA-256 checksums are replaced with the refreshed application.

@@ -13,4 +13,6 @@ AtomicClockSync 1.11.0 adds **Bluetooth time synchronization** beside radio tran
 
 **Downloads:** macOS Apple Silicon ZIP, Windows 11 x64 portable EXE, Linux x64 AppImage/DEB/RPM. Packages are unsigned or locally ad-hoc signed and the macOS app is not notarized. Verify downloads with **SHA256SUMS.txt**.
 
+**Validation:** 98 JavaScript tests and 28 Python Bluetooth tests; native Electron checks for the Bluetooth dialog, six-language illustrated Guide, navigation and desktop/audio behavior. Bluetooth UI/protocol tests substitute hardware; physical validation is limited to the watch updates reported above.
+
 See the [Bluetooth guide](https://github.com/Gladiak/atomicClockSync/blob/main/docs/BLUETOOTH.md), [model catalogue](https://github.com/Gladiak/atomicClockSync/blob/main/docs/BLUETOOTH_MODELS.md) and [changelog](https://github.com/Gladiak/atomicClockSync/blob/main/docs/RELEASE_NOTES.md).
