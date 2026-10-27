@@ -15,7 +15,7 @@ function verify(directory) {
     const file = path.join(directory, item.name);
     if (item.isDirectory()) verify(file);
     else if (item.isFile()) {
-      assert.deepEqual(asar.extractFile(archive, file.split(path.sep).join('/')), fs.readFileSync(file), file);
+      assert.deepEqual(asar.extractFile(archive, file), fs.readFileSync(file), file);
       count++;
     }
   }
