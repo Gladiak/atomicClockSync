@@ -5,6 +5,9 @@ const { performance } = require('node:perf_hooks');
 
 const fail = code => Object.assign(new Error(code), { code });
 const codes = new Set(['busy', 'cancelled', 'uncertain', 'protocol', 'timeout', 'bluetooth', 'unsupported', 'offset']);
+const trace = (event, fields = {}) => {
+  if (process.env.ATOMIC_BLUETOOTH_DEBUG === '1') process.stderr.write('[Bluetooth] ' + JSON.stringify({ at: new Date().toISOString(), event, ...fields }) + '\n');
+};
 
 function helperCommand({ packaged, resourcesPath, root, platform = process.platform, arch = process.arch }) {
   const name = platform === 'win32' ? 'atomic-bluetooth.exe' : 'atomic-bluetooth';
@@ -61,6 +64,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
       // Long model-specific handshakes must not age the internet reference.
       // Request it only after the watch is ready for the single time write.
       const ref = await synchronize();
+      trace('ntp-ready', { uncertaintyMs: ref.uncertaintyMs });
       if (op.cancelled || operation !== op || worker !== instance || !op.pending) return;
       const age = monotonic() - ref.monotonicMs;
       if (![ref.epochMs, ref.offsetMs, ref.monotonicMs, ref.uncertaintyMs].every(Number.isFinite) ||
@@ -77,6 +81,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
   async function ensureWorker() {
     if (worker) return worker.ready;
     const spec = command();
+    trace('worker-start', { executable: spec.executable });
     const child = spawnProcess(spec.executable, spec.args, { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false });
     let readyResolve, readyReject;
     const ready = new Promise((resolve, reject) => { readyResolve = resolve; readyReject = reject; });
@@ -97,10 +102,10 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
       }
     };
     child.on('error', lost);
-    child.on('close', lost);
+    child.on('close', (code, signal) => { trace('worker-close', { code, signal }); lost(); });
     child.stdin.on('error', lost);
     // Consume diagnostics without exposing addresses/driver-specific text to UI.
-    child.stderr.on('data', () => {});
+    child.stderr.on('data', chunk => { if (process.env.ATOMIC_BLUETOOTH_DEBUG === '1') process.stderr.write(chunk); });
     child.stdout.on('data', chunk => {
       buffer += chunk.toString();
       if (buffer.length > 32768) { readyReject(fail('protocol')); stopWorker(); return; }
@@ -158,6 +163,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
     if (operation || closing) return { ok: false, code: 'busy' };
     const op = { kind, id: ++sequence, cancelled: false, pending: null, writing: false };
     operation = op;
+    trace('operation-start', { operation: kind, id: op.id });
     try {
       await ensureWorker();
       if (op.cancelled) throw fail('cancelled');
@@ -165,6 +171,7 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
       if (op.cancelled) throw fail(op.writing ? 'uncertain' : 'cancelled');
       return { ok: true, ...result };
     } catch (error) {
+      trace('operation-failure', { operation: kind, code: error.code || 'bluetooth' });
       // The helper already disconnected before reporting missing offset.
       // Keep the selected opaque token so an explicit-offset retry is usable.
       if (error.code !== 'offset') await stopWorker();

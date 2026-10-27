@@ -75,9 +75,9 @@ Closing, locking, suspending or quitting cancels Bluetooth. Radio transmission
 and Bluetooth are mutually exclusive. Bluetooth does not create radio GET trials
 or journal measurements automatically.
 
-The support is experimental and independent of Casio. GA-B2100C has one physical
-time-update confirmation on macOS; GWG-B1000, GST-B1000D and other profiles still
-need watch tests. Wear OS is excluded. Unknown models need an actual writable
+The support is experimental and independent of Casio. GA-B2100C and GWG-B1000
+have physical time-update confirmations on macOS; GST-B1000D and other profiles
+still need watch tests. Wear OS is excluded. Unknown models need an actual writable
 dedicated time service; SP/MIP firmware that omits required settings snapshots
 is refused. See [full Bluetooth scope and requirements](BLUETOOTH.md) and the
 [129-profile model catalogue](BLUETOOTH_MODELS.md).

@@ -12,7 +12,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 
 ## Features
 
-- **Bluetooth time update (experimental):** one compact button in Synchronize supports explicit Casio family profiles, including GA-B2100 / 5689 and Mudmaster GWG-B1000 / 5713, with standard, analogue and dedicated time procedures. Only date/time is updated; Wear OS is excluded. GA-B2100C is physically confirmed on macOS; other models and SP/MIP firmware have validation limits. See [compatibility, setup and builds](docs/BLUETOOTH.md).
+- **Bluetooth time update (experimental):** one compact button in Synchronize supports explicit Casio family profiles, including GA-B2100 / 5689 and Mudmaster GWG-B1000 / 5713, with standard, analogue and dedicated time procedures. Only date/time is updated; Wear OS is excluded. GA-B2100C and GWG-B1000 time updates are physically confirmed on macOS; other models and SP/MIP firmware have validation limits. See [compatibility, setup and builds](docs/BLUETOOTH.md).
 - **Watch Accuracy:** per-watch offset journal, segmented drift graphs, local/UTC references, correction events and JSON/CSV exports.
 - **Reception Lab:** per-watch GET/ERR statistics, recorded-configuration groups, A/B comparison and preparation of a trial changing one audio setting.
 - **Light Travel:** a cinematic offline Solar System, nine light sources, date-dependent travel times, departure/reception clocks and a controllable photon journey.
@@ -68,7 +68,7 @@ it is an interface example, not evidence of reception.
 | Watch | Connection action | Validation |
 | --- | --- | --- |
 | GA-B2100 / 5689 | Hold C at least 3 seconds, until CNCT flashes | Successful time update reported on GA-B2100C on macOS |
-| GWG-B1000 / 5713 | Hold B at least 5 seconds, until CNCT | Implemented; physical test pending |
+| GWG-B1000 / 5713 | Hold B at least 5 seconds, until CNCT | Successful time update and watch OK reported on macOS |
 | GST-B1000D / 5748 | Hold B at least 2.5 seconds, until R; C about 0.5 seconds requests immediate time correction | Implemented; physical test pending |
 | GW-9500 / 3553 | Use the radio mode | This model has no Bluetooth |
 

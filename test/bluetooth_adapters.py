@@ -90,7 +90,7 @@ class RegistryTests(unittest.TestCase):
         for name in ("CASIO GSW-H1000", "WSD-F30", "CASIO WSD-F20", "other watch", None):
             self.assertFalse(discoverable(name))
         self.assertTrue(metadata("GA-B2100")["verified"])
-        self.assertFalse(metadata("GWG-B1000")["verified"])
+        self.assertTrue(metadata("GWG-B1000")["verified"])
         self.assertGreater(len(PROFILES), 100)
 
     def test_local_time_info_unknown_is_not_zero_and_quarter_offsets(self):
@@ -130,17 +130,30 @@ class RegistryTests(unittest.TestCase):
 
 
 class AdapterTests(unittest.IsolatedAsyncioTestCase):
-    async def test_mudmaster_initializes_all_six_slots_without_changing_them(self):
+    async def test_mudmaster_5713_only_initializes_home_and_world_time(self):
         gatt = Gatt("GWG-B1000")
+        # The real 5713 returned a 15-byte 1d00 record, then timed out when
+        # incorrectly asked for 1d02 by the square's six-clock profile.
+        # Payload contents below are synthetic, not a real settings capture.
+        gatt.records[b"\x1d\x00"] = bytes.fromhex("1d00000303d4762500ffffffffffff")
         session = TimeSession(gatt, gatt.profile)
         self.assertEqual(await session.prepare(), 120)
-        expected = ([bytes([0x1D, i]) for i in (0, 2, 4)] +
-                    [bytes([0x1E, i]) for i in range(6)] + [bytes([0x1F, i]) for i in range(6)])
+        expected = [b"\x1d\x00", b"\x1e\x00", b"\x1e\x01", b"\x1f\x00", b"\x1f\x01"]
         self.assertEqual([p for c, p, _ in gatt.writes if c == REQUEST], expected)
         self.assertEqual([p for c, p, _ in gatt.writes if c == FEATURES], [gatt.records[k] for k in expected])
         await session.send_time(encode_time(1793102400000, 120))
-        self.assertEqual(len(gatt.writes), 31)
+        self.assertEqual(len(gatt.writes), 11)
         self.assertEqual(gatt.writes[-1][1][0], 9)
+        self.assertFalse(session.policy.permits(REQUEST, b"\x1d\x02"))
+        self.assertFalse(session.policy.permits(REQUEST, b"\x1e\x02"))
+
+    async def test_square_still_initializes_all_six_clocks(self):
+        gatt = Gatt("GW-B5600")
+        session = TimeSession(gatt, gatt.profile)
+        await session.prepare()
+        expected = ([bytes([0x1D, i]) for i in (0, 2, 4)] +
+                    [bytes([0x1E, i]) for i in range(6)] + [bytes([0x1F, i]) for i in range(6)])
+        self.assertEqual([p for c, p, _ in gatt.writes if c == REQUEST], expected)
 
     async def test_no_city_model_does_not_request_world_city_register(self):
         gatt = Gatt("EQB-1000")

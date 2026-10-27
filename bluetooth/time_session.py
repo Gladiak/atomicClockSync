@@ -4,6 +4,7 @@ No pairing reset, alarms, sensors, location generation or timezone setters.
 All configuration writes originate in byte-for-byte snapshots from this link.
 """
 import asyncio
+from diagnostics import trace
 try:
     from asyncio import timeout
 except ImportError:
@@ -42,6 +43,7 @@ class TimeSession:
         raise Unsupported("Missing time characteristic")
 
     async def start(self):
+        trace("capabilities", fullService=self.service is not None, currentTimeService=self.time_service is not None)
         # Keep the hardware-confirmed full GA sequence when available. A
         # dedicated quick-time service is useful on other connection modes,
         # unknown models and SP watches, and changes no configuration at all.
@@ -52,6 +54,7 @@ class TimeSession:
             self.characteristic(CURRENT_TIME)
             self.quick = True
             self.time_characteristic = CURRENT_TIME
+            trace("adapter", mode="current-time")
             return
         if self.profile is None or self.service is None:
             raise Unsupported("No known time-only adapter for this service")
@@ -72,7 +75,9 @@ class TimeSession:
             else:
                 self.replies.put_nowait((getattr(characteristic, "uuid", "").lower(), bytes(value)))
         for char in notifications:
+            trace("subscribe", characteristic=char.uuid, properties=char.properties)
             await self.client.start_notify(char, notified)
+        trace("adapter", mode=self.profile.driver, reads=len(self.profile.reads))
 
     async def write(self, uuid, payload):
         if not self.policy.permits(uuid, payload):
@@ -83,13 +88,17 @@ class TimeSession:
             response = "write" in char.properties
         if ("write" if response else "write-without-response") not in char.properties:
             raise Unsupported("Time characteristic is not writable")
+        trace("write", characteristic=uuid, command=payload[:2].hex() if uuid in (REQUEST, SP_REQUEST) else payload[:1].hex(), length=len(payload), response=response)
         await self.client.write_gatt_char(char, payload, response=response)
+        trace("write-complete", characteristic=uuid)
 
     async def read(self, key):
+        trace("read", register=key.hex())
         await self.write(REQUEST, key)
         async with timeout(5):
             while True:
                 _, raw = await self.replies.get()
+                trace("reply", register=raw[:2].hex(), length=len(raw))
                 data = unwrap(raw, self.profile.driver == "analogue")
                 if data[:1] == b"\xff":
                     raise ProtocolError("Watch rejected time initialization")
@@ -97,6 +106,7 @@ class TimeSession:
                     if not 4 <= len(data) <= 64:
                         raise ProtocolError("Unknown time record")
                     self.policy.snapshots[key] = data
+                    trace("read-complete", register=key.hex(), length=len(data))
                     return data
 
     async def echo(self, key):

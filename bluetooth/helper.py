@@ -17,6 +17,7 @@ except ImportError:  # Python 3.10 on the pinned Linux builder.
 from casio_protocol import ProtocolError, Unsupported, OffsetRequired, encode_time, supported_name
 from models import resolve, metadata
 from time_session import TimeSession
+from diagnostics import trace
 
 
 def emit(value):
@@ -32,6 +33,7 @@ class Worker:
         self.request_id = None
 
     async def scan(self):
+        trace("scan-start")
         self.devices.clear()
         detected = asyncio.Event()
 
@@ -44,6 +46,7 @@ class Worker:
                 return
             token = str(uuid.uuid4())
             self.devices[token] = (device, name[:80])
+            trace("scan-found", model=metadata(name)["model"])
             emit({"event": "device", "id": self.request_id, "device": {"id": token, "name": name[:80], **metadata(name)}})
             detected.set()
 
@@ -55,20 +58,24 @@ class Worker:
                 await asyncio.wait_for(detected.wait(), timeout=10)
             except (TimeoutError, asyncio.TimeoutError):
                 pass
+        trace("scan-complete", count=len(self.devices))
         return {"count": len(self.devices)}
 
     async def sync(self, token, manual_offset=None):
         if token not in self.devices:
             raise ProtocolError("Unknown scan token")
         device, name = self.devices[token]
+        trace("connect", model=metadata(name)["model"])
         if not supported_name(name):
             raise ProtocolError("Unsupported model")
         emit({"event": "stage", "id": self.request_id, "stage": "connecting"})
         disconnected = asyncio.Event()
         async with self.client_factory(device, timeout=15, disconnected_callback=lambda _client: disconnected.set()) as client:
+            trace("connected")
             session = TimeSession(client, resolve(name), manual_offset)
             emit({"event": "stage", "id": self.request_id, "stage": "reading"})
             offset = await session.prepare()
+            trace("prepared", offsetMinutes=offset)
             self.clock = asyncio.get_running_loop().create_future()
             emit({"event": "clock", "id": self.request_id})
             async with timeout(20):
@@ -79,6 +86,7 @@ class Worker:
             # did not accept it. Never retry a time write automatically.
             self.write_started = True
             await session.send_time(packet)
+            trace("time-write-complete")
             # Allow the device to finish its update/automatic disconnect before
             # the host tears down GATT. Do not equate ATT success with watch OK.
             try:
@@ -103,13 +111,17 @@ class Worker:
                     result = await self.sync(command.get("deviceId"), command.get("offsetMinutes"))
         except asyncio.CancelledError:
             error = "uncertain" if self.write_started else "cancelled"
-        except OffsetRequired:
+        except OffsetRequired as exc:
+            trace("failure", kind=type(exc).__name__, detail=str(exc), writing=self.write_started)
             error = "uncertain" if self.write_started else "offset"
-        except Unsupported:
+        except Unsupported as exc:
+            trace("failure", kind=type(exc).__name__, detail=str(exc), writing=self.write_started)
             error = "uncertain" if self.write_started else "unsupported"
-        except ProtocolError:
+        except ProtocolError as exc:
+            trace("failure", kind=type(exc).__name__, detail=str(exc), writing=self.write_started)
             error = "uncertain" if self.write_started else "protocol"
         except (TimeoutError, asyncio.TimeoutError):
+            trace("failure", kind="TimeoutError", writing=self.write_started)
             error = "uncertain" if self.write_started else "timeout"
         except Exception as exc:
             # Driver messages differ across OSes. Keep them on stderr for
@@ -118,6 +130,7 @@ class Worker:
             error = "uncertain" if self.write_started else "bluetooth"
         finally:
             self.clock = None
+        trace("operation-complete", operation=command["op"], code=error, ok=error is None)
         emit({"id": request_id, "ok": error is None, **({"result": result} if error is None else {"code": error})})
 
     async def listen(self):

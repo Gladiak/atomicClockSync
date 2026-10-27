@@ -5,7 +5,7 @@ are accepted after a known model; unknown numeric model extensions do not inheri
 a profile. Modules are shown only where identified for the user’s watches.
 See [procedure limits and hardware evidence](BLUETOOTH.md).
 
-**Physically reported:** GA-B2100C / 5689, macOS. All other entries await a watch test.
+**Physically reported:** GA-B2100C / 5689 and GWG-B1000 / 5713, macOS. All other entries await a watch test.
 **Excluded:** Wear OS (GSW/WSD). Unknown/older Casio models may use only an actual
 dedicated current-time service, not an inferred full-protocol sequence.
 
@@ -95,7 +95,7 @@ dedicated current-time service, not an inferred full-protocol sequence.
 | GW-BX5600 | — | SP/MIP, complete snapshots required | 6 | Pending |
 | GWF-300 | — | Standard | 2 | Pending |
 | GWF-A1000 | — | Standard | 2 | Pending |
-| GWG-B1000 | 5713 | Standard | 6 | Pending |
+| GWG-B1000 | 5713 | Standard | 2 | User-confirmed time update (macOS) |
 | GWR-B1000 | — | Standard | 6 | Pending |
 | GWR-B3000 | — | Standard | 6 | Pending |
 | LIW-B1000 | — | Standard | 2 | Pending |

@@ -38,7 +38,9 @@ def register(names, **options):
 
 
 register("GA-B2100", module="5689", verified=True, instructions="ga")
-register("GWG-B1000", cities=6, states=3, module="5713", instructions="gwg")
+# A live 5713 trace accepts 1d00 but does not answer the square models' 1d02
+# request. Keep home/world time only; do not inherit the GW-B5600 six clocks.
+register("GWG-B1000", module="5713", instructions="gwg", verified=True)
 register("GMW-B5000 GW-B5000 GW-B5600 MRG-B5000 DW-B5600 GCW-B5000 TRN-50 PRJ-BW002 GWR-B1000 GWR-B3000",
          cities=6, states=3)
 register("GM-B2100 GBM-2100 MRG-B2100 GMC-B2100 GA-B001 GA-B010 GBA-400 GBA-800 GBA-900 GBA-950 "

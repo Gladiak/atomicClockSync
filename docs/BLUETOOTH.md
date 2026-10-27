@@ -6,10 +6,10 @@ Bluetooth dialog is used for every family. It selects a procedure from an explic
 model registry and the services actually exposed by the watch; it does not send
 the GA-B2100 sequence indiscriminately to other models.
 
-**Hardware evidence:** a user confirmed a successful time update on GA-B2100C /
-5689 on macOS on 27 October 2026. The other profiles, including **GWG-B1000 /
-5713 (Mudmaster)**, are implemented and covered by synthetic GATT tests but still
-need physical acceptance. A registry entry is not certification of compatibility.
+**Hardware evidence:** a user confirmed successful time updates on GA-B2100C /
+5689 and **GWG-B1000 / 5713 (Mudmaster)** on macOS on 27 October 2026. The other
+profiles are implemented and covered by synthetic GATT tests but still need
+physical acceptance. A registry entry is not certification of compatibility.
 Advertising identifies a family, not a verified module number or device identity.
 
 ## Using it
@@ -46,7 +46,8 @@ path and continue to use the radio feature.
 
 The complete explicit catalogue is in [BLUETOOTH_MODELS.md](BLUETOOTH_MODELS.md),
 generated from `bluetooth/models.py`. All profiles except the reported GA-B2100
-remain experimental pending physical tests.
+and GWG-B1000 remain experimental pending physical time-update tests. Complete
+settings-preservation acceptance remains pending on every family.
 
 **GST-B1000D / 5748:** Casio's product support links the 5748 manual. The
 published Python/Kotlin reference assigns GST-B1000 to its standard two-slot
@@ -61,8 +62,8 @@ fallback; synthetic transcripts check routing and unchanged echoes only.
 
 | Procedure | Examples | Time-only behavior |
 | --- | --- | --- |
-| Standard, two city slots | GA/GM/GBM/GMC/MRG-2100, GST, ECB, Oceanus, Pro Trek | Existing DST/zone/city records read and echoed unchanged, then time `09` |
-| Standard, six city slots | GW/GMW/MRG/GCW squares, **GWG-B1000**, GWR | Three DST states and six zone/city records, all unchanged, then time `09` |
+| Standard, two city slots | GA/GM/GBM/GMC/MRG-2100, **GWG-B1000**, GST, ECB, Oceanus, Pro Trek | Existing DST/zone/city records read and echoed unchanged, then time `09` |
+| Standard, six city slots | GW/GMW/MRG/GCW squares, GWR | Three DST states and six zone/city records, all unchanged, then time `09` |
 | Without city-name register | EQB, GBD/GBX, ABL/F/BSA | DST/zone initialization without unsupported `1f` requests |
 | Analogue | MTG-B1000, MTG-B3000/B3100 | Wrapped replies, model-specific `1f`/`24` home records, then time and the dedicated second-dial sequence |
 | Dedicated current-time service | Casio models/connection modes exposing service `26eb0002…` or standard `1805`, with writable `2a2b` | Ten-byte Current Time write; read `2a0f` Local Time Information when available; no configuration echoes |
@@ -75,6 +76,14 @@ including coordinates. Firmware that omits those records is refused before any
 configuration/time write; use the dedicated time mode if offered. This is not a
 claim that every SP firmware is already supported. Synthetic SP transcripts
 verify preservation and rejection, not compatibility with real firmware.
+
+**GWG-B1000 / 5713:** a real-device debug attempt on 27 October 2026 connected
+and read/echoed a 15-byte `1d00` record, but the inherited six-clock sequence
+timed out at `1d02` before sending time. Its profile now restricts initialization
+to home/world time (`1d00`, `1e00/01`, `1f00/01`). A subsequent real attempt
+completed these reads/unchanged echoes, obtained fresh NTP, wrote time `09`, and
+disconnected normally. The user confirmed OK on the watch. This establishes one
+time update on macOS, not timing accuracy or a full settings-preservation audit.
 
 Older G-SHOCK+ generations (GB-5600/GB-6900), unknown models and new numeric model
 extensions do **not** inherit an arbitrary full-protocol profile. Casio-named
@@ -154,6 +163,15 @@ Linux worker. The manual GitHub Actions workflow builds native packages on all
 three operating systems without publishing them.
 
 ## Verification and sources
+
+For a real-device failure, quit the running app and launch `npm run start:debug`.
+Retry the Bluetooth operation. The console and a timestamped file under
+`artifacts/bluetooth-debug/` record adapter selection, notification subscriptions,
+requested time registers, reply lengths, write completion and failures. Tracing
+is opt-in; configuration contents and device addresses are not part of the
+protocol trace. Native driver error messages may contain device identifiers;
+review the local log before sharing it. An `ERR` on the watch alone does not
+identify which step failed.
 
 ```sh
 npm test

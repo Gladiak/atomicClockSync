@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "start": "electron .",
+    "start:debug": "node scripts/debug.cjs",
     "test": "node --test test/*.test.*",
     "build:bluetooth": "node scripts/build-bluetooth.cjs",
     "test:bluetooth": "electron scripts/bluetooth-smoke.cjs",

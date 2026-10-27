@@ -84,6 +84,10 @@ function createWindow() {
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', event => event.preventDefault());
   mainWindow.webContents.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
+  if (process.env.ATOMIC_BLUETOOTH_DEBUG === '1') {
+    mainWindow.webContents.once('did-finish-load', () => console.error('[Bluetooth] Debug app ready'));
+    mainWindow.webContents.on('console-message', details => { if (details.level === 'error') console.error('[Renderer]', details.message); });
+  }
   mainWindow.loadFile(path.join(__dirname, '../src/index.html'));
   mainWindow.on('closed', () => { releasePower(); bluetooth.cancel(); mainWindow = null; });
   mainWindow.webContents.on('render-process-gone', () => { releasePower(); bluetooth.cancel(); });

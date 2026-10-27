@@ -8,10 +8,13 @@ jobs:
         include:
           - os: macos-15
             target: mac
+            arch: arm64
           - os: windows-latest
             target: win
+            arch: x64
           - os: ubuntu-22.04
             target: linux
+            arch: x64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -31,12 +34,13 @@ jobs:
       - if: runner.os == 'Windows'
         run: .venv-bluetooth/Scripts/python.exe -m pip install -r bluetooth/requirements.txt
       - run: npm run build:bluetooth
-      - run: npx electron-builder --${{ matrix.target }} --publish never
+      - run: npx electron-builder --${{ matrix.target }} --${{ matrix.arch }} --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
       - uses: actions/upload-artifact@v4
         with:
           name: AtomicClockSync-${{ matrix.target }}
+          if-no-files-found: error
           path: |
             release/*.zip
             release/*.exe
