@@ -52,19 +52,22 @@ settings-preservation acceptance remains pending on every family.
 **GST-B1000D / 5748:** Casio's product support links the 5748 manual. The
 published Python/Kotlin reference assigns GST-B1000 to its standard two-slot
 profile, but also has an erroneous 5631 module comment (5631 belongs to GST-B300).
-No GST-B1000-specific BLE transcript was found. We keep that full profile
-experimental and prefer a writable dedicated current-time service when exposed,
-including when the full service is present as well. The official manual does
-not describe a World Time feature; that alone does not establish the internal
-register layout. Do not infer an MTG second-dial sequence from its analogue dial.
-Physical testing or a real protocol capture is required to validate the full
-fallback; synthetic transcripts check routing and unchanged echoes only.
+A live module 5748 trace on 27 October 2026 accepted `1d00` and `1e00/01`
+reads/unchanged echoes, then rejected the city-name query `1f00` with `ff81`.
+Its full profile now requests only those three accepted records, omitting city
+names. A subsequent real attempt completed the three reads/unchanged echoes,
+obtained fresh NTP, wrote time `09` and disconnected without errors. The watch’s
+OK indication and displayed date/time still need user confirmation,
+and prefer a writable dedicated current-time service when exposed, including
+when the full service is present as well. Do not infer an MTG second-dial sequence
+from its analogue dial. Synthetic regression tests verify the restricted queries
+and unchanged echoes, not success on the physical watch.
 
 | Procedure | Examples | Time-only behavior |
 | --- | --- | --- |
-| Standard, two city slots | GA/GM/GBM/GMC/MRG-2100, **GWG-B1000**, GST, ECB, Oceanus, Pro Trek | Existing DST/zone/city records read and echoed unchanged, then time `09` |
+| Standard, two city slots | GA/GM/GBM/GMC/MRG-2100, **GWG-B1000**, GST except GST-B1000, ECB, Oceanus, Pro Trek | Existing DST/zone/city records read and echoed unchanged, then time `09` |
 | Standard, six city slots | GW/GMW/MRG/GCW squares, GWR | Three DST states and six zone/city records, all unchanged, then time `09` |
-| Without city-name register | EQB, GBD/GBX, ABL/F/BSA | DST/zone initialization without unsupported `1f` requests |
+| Without city-name register | **GST-B1000 / 5748**, EQB, GBD/GBX, ABL/F/BSA | DST/zone initialization without unsupported `1f` requests |
 | Analogue | MTG-B1000, MTG-B3000/B3100 | Wrapped replies, model-specific `1f`/`24` home records, then time and the dedicated second-dial sequence |
 | Dedicated current-time service | Casio models/connection modes exposing service `26eb0002…` or standard `1805`, with writable `2a2b` | Ten-byte Current Time write; read `2a0f` Local Time Information when available; no configuration echoes |
 | SP/MIP | GW-BX5600, GMW-BZ5000 | Prefer dedicated current-time service. Full SP requires complete snapshots of existing DST, zones, city names **and coordinates** before any echo/time write |
@@ -160,7 +163,10 @@ hook rejects missing/outdated workers. For a cross-build, first copy a worker
 built for the target OS/architecture into the corresponding directory; building
 a Windows worker on macOS is not supported. Docker's Linux build creates its own
 Linux worker. The manual GitHub Actions workflow builds native packages on all
-three operating systems without publishing them.
+three operating systems and verifies packaged sources and the bundled runtime.
+Its optional `stage_release_tag` input uploads the five packages and checksums
+only to an existing draft whose tag matches the exact workflow commit. It never
+publishes the draft.
 
 ## Verification and sources
 

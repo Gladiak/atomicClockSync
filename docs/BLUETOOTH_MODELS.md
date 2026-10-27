@@ -83,7 +83,7 @@ dedicated current-time service, not an inferred full-protocol sequence.
 | GR-B300 | — | Standard | 2 | Pending |
 | GSR-H1000 | — | Standard | 2 | Pending |
 | GST-B100 | — | Standard | 2 | Pending |
-| GST-B1000 (including GST-B1000D) | 5748 | Dedicated current-time service preferred; standard fallback unverified | 2 (upstream profile, unverified) | Pending |
+| GST-B1000 (including GST-B1000D) | 5748 | Dedicated current-time service preferred; no city-name register in full mode | 2 zone records | Physical time write logged (macOS); watch OK confirmation pending |
 | GST-B200 | — | Standard | 2 | Pending |
 | GST-B300 | — | Standard | 2 | Pending |
 | GST-B400 | — | Standard | 2 | Pending |

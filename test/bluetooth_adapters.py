@@ -81,6 +81,7 @@ class RegistryTests(unittest.TestCase):
             gst = resolve(name)
             self.assertEqual((gst.model, gst.module, gst.instructions), ("GST-B1000", "5748", "gst"))
             self.assertTrue(gst.prefer_current_time)
+            self.assertEqual(gst.city_register, 0)
             self.assertFalse(gst.second_dial)
         self.assertEqual(resolve("GST-B100").model, "GST-B100")
         self.assertFalse(resolve("GST-B100").prefer_current_time)
@@ -221,16 +222,23 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
             await session.send_time(packet)
             self.assertEqual(gatt.writes, [(CURRENT_TIME, packet[1:], True)])
 
-    async def test_gst_b1000_standard_fallback_does_not_run_mtg_second_dial_commands(self):
-        # Synthetic standard transcript verifies routing/preservation only;
-        # there is no physical GST-B1000 capture confirming this fallback yet.
+    async def test_gst_b1000_5748_does_not_query_rejected_city_register(self):
+        # A live 5748 trace accepted these three reads/unchanged echoes, then
+        # rejected 1f00 with ff81. Keep the device's real reply shape, using
+        # synthetic setting values; this does not establish time-write success.
         gatt = Gatt("GST-B1000D")
+        gatt.records[b"\x1d\x00"] = bytes.fromhex("1d00000303d4762500ffffffffffff")
+        gatt.records[b"\x1f\x00"] = bytes.fromhex("ff8100")
         session = TimeSession(gatt, gatt.profile)
         self.assertEqual(await session.prepare(), 120)
         await session.send_time(encode_time(1793102400000, 120))
         self.assertEqual([p for c, p, _ in gatt.writes if c == REQUEST],
-                         [b"\x1d\x00", b"\x1e\x00", b"\x1e\x01", b"\x1f\x00", b"\x1f\x01"])
-        self.assertEqual(len(gatt.writes), 11)
+                         [b"\x1d\x00", b"\x1e\x00", b"\x1e\x01"])
+        self.assertEqual([p for c, p, _ in gatt.writes if c == FEATURES][:-1],
+                         [gatt.records[k] for k in (b"\x1d\x00", b"\x1e\x00", b"\x1e\x01")])
+        self.assertEqual(len(gatt.writes), 7)
+        self.assertFalse(session.policy.permits(REQUEST, b"\x1f\x00"))
+        self.assertFalse(session.policy.permits(FEATURES, bytes.fromhex("1f004142")))
         self.assertFalse(any(p[:1] in (b"\x21", b"\x24") for _, p, _ in gatt.writes))
 
     async def test_missing_offset_requires_explicit_confirmation_without_writes(self):
