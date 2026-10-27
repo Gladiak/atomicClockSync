@@ -89,7 +89,7 @@ app.whenReady().then(async () => {
     // compact dialog. No timezone is silently preselected from the computer.
     device = { ...device, name: 'CASIO GWG-B1000', model: 'GWG-B1000', module: '5713', instructions: 'gwg', verified: false };
     await open(); await selectWatch();
-    assert.match(await run("document.getElementById('bluetooth-intro').textContent"), /hold B.*five seconds/);
+    assert.match(await run("document.getElementById('bluetooth-instructions').textContent"), /hold B.*five seconds/);
     assert.match(await run("document.getElementById('bluetooth-profile').textContent"), /5713.*awaiting/);
     await run("document.getElementById('bluetooth-update').click()");
     await pause(50); finishSync({ ok: false, code: 'offset' });
@@ -106,7 +106,7 @@ app.whenReady().then(async () => {
 
     device = { ...device, name: 'CASIO GST-B1000D', model: 'GST-B1000', module: '5748', instructions: 'gst', verified: false };
     await open(); await selectWatch();
-    assert.match(await run("document.getElementById('bluetooth-intro').textContent"), /hold B.*2\.5 seconds.*hold C.*0\.5 seconds/);
+    assert.match(await run("document.getElementById('bluetooth-instructions').textContent"), /hold B.*2\.5 seconds.*hold C.*0\.5 seconds/);
     assert.match(await run("document.getElementById('bluetooth-profile').textContent"), /5748.*awaiting/);
     await run("document.getElementById('bluetooth-close').click()");
     await until("!document.getElementById('bluetooth-button').disabled");
@@ -123,7 +123,7 @@ app.whenReady().then(async () => {
         assert.equal(await run(`(() => {const r=document.getElementById('bluetooth-dialog').getBoundingClientRect();return r.left>=0 && r.top>=0 && r.right<=innerWidth && r.bottom<=innerHeight;})()`), true);
         assert.equal(await run("document.querySelector('#bluetooth-dialog img') === null"), true);
         if (language !== 'en') assert.notEqual(await run("document.getElementById('bluetooth-title').textContent"), 'Update time via Bluetooth');
-        if (language !== 'en') assert.equal(await run("document.getElementById('bluetooth-intro').textContent.includes('On your GST-B1000')"), false);
+        if (language !== 'en') assert.equal(await run("document.getElementById('bluetooth-instructions').textContent.includes('On your GST-B1000')"), false);
         if (language === 'it' && theme === 'lime') await capture('bluetooth-dialog-it.png');
         await run("document.getElementById('bluetooth-close').click()");
         await until("!document.getElementById('bluetooth-button').disabled");

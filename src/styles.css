@@ -513,6 +513,18 @@ h1>span {
 .bt-devices input { width:15px; height:15px; margin:0; accent-color:var(--accent); }
 .bt-dialog .bt-status { min-height:40px; color:var(--accent-text); }
 .bt-dialog .bt-error { color:var(--text); }
+.bt-dialog .bt-info {
+  padding:12px 14px;
+  margin:0;
+  border:1px solid color-mix(in srgb,var(--accent) 28%,var(--line));
+  border-left:3px solid var(--accent);
+  border-radius:6px;
+  background:linear-gradient(115deg,color-mix(in srgb,var(--accent) 13%,var(--panel)),color-mix(in srgb,var(--accent) 3%,var(--panel)));
+  color:var(--text);
+  font-size:11px;
+}
+.bt-dialog .bt-info p { margin:0; color:inherit; font-size:inherit; }
+.bt-dialog .bt-info p + p { margin-top:8px; }
 .bt-dialog .bt-scope { border-top:1px solid var(--line); padding-top:12px; font-size:11px; }
 .bt-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:20px; }
 .bt-actions .text-button { margin-right:auto; }

@@ -27,7 +27,7 @@ const INSTRUCTIONS = {
   ga: 'On your GA-B2100, hold C for at least three seconds until CNCT flashes. Keep the watch nearby and disconnect CASIO WATCHES.',
   gwg: 'On your GWG-B1000, hold B for at least five seconds until CNCT appears. Keep the watch nearby and disconnect CASIO WATCHES.',
   gst: 'On your GST-B1000, hold B for at least 2.5 seconds until the second hand points to R. For time correction only, hold C for about 0.5 seconds until R. Disconnect CASIO WATCHES.',
-  manual: 'Enable the watch’s Bluetooth connection mode. GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.',
+  manual: 'GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.',
 };
 
 export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReference, notify }) {
@@ -48,7 +48,7 @@ export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReferen
     $('bluetooth-offset-field').hidden = !needsOffset;
     $('bluetooth-offset').disabled = pending;
     const device = devices.get(selected);
-    $('bluetooth-intro').textContent = t(INSTRUCTIONS[device?.instructions] || INSTRUCTIONS.manual);
+    $('bluetooth-instructions').textContent = t(INSTRUCTIONS[device?.instructions] || INSTRUCTIONS.manual);
     $('bluetooth-profile').textContent = device?.model ? `${device.model}${device.module ? ` · ${device.module}` : ''} · ${t(device.verified ? 'Time update verified on a watch' : 'Time update awaiting a watch test')}` : '';
     $('bluetooth-profile').hidden = !device?.model;
     $('bluetooth-close').textContent = t(pending ? 'Cancel' : 'Close');

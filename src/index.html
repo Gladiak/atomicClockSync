@@ -351,15 +351,20 @@
   <footer class="app-footer"><span>MADE FOR THE TIME THAT MATTERS.</span><span id="footer-station">DCF77 ＋ MAINFLINGEN</span></footer>
 </main>
 </div><div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-<dialog id="bluetooth-dialog" class="bt-dialog" aria-labelledby="bluetooth-title" aria-describedby="bluetooth-intro">
+<dialog id="bluetooth-dialog" class="bt-dialog" aria-labelledby="bluetooth-title" aria-describedby="bluetooth-intro bluetooth-instructions">
   <span class="tiny-label">CASIO · <span>Experimental</span></span>
   <h2 id="bluetooth-title">Update time via Bluetooth</h2>
-  <p id="bluetooth-intro">Enable the watch’s Bluetooth connection mode. GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.</p>
+  <p id="bluetooth-intro">Enable the watch’s Bluetooth connection mode.</p>
   <div id="bluetooth-devices" class="bt-devices" role="group" aria-label="Bluetooth watches"></div>
   <p id="bluetooth-profile" class="bt-scope"></p>
   <label id="bluetooth-offset-field" class="bt-offset" hidden><span>Current watch UTC offset (including summer time)</span><select id="bluetooth-offset" aria-label="Current watch UTC offset (including summer time)"><option value="">Choose an offset</option></select><small>Reconnect the watch before updating. This value is used only to calculate its local time.</small></label>
   <p id="bluetooth-status" class="bt-status" role="status" aria-live="polite"></p>
-  <p class="bt-scope">Only date and time are updated. The watch’s time zone and other settings stay as configured.</p>
+  <div class="bt-scope">
+    <div class="bt-info" role="note">
+      <p id="bluetooth-instructions">GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.</p>
+      <p>Only date and time are updated. The watch’s time zone and other settings stay as configured.</p>
+    </div>
+  </div>
   <div class="bt-actions"><button id="bluetooth-search" class="text-button">Search again</button><button id="bluetooth-close" class="secondary-button">Close</button><button id="bluetooth-update" class="primary-button" disabled>Update time</button></div>
 </dialog>
 </body>

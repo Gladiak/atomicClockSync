@@ -1,4 +1,11 @@
 const rows = [
+  ['Enable the watch’s Bluetooth connection mode.', 'Attiva la modalità di connessione Bluetooth dell’orologio.', 'Activez le mode de connexion Bluetooth de la montre.', 'Bluetooth-Verbindungsmodus der Uhr aktivieren.', 'Activa el modo de conexión Bluetooth del reloj.', '時計を Bluetooth 接続モードにしてください。'],
+  ['GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.',
+    'GA-B2100: premi C per 3 secondi. GWG-B1000: premi B per 5 secondi. Per gli altri modelli segui il manuale. Scollega CASIO WATCHES.',
+    'GA-B2100 : maintenez C 3 secondes. GWG-B1000 : maintenez B 5 secondes. Pour les autres modèles, consultez le manuel. Déconnectez CASIO WATCHES.',
+    'GA-B2100: C 3 Sekunden halten. GWG-B1000: B 5 Sekunden halten. Bei anderen Modellen die Anleitung beachten. CASIO WATCHES trennen.',
+    'GA-B2100: mantén C 3 segundos. GWG-B1000: mantén B 5 segundos. Para otros modelos, consulta el manual. Desconecta CASIO WATCHES.',
+    'GA-B2100 は C を3秒、GWG-B1000 は B を5秒押します。他の機種は説明書に従ってください。CASIO WATCHES を切断してください。'],
   ['On your GST-B1000, hold B for at least 2.5 seconds until the second hand points to R. For time correction only, hold C for about 0.5 seconds until R. Disconnect CASIO WATCHES.',
     'Sul GST-B1000, tieni premuto B per almeno 2,5 secondi finché la lancetta dei secondi indica R. Per la sola correzione dell’ora, premi C per circa 0,5 secondi fino a R. Scollega CASIO WATCHES.',
     'Sur la GST-B1000, maintenez B au moins 2,5 secondes jusqu’à R. Pour régler uniquement l’heure, maintenez C environ 0,5 seconde jusqu’à R. Déconnectez CASIO WATCHES.',
