@@ -135,7 +135,7 @@ Chapters explain the purpose and meaning of a feature in connected prose, follow
 
 **Open section** navigates to the actual tool. The header’s **?** opens the chapter for the current section; trial details use the History chapter. Previous/Next and the chapter index support continuous reading. The last chapter is saved locally in `atomic.guide.chapter`; per-chapter scroll is remembered during the session. Language changes translate the whole explanation, examples, notes and screenshots, preserving the selected chapter. The reader and index scroll independently within the fixed window. Reduced motion is respected.
 
-The 84 screenshots are captured from the real app with the Rainbow theme, Pulse Sync branding, the current compact sidebar and an isolated sample profile, never the user's records. They are bundled for offline reading. Use `npm run capture:guide` after interface/version changes to regenerate all fourteen views in six languages.
+The 84 screenshots are captured from the real app with the Rainbow theme, Pulse Sync branding and an isolated sample profile, never the user's records. The documentation layout shows the expanded sidebar, its current section and the active menu beside the full view. They are bundled for offline reading. Use `npm run capture:guide` after interface/version changes to regenerate all fourteen views in six languages.
 
 ## Watch Accuracy
 

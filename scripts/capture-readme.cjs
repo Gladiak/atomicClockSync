@@ -3,6 +3,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
 const { pathToFileURL } = require('node:url');
+const prepareCaptureNavigation = require('./capture-navigation.cjs');
 const root = path.join(__dirname, '..');
 const output = path.join(root, 'docs/images');
 const previews = path.join(root, 'artifacts/readme');
@@ -40,22 +41,17 @@ app.whenReady().then(async () => {
   }
   const click = id => run(`document.getElementById(${JSON.stringify(id)}).click()`);
   const change = (id, value, type = 'change') => run(`document.getElementById(${JSON.stringify(id)}).value=${JSON.stringify(value)};document.getElementById(${JSON.stringify(id)}).dispatchEvent(new Event(${JSON.stringify(type)}))`);
-  async function sidebar(expanded = false) {
-    await run('document.activeElement.blur()');
-    win.webContents.sendInputEvent({ type:'mouseMove', x:1050, y:90 });
-    await pause(200);
-    if (await run('document.querySelector(".sidebar").dataset.expanded') !== String(expanded)) await click('sidebar-toggle');
-    await pause(350);
-  }
+  let showNavigation;
+  async function sidebar() { await showNavigation(); }
   async function navigate(page) {
-    await sidebar(false);
     await run(`document.querySelector('[data-page=${page}]').click()`);
+    await sidebar();
     await pause(450);
   }
   const captures = [];
-  async function capture(name, expanded = false) {
+  async function capture(name) {
     await run("document.getElementById('toast').hidden=true;document.activeElement.blur()");
-    await sidebar(expanded);
+    await sidebar();
     await pause(250);
     fs.writeFileSync(path.join(output, name + '.png'), (await win.webContents.capturePage()).toPNG());
     captures.push(name);
@@ -94,14 +90,14 @@ app.whenReady().then(async () => {
     await new Promise(resolve => win.webContents.once('did-finish-load', resolve));
     await until("!document.getElementById('start-button').disabled");
     await run('document.fonts.ready.then(()=>true)');
+    showNavigation = await prepareCaptureNavigation(win);
 
     await navigate('sync');
     await capture('synchronization');
-    await sidebar(true);
-    // Capture the actual expanded rail separately, so the main screenshot's
-    // page title and controls remain readable at the app's fixed window size.
+    await sidebar();
+    // Keep a separate detail of the same expanded navigation.
     fs.writeFileSync(path.join(output, 'sidebar-rainbow.png'), (await win.webContents.capturePage({ x:0, y:44, width:236, height:696 })).toPNG());
-    await sidebar(false);
+    await sidebar();
     await click('bluetooth-button');
     await until("document.getElementById('bluetooth-dialog').open&&!document.getElementById('bluetooth-update').disabled");
     await capture('bluetooth');

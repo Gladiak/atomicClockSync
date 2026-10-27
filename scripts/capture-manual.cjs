@@ -14,6 +14,7 @@ const sampleWatch={id:'11111111-1111-1111-1111-111111111111',name:'CASIO GA-B210
 ipcMain.removeHandler('bluetooth:scan');ipcMain.handle('bluetooth:scan',()=>({ok:true,devices:[sampleWatch]}));
 ipcMain.removeHandler('bluetooth:cancel');ipcMain.handle('bluetooth:cancel',()=>({ok:true}));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const prepareCaptureNavigation=require('./capture-navigation.cjs');
 app.whenReady().then(async()=>{
  const win=BrowserWindow.getAllWindows()[0];win.showInactive();win.webContents.setAudioMuted(true);const run=async code=>{try{return await win.webContents.executeJavaScript(code,true)}catch(error){throw Error(code+'\n'+error.message)}};
  win.webContents.on('console-message',details=>{if(details.level==='error')console.error(details.message)});
@@ -30,6 +31,7 @@ app.whenReady().then(async()=>{
   await run(`localStorage.setItem('atomic.theme',JSON.stringify('rainbow'));localStorage.setItem('atomic.profiles',JSON.stringify(${JSON.stringify(profiles)}));localStorage.setItem('atomic.activeProfile',JSON.stringify('manual-watch'));localStorage.setItem('atomic.history',JSON.stringify(${JSON.stringify(history)}));localStorage.setItem('atomic.accuracy.v1',JSON.stringify({version:1,entries:${JSON.stringify(entries)}}));`);
   await run(`localStorage.setItem('atomic.bluetooth.history.v1',JSON.stringify([{id:'manual-bluetooth',type:'bluetooth',at:${now-day/2},endedAt:${now-day/2+5000},seconds:5,outcome:'sent',code:'',watch:{name:'CASIO GST-B1000',model:'GST-B1000',module:'5748'},reference:{host:'Reference · sample',offsetMs:0,uncertaintyMs:12,synchronizedAt:${now-day/2+4000}}}]))`);
   win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
+  const showNavigation=await prepareCaptureNavigation(win);
   const routes=['sync','reception-lab','signal','profiles','watch-accuracy','history','world','moon','iss','light-travel','time-machine','back-in-time','settings'];
   for(const language of ['en','it','fr','de','es','ja']){
    if(process.env.ATOMIC_CAPTURE_LANGUAGE&&language!==process.env.ATOMIC_CAPTURE_LANGUAGE)continue;
@@ -48,7 +50,7 @@ app.whenReady().then(async()=>{
     if(route==='time-machine')await run("document.querySelector('[data-event=einstein-gravity]').click()");
     if(route==='profiles')await change('profile-edit-select','manual-watch');
     await run("document.getElementById('page-title').tabIndex=-1;document.getElementById('page-title').focus();document.activeElement.blur();document.getElementById('toast').hidden=true");
-    win.webContents.sendInputEvent({type:'mouseMove',x:1050,y:90});await pause(550);
+    await showNavigation();
     fs.writeFileSync(path.join(output,route+'.jpg'),(await win.webContents.capturePage()).toJPEG(85));
     if(route==='sync'){
      await run("document.getElementById('bluetooth-button').click()");

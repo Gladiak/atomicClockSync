@@ -4,7 +4,7 @@ Sync compatible Casio watches through **Bluetooth** or simulated **Multiband 6 t
 
 ![Atomic Clock Sync — synchronization screen](docs/images/synchronization.png)
 
-Screenshots use the Rainbow theme, Pulse Sync branding and illustrative sample data. Views show the compact sidebar; expand the detail below to see its full navigation.
+Screenshots use the Rainbow theme, Pulse Sync branding and illustrative sample data. The documentation layout shows expanded navigation beside each view, with the active menu visible and the full content unobscured.
 
 <details>
 <summary>View the expanded Rainbow sidebar</summary>
