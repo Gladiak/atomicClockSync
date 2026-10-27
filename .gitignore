@@ -5,6 +5,8 @@ artifacts/
 coverage/
 __pycache__/
 *.py[cod]
+.venv-bluetooth/
+build/bluetooth/
 
 # Local OS/editor state and logs
 .DS_Store

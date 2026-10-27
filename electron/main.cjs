@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const { performance } = require('node:perf_hooks');
 const { synchronize } = require('./ntp.cjs');
 const { createIssDataService } = require('./iss-data.cjs');
+const { createBluetoothService, helperCommand } = require('./bluetooth.cjs');
 
 app.setName('Atomic Clock Sync');
 // Keep the existing profile path (or a caller's temporary test profile) when
@@ -16,6 +17,11 @@ let mainWindow;
 let blocker = null;
 let syncing = null;
 let issData;
+const bluetooth = createBluetoothService({
+  command: () => helperCommand({ packaged: app.isPackaged, resourcesPath: process.resourcesPath, root: path.join(__dirname, '..') }),
+  synchronize,
+  onEvent: value => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('bluetooth:event', value); },
+});
 const menuLabels = {
   en: ['About', 'Hide', 'Hide Others', 'Quit', 'Edit', 'Undo', 'Redo', 'Cut', 'Copy', 'Paste', 'Select All', 'Window', 'Minimize'],
   it: ['Informazioni su', 'Nascondi', 'Nascondi altre', 'Esci da', 'Modifica', 'Annulla', 'Ripeti', 'Taglia', 'Copia', 'Incolla', 'Seleziona tutto', 'Finestra', 'Riduci a icona'],
@@ -61,6 +67,7 @@ function releasePower() {
 
 function interrupt(reason) {
   releasePower();
+  bluetooth.cancel();
   if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('signal:interrupt', reason);
 }
 
@@ -78,13 +85,14 @@ function createWindow() {
   mainWindow.webContents.on('will-navigate', event => event.preventDefault());
   mainWindow.webContents.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
   mainWindow.loadFile(path.join(__dirname, '../src/index.html'));
-  mainWindow.on('closed', () => { releasePower(); mainWindow = null; });
-  mainWindow.webContents.on('render-process-gone', releasePower);
-  mainWindow.webContents.on('did-start-loading', releasePower);
+  mainWindow.on('closed', () => { releasePower(); bluetooth.cancel(); mainWindow = null; });
+  mainWindow.webContents.on('render-process-gone', () => { releasePower(); bluetooth.cancel(); });
+  mainWindow.webContents.on('did-start-loading', () => { releasePower(); bluetooth.cancel(); });
 }
 
 ipcMain.handle('clock:sync', async () => {
   if (blocker !== null) return { ok: false, error: 'Stop transmission before checking the time.' };
+  if (bluetooth.active) return { ok: false, error: 'Wait for Bluetooth to finish.' };
   if (!syncing) syncing = synchronize().finally(() => { syncing = null; });
   try {
     const result = await syncing;
@@ -93,10 +101,25 @@ ipcMain.handle('clock:sync', async () => {
 });
 
 ipcMain.handle('signal:active', (_event, active) => {
+  if (active && bluetooth.active) return false;
   releasePower();
   if (active) blocker = powerSaveBlocker.start('prevent-display-sleep');
   return true;
 });
+function bluetoothClient(event) {
+  return event.sender === mainWindow?.webContents && event.senderFrame === mainWindow.webContents.mainFrame;
+}
+ipcMain.handle('bluetooth:scan', event => {
+  if (!bluetoothClient(event)) return { ok: false, code: 'client' };
+  if (blocker !== null || syncing) return { ok: false, code: 'busy' };
+  return bluetooth.scan();
+});
+ipcMain.handle('bluetooth:sync', (event, deviceId, offsetMinutes) => {
+  if (!bluetoothClient(event)) return { ok: false, code: 'client' };
+  if (blocker !== null || syncing) return { ok: false, code: 'busy' };
+  return bluetooth.sync(deviceId, offsetMinutes);
+});
+ipcMain.handle('bluetooth:cancel', event => bluetoothClient(event) ? bluetooth.cancel() : { ok: false, code: 'client' });
 ipcMain.handle('iss:refresh', async event => {
   if(event.sender!==mainWindow?.webContents)throw Error('Unknown ISS client');
   issData ||= createIssDataService({storagePath:path.join(app.getPath('userData'),'iss-cache.json')});
@@ -123,5 +146,5 @@ else {
     app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
   });
   app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
-  app.on('before-quit', releasePower);
+  app.on('before-quit', () => { releasePower(); bluetooth.cancel(); });
 }

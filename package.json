@@ -9,6 +9,8 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test test/*.test.*",
+    "build:bluetooth": "node scripts/build-bluetooth.cjs",
+    "test:bluetooth": "electron scripts/bluetooth-smoke.cjs",
     "test:desktop": "electron scripts/smoke.cjs",
     "test:navigation": "electron scripts/navigation-smoke.cjs",
     "test:languages": "electron scripts/languages-smoke.cjs",
@@ -45,6 +47,7 @@
   "license": "MIT",
   "type": "commonjs",
   "build": {
+    "beforePack": "scripts/require-bluetooth.cjs",
     "appId": "it.atomicclocksync.desktop",
     "productName": "AtomicClockSync",
     "directories": {
@@ -57,6 +60,8 @@
       "package.json"
     ],
     "mac": {
+      "extraResources": [{ "from": "build/bluetooth/darwin-${arch}/atomic-bluetooth", "to": "bluetooth/atomic-bluetooth" }],
+      "extendInfo": { "NSBluetoothAlwaysUsageDescription": "AtomicClockSync uses Bluetooth to update the date and time on your Casio watch." },
       "category": "public.app-category.utilities",
       "target": [
         "zip"
@@ -65,6 +70,7 @@
       "icon": "assets/icon.png"
     },
     "win": {
+      "extraResources": [{ "from": "build/bluetooth/win32-${arch}/atomic-bluetooth", "to": "bluetooth/atomic-bluetooth" }],
       "target": [
         "portable"
       ],
@@ -72,6 +78,7 @@
       "artifactName": "${productName}-${version}-windows-${arch}-portable.${ext}"
     },
     "linux": {
+      "extraResources": [{ "from": "build/bluetooth/linux-${arch}/atomic-bluetooth", "to": "bluetooth/atomic-bluetooth" }],
       "target": [
         "AppImage",
         "deb",

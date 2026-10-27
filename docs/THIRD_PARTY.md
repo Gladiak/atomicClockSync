@@ -210,3 +210,16 @@ npm run test:iss
 ## Application manual screenshots
 
 `assets/guide/` contains original screenshots of this application's interface: thirteen views in each of the six supported languages. They are captured by `scripts/capture-manual.cjs` using an isolated temporary profile, synthetic watch/history/accuracy records and the repository's ISS fixture; no user records are included. Screenshots are examples, not evidence of physical reception. Interface artwork, map data and fonts retain their existing licenses and attribution documented above.
+
+## Bluetooth runtime and protocol
+
+Bluetooth uses [Bleak](https://github.com/hbldh/bleak) (MIT) and its platform
+dependencies. The frozen worker is built with [PyInstaller](https://pyinstaller.org/),
+whose bootloader distribution exception permits bundling applications. Installed
+dependency notices are copied into the worker's `THIRD_PARTY_LICENSES` directory.
+
+The small time-only protocol implementation references Ivo Zivkov's MIT-licensed
+[gshock_api](https://github.com/izivkov/gshock_api) and
+[GShockAPI](https://github.com/izivkov/GShockAPI). The retained notice is in
+`bluetooth/LICENSE.gshock-api.txt` and is bundled with the worker. See
+[Bluetooth documentation](BLUETOOTH.md) for pinned source revisions and scope.

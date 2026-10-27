@@ -12,6 +12,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 
 ## Features
 
+- **Bluetooth time update (experimental):** one compact button in Synchronize supports explicit Casio family profiles, including GA-B2100 / 5689 and Mudmaster GWG-B1000 / 5713, with standard, analogue and dedicated time procedures. Only date/time is updated; Wear OS is excluded. GA-B2100C is physically confirmed on macOS; other models and SP/MIP firmware have validation limits. See [compatibility, setup and builds](docs/BLUETOOTH.md).
 - **Watch Accuracy:** per-watch offset journal, segmented drift graphs, local/UTC references, correction events and JSON/CSV exports.
 - **Reception Lab:** per-watch GET/ERR statistics, recorded-configuration groups, A/B comparison and preparation of a trial changing one audio setting.
 - **Light Travel:** a cinematic offline Solar System, nine light sources, date-dependent travel times, departure/reception clocks and a controllable photon journey.
@@ -210,6 +211,7 @@ npm start
 ```
 
 The explicit runtime download is needed for the Electron version used here. No web server is required.
+For Bluetooth development, also prepare the project-local Python environment described in [Bluetooth setup](docs/BLUETOOTH.md). Packaged applications include that runtime.
 
 ## Tests and packaging
 
@@ -229,6 +231,8 @@ npm run test:observatory  # Moon phases, historical journeys, capsules, themes a
 npm run test:back-in-time # Movie circuits, time travel, layout and audio isolation
 npm run build:iss        # Rebuild the bundled SGP4 library
 npm run build:world      # Rebuild the bundled cartography/astronomy dependencies
+npm run test:bluetooth   # Bluetooth dialog, cancellation and immediate watch selection; hardware substituted
+npm run build:bluetooth  # Prepare the native worker on the target OS/architecture before packaging
 npm run pack             # Unpacked application
 npm run dist             # macOS ZIP for the host architecture
 npm run dist:win         # Windows x64 portable, with the configured native NSIS toolset
@@ -240,7 +244,7 @@ npm run checksums -- --github # Use GitHub download filenames in the published m
 
 The Docker build uses a pinned official Electron Builder image, reads the checkout without changing it, installs Linux dependencies in the temporary container and writes only to `release/`. Host `node_modules` stays separate. `npm run checksums` generates `SHA256SUMS.txt` for the current-version individual packages available in `release/`; use `-- --github` before uploading that manifest because GitHub replaces filename spaces with dots. Electron Builder additionally supports Snap, Flatpak, Pacman and archive targets; AppImage, DEB and RPM are configured here. The DEB/RPM payloads match the application tested on Ubuntu; installation and desktop integration on other distributions remain untested.
 
-The 86 unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
+The unit tests include independent decoding of generated PCM across the autumn DST transition, movie-date duration calculations, translation/interpolation coverage and light-time comparisons against independent JPL Horizons reference values. Bluetooth adds protocol/worker tests and desktop checks for immediate selection, exclusive controls, cancellation and ambiguous outcomes. The desktop suites check six languages, nine themes, text contrast, persistence, fixed-window layout, profiles, history, channel selection, offline fallback and interruption handling. Language checks include long translations, Japanese glyphs, historical journeys, native menus, unsaved personal text and uninterrupted muted transmission. Tests use temporary profiles and do not overwrite user data.
 
 The desktop suite writes screenshots to `artifacts/`. Physical reception on a watch requires a separate hardware test. A user has reported successful DCF77 reception on a GW-6900 using built-in Mac speakers; this is not a general hardware compatibility guarantee.
 

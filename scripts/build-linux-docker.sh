@@ -14,7 +14,12 @@ docker run --rm --platform linux/amd64 \
     mkdir -p /tmp/atomic-linux-build
     cd /tmp/atomic-linux-build
     cp /source/package.json /source/package-lock.json /source/LICENSE .
-    cp -R /source/electron /source/src /source/assets .
+    cp -R /source/electron /source/src /source/assets /source/bluetooth /source/scripts .
+    apt-get update -qq
+    apt-get install -y --no-install-recommends python3 python3-venv libpython3.10
+    python3 -m venv .venv-bluetooth
+    .venv-bluetooth/bin/python3 -m pip install --no-cache-dir -r bluetooth/requirements.txt
     npm ci --no-audit --no-fund
+    npm run build:bluetooth
     npm run dist:linux -- --publish never --config.directories.output=/output
   '

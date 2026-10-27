@@ -12,6 +12,7 @@ import { createLightTravelView } from './light-travel.mjs';
 import { createGuide } from './guide.mjs';
 import { createSidebar } from './sidebar.mjs';
 import { createSectionTransitions } from './section-transitions.mjs';
+import { createBluetoothSync } from './bluetooth-sync.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, getLanguage, setLanguage, onLanguageChange, localizeDocument, localizeStoredMessage } from './i18n.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
 
@@ -46,6 +47,7 @@ let reference = null;
 let session = null;
 let busy = false;
 let syncing = false;
+let bluetoothBusy = false;
 let toastTimer;
 let lastSecond = -1;
 let currentFrame;
@@ -94,6 +96,13 @@ const accuracyView = createWatchAccuracy({
 });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
+const bluetoothView = createBluetoothSync({ desktop,
+  getLocked: () => Boolean(session) || busy || syncing,
+  setBusy: active => { bluetoothBusy = active; setControls(); },
+  acceptReference: value => {
+    reference = value; anchor = { epoch: value.nowMs, mono: performance.now() }; renderReference();
+  }, notify,
+});
 function persist(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); return true; }
   catch { notify(t("Local storage is full or unavailable. The latest changes were not saved."), true); return false; }
@@ -157,7 +166,7 @@ function navigate(page) {
 }
 
 function setControls() {
-  const locked = Boolean(session) || busy;
+  const locked = Boolean(session) || busy || bluetoothBusy;
   $('station-select').disabled = locked;
   $('duration').disabled = locked;
   $('wave-type').disabled = locked;
@@ -175,7 +184,7 @@ function setControls() {
   $('test-output').disabled = locked || syncing;
   $('sync-button').disabled = locked || syncing;
   $('settings-sync').disabled = locked || syncing;
-  $('start-button').disabled = busy || syncing;
+  $('start-button').disabled = busy || syncing || bluetoothBusy;
   $('start-button').classList.toggle('running', Boolean(session));
   $('start-symbol').textContent = session ? '■' : '▶';
   $('start-label').textContent = busy ? t("Preparing audio…") : session ? t("Stop") : t("Start transmission");
@@ -186,6 +195,7 @@ function setControls() {
   $('trial-accuracy').disabled = !history.find(item => item.id === selectedTrialId && item.outcome === 'get' && item.snapshot?.profileId);
   $('profile-accuracy').disabled = !profiles.some(profile => profile.id === editingProfileId);
   $('status-badge').classList.toggle('transmitting', Boolean(session));
+  bluetoothView.refresh();
 }
 
 function renderReference() {
@@ -200,7 +210,7 @@ function renderReference() {
 }
 
 async function syncClock(quiet = false) {
-  if (syncing || session || busy) return;
+  if (syncing || session || busy || bluetoothBusy) return;
   syncing = true;
   setControls();
   $('sync-button').textContent = t("Checking time…");
@@ -224,7 +234,7 @@ async function syncClock(quiet = false) {
 }
 
 async function start() {
-  if (busy || syncing) return;
+  if (busy || syncing || bluetoothBusy) return;
   busy = true;
   setControls();
   try {
@@ -233,7 +243,7 @@ async function start() {
       wave: preferences.wave, channel: preferences.channel, deviceId: preferences.deviceId, advanceMs: preferences.advanceMs, stationId: preferences.stationId,
       onComplete: () => stop('complete'), onInterrupt: reason => stop('interrupted', reason) });
     session = { ...timing, createdAt: now(), minutes: preferences.duration, stationId: preferences.stationId, snapshot, volumeChanges: [] };
-    await desktop.setTransmitting(true);
+    if (!await desktop.setTransmitting(true)) throw new Error(t('Wait for Bluetooth to finish.'));
     $('session-message').textContent = t("Check the reception indicator on your Casio.");
     if (!reference) notify(t("Transmitting system time. Accuracy depends on the computer clock."));
   } catch (error) {
@@ -699,6 +709,7 @@ $('clear-history').addEventListener('click', () => {
   toastTimer = setTimeout(() => { $('toast').hidden = true; }, 8000);
 });
 desktop.onInterrupt(reason => {
+  bluetoothView.interrupt();
   if (session) stop('interrupted', reason);
   reference = null; anchor = { epoch: Date.now(), mono: performance.now() }; renderReference();
 });
