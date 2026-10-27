@@ -32,7 +32,8 @@
     "test:reception-lab": "electron scripts/reception-lab-smoke.cjs",
     "test:accuracy": "electron scripts/watch-accuracy-smoke.cjs",
     "test:guide": "electron scripts/guide-smoke.cjs",
-    "capture:guide": "electron scripts/capture-manual.cjs"
+    "capture:guide": "electron scripts/capture-manual.cjs",
+    "capture:readme": "electron scripts/capture-readme.cjs"
   },
   "keywords": [
     "casio",

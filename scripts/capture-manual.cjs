@@ -43,25 +43,14 @@ app.whenReady().then(async()=>{
     await run("document.getElementById('page-title').tabIndex=-1;document.getElementById('page-title').focus();document.activeElement.blur();document.getElementById('toast').hidden=true");
     win.webContents.sendInputEvent({type:'mouseMove',x:1050,y:90});await pause(550);
     fs.writeFileSync(path.join(output,route+'.jpg'),(await win.webContents.capturePage()).toJPEG(85));
-    if(language==='en'&&route==='sync'){
-     fs.mkdirSync(path.join(__dirname,'../docs/images'),{recursive:true});
-     fs.writeFileSync(path.join(__dirname,'../docs/images/synchronization.png'),(await win.webContents.capturePage()).toPNG());
-    }
     if(route==='sync'){
      await run("document.getElementById('bluetooth-button').click()");
      await until("document.getElementById('bluetooth-dialog').open&&!document.getElementById('bluetooth-update').disabled");
      await run("document.activeElement.blur()");await pause(150);
      fs.writeFileSync(path.join(output,'bluetooth.jpg'),(await win.webContents.capturePage()).toJPEG(85));
-     if(language==='en')fs.writeFileSync(path.join(__dirname,'../docs/images/bluetooth.png'),(await win.webContents.capturePage()).toPNG());
      await run("document.getElementById('bluetooth-close').click()");
      await until("!document.getElementById('bluetooth-button').disabled");
     }
-   }
-   if(language==='en'){
-    await run("document.querySelector('[data-page=guide]').click();document.querySelector('[data-chapter=bluetooth]').click()");
-    await until("document.querySelector('.manual-figure img').complete&&document.querySelector('.manual-figure img').naturalWidth>0");
-    await run("document.getElementById('manual-reader').scrollTop=0;document.activeElement.blur()");await pause(250);
-    fs.writeFileSync(path.join(__dirname,'../docs/images/guide.png'),(await win.webContents.capturePage()).toPNG());
    }
    console.log('Captured '+(selectedRoutes.length+(selectedRoutes.includes('sync')?1:0))+' real manual screenshots: '+language+' (Bluetooth detection simulated)');
   }

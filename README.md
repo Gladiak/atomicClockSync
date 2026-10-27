@@ -4,6 +4,15 @@ Sync compatible Casio watches through **Bluetooth** or simulated **Multiband 6 t
 
 ![Atomic Clock Sync — synchronization screen](docs/images/synchronization.png)
 
+Screenshots use the Rainbow theme, Pulse Sync branding and illustrative sample data. Views show the compact sidebar; expand the detail below to see its full navigation.
+
+<details>
+<summary>View the expanded Rainbow sidebar</summary>
+
+<img src="docs/images/sidebar-rainbow.png" alt="Pulse Sync logo and expanded sidebar in the Rainbow theme" width="236">
+
+</details>
+
 AtomicClockSync generates the time codes used by DCF77, MSF, WWVB, JJY and BPC. Choose a station, check the time, place your watch near a speaker or wired earphone, and start manual reception on the watch.
 
 Choose English, Italian, French, German, Spanish or Japanese in **Settings → Language**. Language changes apply immediately and are saved on this device. Source files and documentation are in English. Read the [full user guide](docs/USAGE.en.md) for setup, troubleshooting and protocol details.
@@ -229,7 +238,7 @@ Lime Green · Cyan Blue · Fuchsia Pink · Ruby Red · Champagne Gold · Seafoam
 
 The four pastel themes change only the accent color, preserving the original dark background and panels. Rainbow and Rainbow Soft share this dark base and assign blue to actions, violet to data, mint to the reference and confirmations, orange to transmission/progress and pink to errors. Choose a palette in **Settings → Theme**. The choice persists across launches and can change during transmission without changing audio settings.
 
-![Atlantic Blue theme in Settings](docs/images/settings-atlantic.png)
+![Rainbow theme and Pulse Sync logo in Settings](docs/images/settings-rainbow.png)
 
 ## Run from source
 
@@ -254,6 +263,7 @@ npm run test:desktop     # Real Electron and AudioWorklet; audio muted
 npm run test:navigation  # App identity, motion, rapid clicks, focus and live audio isolation
 npm run test:guide         # All manual prose/images in six languages, footer links and preview audio isolation
 npm run capture:guide      # Regenerate the manual screenshots from a temporary sample profile
+npm run capture:readme     # Regenerate all README screenshots in Rainbow with sample data
 npm run test:accuracy      # Offset journal, segmented drift, GET links, exports, languages and themes
 npm run test:reception-lab # Statistics, A/B comparison, preparation, locales and audio isolation
 npm run test:languages   # Six locales, all views, Japanese glyphs, persistence and live audio
