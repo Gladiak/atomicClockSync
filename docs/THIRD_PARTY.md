@@ -4,7 +4,7 @@
 
 `assets/fonts/NotoSansJP.ttf` is the unmodified Noto Sans JP variable font from [Google Fonts](https://github.com/google/fonts/tree/e7db6ca603fd4862010383ff17ffd6cc4ffac1c0/ofl/notosansjp), revision `e7db6ca603fd4862010383ff17ffd6cc4ffac1c0`. It is distributed under **SIL Open Font License 1.1**, included in `assets/fonts/NotoSansJP-OFL.txt`. SHA-256: `c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f`. The font is bundled locally for Japanese glyph fallback; no external font service is contacted.
 
-World View is an offline vector visualization. Geographic and city data are bundled with the app. City lights are an illustrative rendering of population-weighted settlement locations, not measured light emissions or live satellite imagery.
+World View combines an offline NASA Blue Marble raster surface with vector cartographic and astronomical overlays. The optional Map mode retains the vector-only rendering. Geographic and city data are bundled with the app. [Earth imagery source, credit and build instructions](../assets/world/IMAGERY.md) document the fixed August 2004 mosaic; it is not a live satellite or weather layer. City lights are an illustrative rendering of population-weighted settlement locations, not measured light emissions or live satellite imagery.
 
 ## Light Travel
 
@@ -16,7 +16,7 @@ Displayed times begin at the source's emission or reflection and end at Earth's 
 
 ## Moon Observatory and historical journeys
 
-Moon Observatory uses **Astronomy Engine 2.1.19** for lunar phase, illuminated fraction, geocentric distance, topocentric equatorial/horizon coordinates, apparent rise/set, previous new Moon and upcoming quarter phases. These functions are bundled in the existing offline vendor file; its MIT notice is retained in `assets/world/SOFTWARE_LICENSES.txt`. [JavaScript reference](https://github.com/cosinekitty/astronomy/blob/master/source/js/README.md), [NASA lunar phases](https://science.nasa.gov/moon/moon-phases/). No NASA texture or imagery is bundled: the lunar albedo/craters are generated procedurally and illumination is applied to a schematic sphere. Apparent horizon/orientation, terrain, libration and eclipses are not rendered as photographic observations.
+Moon Observatory uses **Astronomy Engine 2.1.19** for lunar phase, illuminated fraction, geocentric distance, topocentric equatorial/horizon coordinates, apparent rise/set, previous new Moon and upcoming quarter phases. These functions are bundled in the existing offline vendor file; its MIT notice is retained in `assets/world/SOFTWARE_LICENSES.txt`. [JavaScript reference](https://github.com/cosinekitty/astronomy/blob/master/source/js/README.md), [NASA lunar phases](https://science.nasa.gov/moon/moon-phases/). The lunar disc uses a bundled 2048 × 2048 WebP derived from the NASA CGI Moon Kit 2019 8K LROC map, credited to NASA’s Scientific Visualization Studio. See [lunar image sources and reproduction details](../assets/moon/SOURCES.md). Spherical phase illumination is calculated locally; apparent rotation, libration, topographic self-shadowing and eclipse shadows are not modeled. A procedural surface is retained only as a fallback if the local image cannot load.
 
 Historical records are curated from these primary sources:
 
@@ -192,13 +192,13 @@ Review changed data, metadata, tests, documentation counts and attribution befor
 ## ISS sources and orbit software
 
 - **CelesTrak GP data**, NORAD 25544, OMM-compatible JSON: <https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=JSON>. Requests are limited to at most one per two hours, with a persistent cache and provider Retry-After support. [Usage policy](https://celestrak.org/usage-policy.php).
-- **Where the ISS at**: position reports and an ISS TLE fallback, using <https://api.wheretheiss.at/v1/satellites/25544> and its `/tles` endpoint. The app requests reports at most every ten seconds while ISS Observatory is visible and backs off on failure. [Provider documentation](https://wheretheiss.at/w/developer).
+- **Where the ISS at**: position reports and an ISS TLE fallback, using <https://api.wheretheiss.at/v1/satellites/25544> and its `/tles` endpoint. The app requests reports at most every ten seconds while Your now or ISS Observatory is visible and backs off on failure. [Provider documentation](https://wheretheiss.at/w/developer).
 - **satellite.js 7.1.0**, Shashwat Kandadai and UCSC Jack Baskin School of Engineering — MIT. Its pure JavaScript SGP4, coordinate transforms, solar-position and shadow routines are bundled locally. The optional WASM modules are not included. Full license notice: `assets/iss/LICENSE.txt`. [Source](https://github.com/shashwatak/satellite-js).
 - Station background: [NASA facts](https://www.nasa.gov/international-space-station/space-station-facts-and-figures/), [NASA orbit tutorial](https://eol.jsc.nasa.gov/Tools/orbitTutorial.htm), [NASA sighting guidance](https://spotthestation.nasa.gov/faq.cfm), [NASA station overview](https://www.nasa.gov/international-space-station/space-station-overview/).
 - Official live-view link: [Canadian Space Agency / NASA](https://www.asc-csa.gc.ca/eng/iss/watch-live.asp). Video opens externally and can be interrupted or unavailable.
 - ACES background: [ESA mission](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/ACES_Atomic_Clock_Ensemble_in_Space), [installation on 25 April 2025](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/ACES_finds_its_home_in_orbit).
 
-The ISS is represented by an original vector schematic, not an official engineering drawing or a depiction of its current visiting-vehicle/array configuration. No NASA/ESA images, onboard telemetry, crew feed, live video or ACES clock measurements are bundled or claimed as live data. Orbital estimates, educational relativity calculations and curated mission facts are identified separately.
+The ISS is represented by an original vector schematic, not an official engineering drawing or a depiction of its current visiting-vehicle/array configuration. No photographs of the ISS, onboard telemetry, crew feed, live video or ACES clock measurements are bundled or claimed as live data. Orbital estimates, position reports, educational relativity calculations and curated mission facts are identified separately. The dashboard’s bundled Earth and Moon photographs are credited in their respective imagery sections.
 
 The reproducible orbit fixture in `test/fixtures/iss-omm.json` is a CelesTrak ISS element set with epoch 24 October 2026, used only for tests. A timestamped WTIA position retrieved on 25 October 2026 is retained as a numeric reference vector in `test/iss.test.mjs`. Test fixtures are not packaged as a live-data fallback.
 
@@ -223,3 +223,10 @@ The small time-only protocol implementation references Ivo Zivkov's MIT-licensed
 [GShockAPI](https://github.com/izivkov/GShockAPI). The retained notice is in
 `bluetooth/LICENSE.gshock-api.txt` and is bundled with the worker. See
 [Bluetooth documentation](BLUETOOTH.md) for pinned source revisions and scope.
+
+
+## Optional watch-photo catalogue
+
+User-requested watch-photo searches use the public [ShockBase catalogue](https://shockbase.org/). The app retrieves only search results, product pages and product pictures under `/pics2/`, without executing the site's scripts or signing in. Its [disclaimer](https://shockbase.org/disclaimer.php) attributes the catalogue photographs to Casio. No catalogue images are bundled with the app or relicensed under this repository's MIT license. A selected photo is resized for the user's local collection and retains its catalogue-page and original-image source URLs, with a visible credit and source link. Search/model information is sent only when the user invokes the feature; personal collection notes and trial data are not sent.
+
+The optional catalogue importer also reads model specifications from the selected public ShockBase product page. It stores normalized factual fields, source URL and retrieval time in local profiles; it does not bundle the catalogue database. Feature states are derived from the catalogue's active/inactive cells, with missing entries retained as unknown. The visible page identity is checked against both the selected search result and model URL. Matching manual links open the official Casio PDF in the user's browser; PDFs are not bundled or cached. Imported capabilities are catalogue information and do not extend the app's verified Bluetooth support registry. Prices, stock, community entries and accessory/parts tables are not imported.

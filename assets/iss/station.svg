@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 240" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 480 320" fill="none">
   <defs><linearGradient id="p" x2="1" y2="1"><stop stop-color="#74c9df"/><stop offset="1" stop-color="#235b85"/></linearGradient><linearGradient id="m" x2="1" y2="1"><stop stop-color="#f2f7fa"/><stop offset="1" stop-color="#7c9cad"/></linearGradient><pattern id="g" width="7" height="9" patternUnits="userSpaceOnUse"><path d="M0 0H7V9" stroke="#193d5a" stroke-width=".6"/></pattern></defs>
   <g transform="translate(240 120) rotate(-18) translate(-240 -120)">
     <path d="M48 119H432" stroke="#bacfd8" stroke-width="8"/><path d="M50 115L72 123L94 115L116 123L138 115L160 123L182 115L204 123L226 115L248 123L270 115L292 123L314 115L336 123L358 115L380 123L402 115L424 123" stroke="#eef6f8" stroke-width="1"/>

@@ -1,3 +1,4 @@
+import { normalizeWatchDetails } from './watch-collection-data.mjs';
 import { STATIONS } from './stations.mjs';
 
 export const CHANNEL_LABELS = Object.freeze({ both: 'Both', left: 'Left', right: 'Right' });
@@ -21,14 +22,14 @@ export function normalizePreferences(value) {
 
 export function watchMetadata(value) {
   const data = object(value);
-  return { name: text(data.name, 60), model: text(data.model, 60), homeCity: text(data.homeCity, 12).toUpperCase(),
+  return { name: text(data.name, 60), model: text(data.model, 80), homeCity: text(data.homeCity, 12).toUpperCase(),
     position: text(data.position, 240), systemVolume: data.systemVolume === '' || data.systemVolume == null ? '' : String(Math.round(bounded(data.systemVolume, 0, 100, 0))) };
 }
 
 export function normalizeProfiles(value) {
   const ids = new Set();
   return (Array.isArray(value) ? value : []).filter(p => p && typeof p.id === 'string' && p.id && !ids.has(p.id) && ids.add(p.id))
-    .map(p => ({ id: p.id, ...watchMetadata(p), name: text(p.name, 60) || 'Watch', settings: normalizePreferences(p.settings),
+    .map(p => ({ id: p.id, ...watchMetadata(p), name: text(p.name, 60) || 'Watch', details: normalizeWatchDetails(p.details), settings: normalizePreferences(p.settings),
       lastSuccess: p.lastSuccess?.settings ? { ...p.lastSuccess, settings: normalizePreferences(p.lastSuccess.settings) } : null }));
 }
 

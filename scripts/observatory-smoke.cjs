@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const fs = require('node:fs'), os = require('node:os'), path = require('node:path'), assert = require('node:assert/strict');
 app.setPath('userData',fs.mkdtempSync(path.join(os.tmpdir(),'atomic-observatory-test-')));
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT ? path.resolve(process.env.ATOMIC_TEST_APP_ROOT) : path.resolve(__dirname,'..'),'electron/main.cjs'));
+require('./offline-iss.cjs')();
 const epoch = Date.parse('2026-10-25T14:33:11Z');
 let referenceEpoch = epoch;
 ipcMain.removeHandler('clock:sync'); ipcMain.handle('clock:sync',()=>({ok:true,nowMs:referenceEpoch,host:'test-reference',offsetMs:0,uncertaintyMs:1,synchronizedAt:referenceEpoch}));
@@ -29,6 +30,9 @@ app.whenReady().then(async()=>{
     const preferences=await run("localStorage.getItem('atomic.preferences')");
     assert.equal(await run("document.querySelector('.sidebar-station')"),null);
     await run("document.querySelector('[data-page=moon]').click()"); await fits();
+    await until("document.getElementById('moon-disc').dataset.texture==='nasa-lro'");
+    assert.equal(await run("document.getElementById('moon-texture-source').hidden"),false);
+    assert.ok(await run("document.getElementById('moon-disc').width>=512"));
     assert.equal(await run("document.getElementById('moon-mode').textContent"),'LIVE');
     assert.equal(await run("document.querySelectorAll('.moon-quarter').length"),4);
     assert.match(await run("document.getElementById('moon-distance').textContent"),/370,99[0-9] km/);
@@ -38,9 +42,16 @@ app.whenReady().then(async()=>{
     await run("document.querySelectorAll('.moon-quarter')[0].click()");
     assert.equal(await run("document.getElementById('moon-mode').textContent"),'PREVIEW');
     assert.ok(await run("parseFloat(document.getElementById('moon-illumination').textContent)>99.5"));
+    const sample=()=>run("(()=>{const c=document.getElementById('moon-disc'),ctx=c.getContext('2d');const pixel=(x,y)=>[...ctx.getImageData(Math.floor(x*c.width),Math.floor(y*c.height),1,1).data];return {left:pixel(.25,.5),right:pixel(.75,.5),center:pixel(.5,.5),corner:pixel(0,0)}})()");
+    const full=await sample();assert.equal(full.corner[3],0);assert.equal(full.center[3],255);assert.ok(full.center[0]>60);
+    await capture('moon-photographic-full.png');
+    await run("document.querySelector('.moon-quarter [data-quarter=\"1\"]').parentElement.click()");
+    const quarter=await sample();assert.ok(quarter.right[0]>quarter.left[0]*2,'First quarter lights the photographic right side');
+
     await change('moon-date','2024-04-08'); await change('moon-hour',1101,'input');
     assert.equal(await run("document.getElementById('moon-phase').textContent"),'New Moon');
     assert.equal(await run("document.getElementById('moon-illumination').textContent"),'0.0%');
+    const dark=await sample();assert.ok(dark.center[0]<full.center[0]/5,'The image retains computed new-Moon darkness');
     await run("document.getElementById('moon-next').click()");assert.equal(await run("document.getElementById('moon-date').value"),'2024-04-09');
     await run("document.getElementById('moon-previous').click();document.getElementById('moon-live').click()");
     assert.equal(await run("document.getElementById('moon-mode').textContent"),'LIVE');
@@ -111,7 +122,7 @@ app.whenReady().then(async()=>{
     assert.equal(await run("[...document.querySelectorAll('[data-action=edit]')].at(-1).disabled"),false);
     referenceEpoch = epoch;
     await run("document.getElementById('settings-sync').click()");await until("document.querySelectorAll('.sealed').length===1");
-    await run("document.querySelector('.tm-personal-actions button:last-child').click();document.querySelector('[data-action=confirm-delete]').click()");
+    await run("document.querySelector('.tm-personal-actions [data-action=delete]').click();document.querySelector('[data-action=confirm-delete]').click()");
     assert.equal(await run("document.querySelectorAll('.tm-personal-card').length"),1);
     // The real muted signal keeps advancing through both preview types.
     await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("document.getElementById('status-badge').textContent==='TRANSMITTING'");

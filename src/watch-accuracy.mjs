@@ -207,6 +207,7 @@ export function createWatchAccuracy({getNow,getData,persist,notify,goTo,openLab,
   setInterval(()=>{const second=Math.floor(getNow()/1000);if(second!==lastTick){lastTick=second;tick();}},250);
   return {
     setVisible(value){visible=value;if(value)render();},refresh:render,
+    getArchive: () => archive,
     openWatch(id){watch=id;periodId=null;},
     openForTrial(trial){
       if(trial?.outcome!=='get'||!trial.snapshot?.profileId)return false;

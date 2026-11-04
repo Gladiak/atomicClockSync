@@ -1,24 +1,37 @@
+import {createWorldProjection} from './world-map-geometry.mjs';
 import {geoNaturalEarth1,geoPath,geoGraticule10,geoCircle,geoContains,feature,mesh} from '../assets/world/vendor.mjs';
 import {solarPosition,wrapLongitude} from './world-math.mjs';
 const NS='http://www.w3.org/2000/svg';
 export function svgNode(tag,attributes={},parent){const node=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attributes))node.setAttribute(k,v);parent?.append(node);return node;}
 let atlasPromise;
 function atlas(){return atlasPromise ||= Promise.all(['countries-50m.json','lights.json'].map(async file=>{const r=await fetch(new URL('../assets/world/'+file,import.meta.url));if(!r.ok)throw Error('Atlas unavailable');return r.json();})).catch(error=>{atlasPromise=null;throw error;});}
-export async function createEarthScene(root,prefix){
+export async function createEarthScene(root,prefix,{basemap=null}={}){
   const [topology,lights]=await atlas();root.replaceChildren();
-  const projection=geoNaturalEarth1().fitExtent([[25,30],[975,545]],{type:'Sphere'}),path=geoPath(projection),sphere=path({type:'Sphere'});
+  const projection=basemap?createWorldProjection():geoNaturalEarth1().fitExtent([[25,30],[975,545]],{type:'Sphere'}),path=geoPath(projection),sphere=path({type:'Sphere'});
+  const frameHeight=basemap?440:580;if(basemap)root.setAttribute('viewBox','0 0 1000 440');
+  let surfaceReady=false,surfaceLoading=false,requestedBasemap=basemap;
   const defs=svgNode('defs',{},root);
   const clip=svgNode('clipPath',{id:prefix+'-clip'},defs);svgNode('path',{d:sphere},clip);
   const gradient=svgNode('radialGradient',{id:prefix+'-ocean'},defs);
   svgNode('stop',{'stop-color':'#142d3f'},gradient);svgNode('stop',{offset:1,'stop-color':'#06111e'},gradient);
   const filter=svgNode('filter',{id:prefix+'-glow',x:'-10%',y:'-10%',width:'120%',height:'120%'},defs);svgNode('feGaussianBlur',{stdDeviation:2},filter);
-  const mask=svgNode('mask',{id:prefix+'-night',maskUnits:'userSpaceOnUse',x:0,y:0,width:1000,height:580},defs);
-  svgNode('rect',{width:1000,height:580,fill:'black'},mask);
+  const mask=svgNode('mask',{id:prefix+'-night',maskUnits:'userSpaceOnUse',x:0,y:0,width:1000,height:frameHeight},defs);
+  svgNode('rect',{width:1000,height:frameHeight,fill:'black'},mask);
   const masks=Array.from({length:7},()=>svgNode('path',{fill:'white',opacity:.27},mask));
   const group=svgNode('g',{'clip-path':`url(#${prefix}-clip)`},root);
   svgNode('path',{d:sphere,fill:`url(#${prefix}-ocean)`},group);
-  svgNode('path',{d:path(geoGraticule10()),fill:'none',stroke:'#b6d1e3','stroke-width':.4,opacity:.12},group);
+  const graticule=svgNode('path',{d:path(geoGraticule10()),fill:'none',stroke:'#b6d1e3','stroke-width':.4,opacity:.12},group);
   svgNode('path',{d:path(feature(topology,topology.objects.land)),fill:'#466371',stroke:'#8ba4aa','stroke-width':.5},group);
+  const surface=basemap?svgNode('image',{width:1000,height:440,preserveAspectRatio:'none',display:'none','aria-hidden':true},group):null;
+  if(basemap)group.append(graticule);
+  function paintSurface(){if(surface){const show=surfaceReady&&requestedBasemap==='satellite';surface.setAttribute('display',show?'inline':'none');root.dataset.basemap=show?'satellite':'atlas';}}
+  function setBasemap(value){
+    if(!surface)return;requestedBasemap=value==='atlas'?'atlas':'satellite';paintSurface();
+    if(requestedBasemap!=='satellite'||surfaceLoading)return;surfaceLoading=true;
+    const image=new Image(),url=new URL('../assets/world/blue-marble-natural-earth.webp',import.meta.url).href;image.src=url;
+    image.decode().then(()=>{surfaceReady=true;surface.setAttribute('href',url);root.dataset.imagery='nasa-blue-marble';paintSurface();}).catch(()=>{root.dataset.imagery='fallback';paintSurface();});
+  }
+  if(basemap)setBasemap(basemap);
   const shades=Array.from({length:18},()=>svgNode('path',{fill:'#010918',opacity:.12},group));
   svgNode('path',{d:path(mesh(topology,topology.objects.countries,(a,b)=>a!==b)),fill:'none',stroke:'#9db5bf','stroke-width':.5,opacity:.4},group);
   const lightGroup=svgNode('g',{mask:`url(#${prefix}-night)`},group),halo=svgNode('g',{filter:`url(#${prefix}-glow)`},lightGroup);
@@ -44,7 +57,7 @@ export async function createEarthScene(root,prefix){
   svgNode('rect',{x:-3,y:-9,width:6,height:18,rx:2,fill:'#eef7fa',stroke:'#1c4257','stroke-width':1},shape);
   const label=svgNode('text',{y:-30,'text-anchor':'middle',fill:'#d9faff','font-size':13,'font-family':'monospace','paint-order':'stroke',stroke:'#06111e','stroke-width':4},craft);label.textContent='ISS';
   const countries=feature(topology,topology.objects.countries).features;
-  return {projection,path,
+  return {projection,path,setBasemap,
     updateSun(epoch){const sun=solarPosition(epoch),anti=[wrapLongitude(sun.longitude+180),-sun.latitude];
       shades.forEach((n,i)=>n.setAttribute('d',path(geoCircle().center(anti).radius(92-i*1.5).precision(2)())));
       masks.forEach((n,i)=>n.setAttribute('d',path(geoCircle().center(anti).radius(89-i*1.7).precision(2)())));},

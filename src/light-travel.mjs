@@ -29,7 +29,7 @@ function duration(seconds) {
   return hours ? `${hours}:${pad(Math.floor(total/60)%60)}:${pad(total%60)}` : `${pad(Math.floor(total/60))}:${pad(total%60)}`;
 }
 
-export function createLightTravelView({getNow,getReference,notify}) {
+export function createLightTravelView({onPreviewChange,getNow,getReference,notify}) {
   const $ = id => document.getElementById(`lt-${id}`);
   const page = document.getElementById('page-light-travel');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -177,11 +177,11 @@ export function createLightTravelView({getNow,getReference,notify}) {
   function previewInput() {
     const epoch=Date.parse(`${$('date').value}T${$('time').value||'00:00:00'}Z`);
     if(!$('date').validity.valid||!$('time').validity.valid||!validLightEpoch(epoch)){render(true);return;}
-    preview=epoch;clearReplay();render(true);
+    preview=epoch;clearReplay();render(true);onPreviewChange?.(epoch);
   }
   $('date').addEventListener('change',previewInput);$('time').addEventListener('change',previewInput);
-  $('months').addEventListener('click',()=>{const epoch=shiftLightMonths(observationEpoch(),6);if(validLightEpoch(epoch)){preview=epoch;clearReplay();render(true);}});
-  $('live').addEventListener('click',()=>{preview=null;clearReplay();render(true);});
+  $('months').addEventListener('click',()=>{const epoch=shiftLightMonths(observationEpoch(),6);if(validLightEpoch(epoch)){preview=epoch;clearReplay();render(true);onPreviewChange?.(epoch);}});
+  $('live').addEventListener('click',()=>{preview=null;clearReplay();render(true);onPreviewChange?.(null);});
   $('play').addEventListener('click',()=>{
     const mono=performance.now();
     if(replay?.phase==='playing')replay=pauseLightReplay(replay,mono);
@@ -205,7 +205,7 @@ export function createLightTravelView({getNow,getReference,notify}) {
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();else if(visible){render();if(frame===null)frame=requestAnimationFrame(tick);}});
   onLanguageChange(()=>{if(visible)render(true);});
   window.addEventListener('beforeunload',pause);
-  return {setVisible(value){
+  return {getEpoch:observationEpoch,setPreview(value){if(value!==null&&!validLightEpoch(value))return;preview=value;clearReplay();if(visible)render(true);},setVisible(value){
     if(value===visible)return;visible=value;
     if(value){render(true);if(!document.hidden&&frame===null)frame=requestAnimationFrame(tick);}
     else {pause();if($('dialog').open)$('dialog').close();}

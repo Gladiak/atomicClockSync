@@ -6,6 +6,7 @@ const path = require('node:path');
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'atomic-navigation-test-'));
 app.setPath('userData', profile);
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT?path.resolve(process.env.ATOMIC_TEST_APP_ROOT):path.resolve(__dirname,'..'),'electron/main.cjs'));
+require('./offline-iss.cjs')();
 ipcMain.removeHandler('clock:sync');
 ipcMain.handle('clock:sync', () => ({ ok: false, error: 'Offline navigation test' }));
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));

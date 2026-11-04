@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),assert=require('node:assert/strict');
 app.setPath('userData',fs.mkdtempSync(path.join(os.tmpdir(),'atomic-light-travel-')));
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT?path.resolve(process.env.ATOMIC_TEST_APP_ROOT):path.resolve(__dirname,'..'),'electron/main.cjs'));
+require('./offline-iss.cjs')();
 const epoch=Date.parse('2026-10-25T12:00:00Z');
 ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:epoch,host:'test-reference',offsetMs:0,uncertaintyMs:1,synchronizedAt:epoch}));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));

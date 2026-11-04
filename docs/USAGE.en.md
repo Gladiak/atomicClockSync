@@ -104,7 +104,7 @@ In **Synchronize → Channel**, choose **Both**, **Left** or **Right**. The excl
 
 Open **My watches** and create a profile with a name, model, home city, placement note and optional system-volume note.
 
-**Save current settings** also stores the station, output device, channel, app volume, waveform, session duration and manual output advance. Home city, system volume and placement are manual notes: the app does not read or change those settings on the watch or operating system.
+**Save settings** also stores the station, output device, channel, app volume, waveform, session duration and manual output advance. Home city, system volume and placement are manual notes: the app does not read or change those settings on the watch or operating system.
 
 Select a watch from the toolbar in **Synchronize** to restore its profile. Further adjustments are temporary until you save that profile again. Profile deletion can be undone and does not delete existing trials.
 
@@ -187,7 +187,9 @@ A user confirmed successful GW-6900 synchronization with DCF77 and built-in Mac 
 
 ## World View
 
-Open **World View** for the offline vector atlas. It draws land and country boundaries without satellite textures, with astronomical day/night shading, graduated twilight and illustrative amber city lights.
+Open **World View** for the offline photographic atlas. **Satellite** shows a locally stored NASA Blue Marble mosaic with land relief and ocean bathymetry; **Map** returns to the vector atlas. The surface is a fixed August 2004 composite. Astronomical day/night shading, graduated twilight, city lights and geographic overlays follow the selected instant independently of that image. The NASA credit opens the original image source.
+
+Zoom with **+ / −** or the wheel, up to 4×. Drag to pan while zoomed in. The crosshair centres the chosen city; the corner-frame button restores the whole world. Focus the map to use plus/minus, arrow keys and Home (or Escape to reset). Station/city symbols retain a consistent size and all geographic layers move together. These controls also work in the full-screen observatory.
 
 - **Live:** follows the same NTP-corrected time reference as the app, or explicitly marked system time when offline.
 - **Preview:** select a UTC date between 1900 and 2100 and scrub its 24 hours. The main UTC clock and the city clock always identify the time being explored. Preview does not alter the audio engine, watch profiles, operating-system clock or transmission time.
@@ -201,7 +203,7 @@ Type at least two characters in **Find a city**. The catalog contains 171,637 lo
 
 The selected city's clock, sunrise, sunset and daylight duration follow its local calendar day and daylight-saving rules. Sunrise/set use standard atmospheric refraction at sea level; weather, terrain and buildings are not modeled. Polar day/night are shown explicitly rather than inventing event times. The city clock's date and IANA zone appear below it.
 
-City selection is local to World View and does not set the Casio's Home City or modify a watch profile. The city, coverage mode and twilight-line setting persist. Preview time and playback do not persist; reopening the app starts in Live mode.
+City selection is local to World View and does not set the Casio's Home City or modify a watch profile. The city, coverage mode, twilight-line setting and Satellite/Map choice persist. Zoom and pan remain local to the session. Preview time and playback do not persist; reopening the app starts in Live mode.
 
 The approximately 20 MB search catalog is separate from the 18,650 geographically grouped light points. Lights appear gradually through twilight and stay amber in all fifteen themes. Their intensity is an illustration based on settlement population, not measured urban brightness or a real-time observation.
 
@@ -236,7 +238,7 @@ The lower cards show the observer's local time, geometric slant distance, distan
 
 The source bar shows the orbit epoch separately from the latest successful HTTPS check. Elements more than 24 hours old are marked aging; older than **72 hours**, or over two hours in the future relative to the app reference, they do not drive current tracking. Predictions also stop at epoch +72 hours. These are conservative product limits, not a guarantee of positional accuracy. Reboosts and drag can reduce forecast accuracy.
 
-The main process retrieves only allowlisted HTTPS endpoints with a response-size limit, schema/spacecraft validation and a timeout. It coalesces concurrent requests and caches GP downloads for at least two hours, including across app restarts. A checksummed ISS TLE is the fallback when the CelesTrak GP endpoint fails. Position reports are requested at most every ten seconds while the section is visible, with exponential backoff and server Retry-After handling. Rendering and polling pause when the section is hidden; no background monitoring or notifications are scheduled.
+The main process retrieves only allowlisted HTTPS endpoints with a response-size limit, schema/spacecraft validation and a timeout. It coalesces concurrent requests and caches GP downloads for at least two hours, including across app restarts. A checksummed ISS TLE is the fallback when the CelesTrak GP endpoint fails. Position reports are requested at most every ten seconds while Your now or ISS Observatory is visible, with exponential backoff and server Retry-After handling. Each view pauses its rendering and polling when hidden; no background monitoring or notifications are scheduled.
 
 The cache is `iss-cache.json` in the Electron app data directory. No API keys, accounts or automatic geolocation are needed. The app's NTP/system-clock reference still determines the time used for calculations; a wrong reference also affects orbital estimates.
 
@@ -270,7 +272,7 @@ Calculations work offline using Astronomy Engine and body-centre positions corre
 
 Select **Moon Observatory** in the sidebar. It uses the city selected in World View and shared with ISS Observatory. Click the city name to choose a different location. The local clock, moonrise/moonset and four upcoming quarter-phase times use that city's time zone, including daylight-saving changes. A missing moonrise or moonset is shown as **No event today**; the app does not substitute an event from another day.
 
-The main display shows calculated phase, illuminated fraction, Earth-centred distance, age since the most recent new Moon, apparent altitude and azimuth measured clockwise from north. **Above your horizon** describes geometric placement, not optical visibility. Terrain, buildings, weather and local atmospheric variations are not modeled. The disc uses original procedural terrain with a schematic phase orientation: waxing is lit on the right, waning on the left. It does not reproduce actual lunar terrain, libration, eclipse shadows or the apparent orientation through a telescope.
+The main display shows calculated phase, illuminated fraction, Earth-centred distance, age since the most recent new Moon, apparent altitude and azimuth measured clockwise from north. **Above your horizon** describes geometric placement, not optical visibility. Terrain, buildings, weather and local atmospheric variations are not modeled. The disc uses NASA/LRO/LROC surface imagery derived from an 8K source and stored locally as a 2048 × 2048 near-side image. Rendering adapts to display density, including the full-screen observatory, up to 2048 pixels. Its phase orientation is schematic and north-up: waxing is lit on the right, waning on the left. Libration, terrain shadows, eclipses and apparent telescope orientation are not modeled. The visible NASA credit opens the original source page; no runtime image download is needed.
 
 Click an upcoming phase to preview its instant, use the UTC date and time-of-day slider, or move one day with the arrows. **Live** restores the app's current NTP/system time reference. A preview is kept in memory while switching views, but does not persist after restarting the app. Supported dates are 1900–2100. All calculations run offline; rendering and timers stop while the section is hidden.
 
@@ -320,7 +322,7 @@ Choose a palette in **Settings → Theme**:
 
 Palettes cover backgrounds, panels, text, fields, buttons, indicators and graphs. The four pastel themes preserve the original dark background, panels, text and borders, changing only the accent color. Rainbow and Rainbow Soft keep that same dark base, using blue for actions, violet for data/graphs, mint for the reference and confirmations, orange for transmission/progress and pink for errors. Labels still distinguish confirmed reception, sent Bluetooth writes and uncertain outcomes. Some accents have a lighter text variant to retain contrast at small sizes. Select arrows follow the palette and keep their right-side spacing. The theme applies immediately, is saved separately under `atomic.theme`, and is restored before the page paints. It can change during transmission without changing audio settings. The application icon retains its original lime color.
 
-The window cannot be resized, maximized or switched to full screen. Separate views keep content compact:
+The main tool window has a fixed size. The Observatory command opens the astronomical scenes full screen. Separate views keep content compact:
 
 - **Synchronize:** watch and station selection, clock, envelope, start/stop, volume, channel and duration.
 - **My watches:** profiles, notes and restoration of the last successful settings.
@@ -423,3 +425,41 @@ Screenshots are written to `artifacts/`. The app and Bluetooth worker were check
 - [Casio module manuals](https://support.casio.com/en/manual/manuallist.php?cid=009)
 
 Not affiliated with Casio, PTB, NICT, NIST, NPL, NTSC or Clock Wave. Licensed under the [MIT License](../LICENSE).
+
+
+## Personal time workspace
+
+On launch, **Your now** brings the reference clock, selected watch and offline astronomical highlights together. The clock follows the observing city selected in World View. The map shares World View’s Satellite/Map preference and photographic NASA Blue Marble surface, with calculated daylight and an ISS marker. The Moon card uses the same local NASA/LRO photograph and phase renderer as Moon Observatory, and includes the next full Moon. The ISS card replaces sunlight travel time: it shows latitude/longitude, orbital speed in km/h, altitude in km, source and orbit/report timestamp. It uses the same validity rules as ISS Observatory: usable orbital estimates or position reports less than 30 seconds old; unusable data show dashes. Offline estimates are explicitly labeled. Click either card to open its observatory. Astronomical previews do not affect these current values. Use **Synchronize my watch** to open the signal controls. A completed transmission still requires checking the watch; only your explicit reception confirmation opens the acknowledgement card.
+
+In **My watches**, the page contains a name/model search, **New watch**, and the saved watch tiles. Search filters locally as you type. **New watch** opens the editor in a modal; click a watch's name or picture to edit it in that modal. **Save** saves and closes the editor; **Cancel**, the close button or **Esc** dismisses it without saving draft fields. Collection-card actions open each watch's accuracy journal, Reception Lab or filtered synchronization history. The profile editor's **Photo & personal story** section stores an optional photo, acquisition date and note when you save the profile. Images stay local, are resized, and do not get copied into historical trial snapshots. The existing app-data backup includes these details. History's watch selector switches between a watch and **All watches**; clearing the complete history is available only with the full list selected.
+
+Use the watch/check icon at the top right of a collection tile to choose the **active watch**. The selected icon stays in the theme accent, including after restarting the app; the other icons stay neutral. Selecting a watch restores its saved transmission settings without opening its editor. Clicking an already active icon preserves any unsaved audio adjustments. Opening, editing or saving a watch does not change the active selection. **Save settings** saves that watch; editing an inactive watch preserves its own saved audio configuration. Use **Adjust transmission** to load that watch for an adjustment, then save its settings. Active selection is locked during transmission or Bluetooth work.
+
+
+In World View, Moon Observatory and Light Travel, **Explore together** links a UTC instant across the three previews. Changing a date, a lunar quarter or a timeline updates the linked views. Unlinking preserves their current previews; **Return all to live** restores current-time views. None of these actions changes the actual reference or a transmitted signal. Astronomical previews cover 1900–2100; ISS predictions keep their independent orbital validity limits. Historical records outside the supported range have sky exploration disabled; date-only records use a clearly announced 12:00 UTC preview.
+
+**Observatory ⛶** opens the current Earth, Moon or light scene full screen. Switch scenes using the upper controls. In Light Travel, the playback button starts, pauses or resumes the existing photon journey. Controls fade after inactivity; moving the pointer or using the keyboard reveals them, and keyboard-focused controls remain available. **Esc**, Exit observatory or the operating system's exit-full-screen action restores the normal interface. Escape inside the observatory preserves any active audio transmission.
+
+
+### Online watch photographs
+
+In My watches, choose **Find photo on ShockBase** on a card, or open **Photo & personal story** in its editor. Search uses the Model field as a starting point. A family name such as GA-B2100 can return multiple colour variants; choose the exact watch. Results are paginated. Recognized regional suffixes such as ER are retried without the suffix only when the full query has no match. The actual catalogue model remains visible; the app does not guess a colour variant.
+
+The selected product picture is downloaded and prepared in a transparent **480 × 480** WebP frame. The subject is centred with consistent margins and its proportions are preserved. Transparent or uniform border-connected backgrounds are trimmed; enclosed white dial details remain opaque. Complex photographic backgrounds are preserved. Local PNG, JPEG and WebP uploads use the same preparation. **Center & resize** can prepare an existing image again. Review the preview and save the watch to retain the result; cancelling or a network failure leaves the saved photo intact.
+
+Source credits link to the selected ShockBase page. ShockBase identifies its catalogue pictures as Casio images; see its [disclaimer](https://shockbase.org/disclaimer.php). Catalogue images are not bundled with the application. The app contacts ShockBase only for a requested search or picture, sends no personal notes or measurements, and keeps saved photos available offline. Photo editing follows the profile editor's existing transmission lock.
+
+
+### macOS development identity
+
+Use `npm start` or `npm run start:debug` when running from a checkout. The macOS launcher prepares a cached AtomicClockSync development bundle with its own display name, icon and helper names. The bundle loads this checkout directly and retains the original local-data directory and development Bluetooth worker. `npm run test:mac-identity` checks the name reported by macOS, bundle metadata and dashboard contrast across all fifteen themes. Restart through the launcher to apply a Dock/menu-bar identity change.
+
+The Your now dashboard uses theme accents on its clock, watch values and astronomical highlights. Rainbow palettes keep their semantic colors: mint for the clock, violet for watch/Moon data, and orange for ISS telemetry. Unverified reference labels remain neutral.
+
+### Normalized technical sheets
+
+Open **Technical sheet** on a collection card or use the Technical sheet row in the watch editor. It replaces the details inside the same modal. **Back** or **Esc** returns to the watch details with draft edits intact; the close button dismisses the editor. The double-arrow icon updates/imports from ShockBase, and the red trash icon removes the draft sheet. Both actions have localized tooltips and accessible labels. **Import from ShockBase** searches the Model field and downloads the selected model's public catalogue page. Review its code and module, import, then **Save settings** to persist the sheet. **Update from ShockBase** retrieves the page again; cancelling or a failed download preserves the saved data. **Remove sheet** affects only the draft sheet until you save.
+
+The sheet uses a shared schema: weight in grams, height × width × thickness in millimetres, water resistance in metres, release month/year, module numbers, materials, colours, display, battery, functions and matching official Casio manuals. Known catalogue spellings are normalized, and numbers/dates follow the interface language. Feature states distinguish **Present**, **Absent** and **Not available**. Unsupported or implausible measurements are omitted, with a notice; unknowns never become zero or false. Rechargeable batteries do not receive an invented battery-life estimate. Source and retrieval time remain visible, and the sheet is available offline after saving. A catalogue Bluetooth flag does not add app support for that watch.
+
+Photo and sheet selection compare the entered Model with the chosen catalogue code. Recognized regional suffixes such as ER/JF are equivalent, and the entered code is retained. A family-only code or a different colour/edition requires explicitly choosing **Use exact catalogue model and import**, or returning to the results. Module suffixes such as `/5689` are checked against sheet modules. The page heading must agree with the search result and source URL; an unverifiable response cannot be imported. The model is checked again before saving, including after an edit, to prevent attaching downloaded data to a different model. Personal profile names and notes are preserved. Manual links are restricted to official Casio PDFs for the matching module.

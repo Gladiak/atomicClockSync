@@ -3,6 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),asse
 const userData=fs.mkdtempSync(path.join(os.tmpdir(),'atomic-accuracy-'));
 app.setPath('userData',userData);
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT?path.resolve(process.env.ATOMIC_TEST_APP_ROOT):path.resolve(__dirname,'..'),'electron/main.cjs'));
+require('./offline-iss.cjs')();
 ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:Date.now(),host:'accuracy-test',offsetMs:0,uncertaintyMs:6,synchronizedAt:Date.now()}));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 app.whenReady().then(async()=>{

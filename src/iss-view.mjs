@@ -1,3 +1,4 @@
+import {currentIssState} from './iss-current-state.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
 import {createEarthScene} from './earth-scene.mjs';
 import {prepareOrbit,stateAt,orbitHealth,groundTrack,compass,relativisticShift} from './iss-orbit.mjs';
@@ -28,13 +29,7 @@ export function createIssView({getNow,getObserver,chooseCity,desktop,notify}){
     button.onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();
       const all=[...document.querySelectorAll('[data-iss-tab]')],i=all.indexOf(button),index=event.key==='Home'?0:event.key==='End'?all.length-1:(i+(event.key==='ArrowRight'?1:-1)+all.length)%all.length;all[index].focus();setTab(all[index].dataset.issTab);};
   });
-  function resolveState(){
-    const time=displayEpoch();
-    if(model&&orbitHealth(model,time).usable){try{return {...stateAt(model,time,observer()),estimated:true};}catch{/* A failed propagator never becomes a guessed position. */}}
-    const fix=data?.fix;
-    if(previewOffset===null&&fix&&Math.abs(getNow()-fix.timestamp)<30000)return {...fix,speedKms:fix.velocity/3600,epoch:fix.timestamp,estimated:false};
-    return null;
-  }
+  function resolveState(){return currentIssState(model,data?.fix,displayEpoch(),observer(),{allowFix:previewOffset===null});}
   async function loadScene(){
     if(scene||sceneLoading)return sceneLoading;
     sceneLoading=createEarthScene($('iss-earth'),'iss-atlas').then(value=>{scene=value;lastSun=0;render(true);})

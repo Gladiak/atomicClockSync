@@ -24,7 +24,7 @@ app.whenReady().then(async () => {
       return [...page.querySelectorAll('*')].filter(element => {
         if(element.closest('svg') || element.parentElement.closest('.tm-events,.tm-moments,.tm-personal-note,.iss-pass-list,.settings-panel,.manual-reader,.manual-index-list'))return false;
         const r=element.getBoundingClientRect(); if(!r.width||!r.height)return false;
-        return r.right>bounds.right+1 || r.bottom>bounds.bottom+1;
+        return r.right>bounds.right+1 || (page.id!=='page-profiles' && r.bottom>bounds.bottom+1);
       }).map(element=>element.id || element.className);
     })()`);
     if(overflow.length) layout.push({language,page,overflow});
@@ -110,5 +110,5 @@ app.whenReady().then(async () => {
     fs.writeFileSync('artifacts/languages/untranslated.json',JSON.stringify(untranslated,null,2));
     assert.deepEqual(layout,[],'Localized layout overflow'); assert.deepEqual(untranslated,[],'Untranslated interface messages'); assert.deepEqual(errors,[]);
     console.log('PASS: six languages, all sections, 96 journeys, long translations, Japanese glyphs, fifteen themes, local persistence, native menu, unsaved personal text and continuous muted transmission.'); app.exit(0);
-  } catch(error) { fs.mkdirSync('artifacts/languages',{recursive:true}); fs.writeFileSync('artifacts/languages/layout.json',JSON.stringify(layout,null,2)); console.error(error.stack);console.error(errors); await capture('failure'); app.exit(1); }
+  } catch(error) { console.error('Transmission state:',await run("({badge:document.getElementById('status-badge').textContent,message:document.getElementById('session-message').textContent,latest:JSON.parse(localStorage.getItem('atomic.history')||'[]')[0]})")); fs.mkdirSync('artifacts/languages',{recursive:true}); fs.writeFileSync('artifacts/languages/layout.json',JSON.stringify(layout,null,2)); console.error(error.stack);console.error(errors); await capture('failure'); app.exit(1); }
 });

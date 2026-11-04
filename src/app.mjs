@@ -1,3 +1,8 @@
+import { createObservatory } from './observatory.mjs';
+import { createSharedInstant } from './shared-instant.mjs';
+import { createWatchCollection } from './watch-collection.mjs';
+import { createSyncJourney } from './sync-journey.mjs';
+import { createNowView } from './now-view.mjs';
 import { STATIONS, getStation, stationTime, stationFrameAt, symbolLabel, symbolDescription } from './stations.mjs';
 import { createWaveform } from './waveform.mjs';
 import { SignalEngine, testOutput } from './audio-engine.mjs';
@@ -45,6 +50,7 @@ let editingProfileId = activeProfileId;
 let history = normalizeHistory(readSaved('atomic.history', []));
 let bluetoothHistory = normalizeBluetoothHistory(readSaved(BLUETOOTH_HISTORY_KEY, []));
 let historyPage = 0;
+let historyWatchId = '';
 let selectedTrialId = null;
 let anchor = { epoch: Date.now(), mono: performance.now() };
 let reference = null;
@@ -56,7 +62,8 @@ let toastTimer;
 let lastSecond = -1;
 let currentFrame;
 let lastWallCheck = { wall: Date.now(), mono: performance.now() };
-const worldView = createWorldView({ getNow: now, getStationId: () => preferences.stationId,
+let sharedTime;
+const worldView = createWorldView({ onPreviewChange: epoch => sharedTime?.changed('world', epoch), getNow: now, getStationId: () => preferences.stationId,
   isTransmitting: () => Boolean(session) || busy, persist, notify,
   getReference: () => reference ? `${now()-reference.nowMs<30*60000?'NTP':t("NTP check needed")} · ${reference.host}` : t("System clock · unverified"),
   useStation: id => {
@@ -69,11 +76,11 @@ const issView = createIssView({ getNow: now, getObserver: () => worldView.getCit
   chooseCity: () => { navigate('world'); $('world-city-search').focus(); } });
 const backInTimeView = createBackInTimeView({ getNow: now, getReference: () => reference
   ? (now() - reference.nowMs < 30 * 60000 ? t("NTP VERIFIED") : t("NTP CHECK NEEDED")) : t("SYSTEM CLOCK") });
-const moonView = createMoonView({ getNow: now, getObserver: () => worldView.getCity(),
+const moonView = createMoonView({ onPreviewChange: epoch => sharedTime?.changed('moon', epoch), getNow: now, getObserver: () => worldView.getCity(),
   chooseCity: () => { navigate('world'); $('world-city-search').focus(); },
   getReference: () => reference ? (now() - reference.nowMs < 30 * 60000 ? t("NTP verified") : t("NTP check needed")) : t("System clock · unverified") });
-const timeMachineView = createTimeMachineView({ getNow: now, persist, notify });
-const lightTravelView = createLightTravelView({ getNow:now, notify, getReference:() => reference
+const timeMachineView = createTimeMachineView({ getNow: now, persist, notify, exploreSky: epoch => { if(sharedTime.explore(epoch))navigate('world'); } });
+const lightTravelView = createLightTravelView({onPreviewChange:epoch=>sharedTime?.changed('light-travel',epoch), getNow:now, notify, getReference:() => reference
   ? (now()-reference.nowMs < 30*60000 ? t('NTP verified') : t('NTP check needed')) : t('System clock · unverified') });
 
 const receptionLab = createReceptionLab({
@@ -98,6 +105,23 @@ const accuracyView = createWatchAccuracy({
   goTo: (page, id) => page === 'trial' ? openTrial(id) : navigate(page),
   openLab: (id, name) => { receptionLab.openWatch(id, name); navigate('reception-lab'); }
 });
+
+const nowView = createNowView({desktop,getBasemap:()=>worldView.getBasemap(), getNow: now, getObserver: () => worldView.getCity(),
+  getData: () => ({ profiles, activeProfileId, history, reference, session }),
+  getAccuracy: () => accuracyView.getArchive() });
+
+const syncJourney = createSyncJourney({ openTrial });
+const collectionView = createWatchCollection({desktop,getData:()=>({profiles,activeProfileId,history}),getNow:now,
+  getAccuracy:()=>accuracyView.getArchive(),getLocked:()=>Boolean(session)||busy||bluetoothBusy,
+  editWatch:id=>showProfile(id),
+  selectWatch:id=>{const profile=profiles.find(p=>p.id===id);if(profile)applyConfiguration(profile.settings,id);},
+  openAccuracy:id=>{accuracyView.openWatch(id);navigate('watch-accuracy');},
+  openLab:(id,name)=>{receptionLab.openWatch(id,name);navigate('reception-lab');},
+  openHistory:id=>{historyWatchId=id;historyPage=0;renderHistory();navigate('history');}});
+
+sharedTime = createSharedInstant({ views: { world: worldView, moon: moonView, 'light-travel': lightTravelView },getNow:now,goTo:navigate,notify });
+
+const observatory = createObservatory({ views: {world:worldView,moon:moonView,'light-travel':lightTravelView},goTo:navigate,desktop,notify });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 const bluetoothView = createBluetoothSync({ desktop,
@@ -132,7 +156,7 @@ function notify(message, error = false) {
 }
 
 function navigate(page) {
-  const titles = { sync: [t("Sync your watch"), t("Choose a station, place your Casio nearby and transmit.")],
+  const titles = { home: [t("Your now"), t("From the second on your wrist to the time of the universe.")], sync: [t("Sync your watch"), t("Choose a station, place your Casio nearby and transmit.")],
     signal: [t("Inside the signal"), t("The selected station time code, live.")],
     world: [t("A world between light and time"), t("Follow the Sun. Find your city. Explore the signals that keep us in sync.")],
     moon: [t("A little closer to the Moon"), t("Follow its phases. Find your moonrise. Explore a different kind of time.")],
@@ -143,7 +167,7 @@ function navigate(page) {
     'reception-lab': [t('Learn from every reception'),t('Compare your GET and ERR results. Change one audio setting and try again.')],
     'watch-accuracy': [t('Every watch has its own rhythm'),t('Measure its offset. Follow its drift. Discover the way your watch keeps time.')],
     history: [t("Your synchronization history"), t("Your trials, stored only on this device.")],
-    profiles: [t("A profile for every watch"), t("Save the settings and placement that work.")],
+    profiles: [t("Your watch collection"), t("Every watch has a story. Keep yours here.")],
     trial: [t("Trial details"), t("The settings used and the result observed on your Casio.")],
     settings: [t("Set up your signal"), t("Configure the signal for your device.")],
     guide: [t("Application guide"), t("Purpose, controls and practical steps for every section.")] };
@@ -161,6 +185,8 @@ function navigate(page) {
   });
   sidebar.revealSelection(previousPage !== $(`page-${page}`));
   waveform.setVisible(page === 'sync');
+  nowView.setVisible(page === 'home');
+  collectionView.setVisible(page === 'profiles');
   $('page-title').replaceChildren(document.createTextNode(titles[page][0]), Object.assign(document.createElement('span'), { textContent: '.' }));
   $('page-subtitle').textContent = titles[page][1];
   worldView.setVisible(page === 'world');
@@ -172,6 +198,8 @@ function navigate(page) {
   receptionLab.setVisible(page === 'reception-lab');
   accuracyView.setVisible(page === 'watch-accuracy');
   guideView.setVisible(page === 'guide');
+  sharedTime.setPage(page);
+  observatory.setPage(page);
   transitionSection(previousPage, $(`page-${page}`));
   window.scrollTo(0, 0);
 }
@@ -186,6 +214,9 @@ function setControls() {
   $('profile-select').disabled = locked;
   $('profile-edit-select').disabled = locked;
   for (const control of $('profile-form').querySelectorAll('input,textarea,button')) control.disabled = locked;
+  for(const id of ['collection-spec-import','collection-spec-remove','collection-spec-open','collection-use-model'])$(id).disabled=locked;
+  for(const id of ['profile-save','collection-spec-save'])$(id).disabled=locked||collectionView.isPhotoPending();
+  $('profile-adjust-transmission').disabled=locked;
   $('profile-new').disabled = locked;
   $('profile-restore-success').disabled = locked || !profiles.find(p => p.id === editingProfileId)?.lastSuccess;
   $('trial-restore').disabled = locked || !history.find(t => t.id === selectedTrialId)?.snapshot;
@@ -207,6 +238,7 @@ function setControls() {
   $('profile-accuracy').disabled = !profiles.some(profile => profile.id === editingProfileId);
   $('status-badge').classList.toggle('transmitting', Boolean(session));
   bluetoothView.refresh();
+  collectionView.refresh();
 }
 
 function renderReference() {
@@ -247,6 +279,7 @@ async function syncClock(quiet = false) {
 
 async function start() {
   if (busy || syncing || bluetoothBusy) return;
+  syncJourney.started();
   busy = true;
   setControls();
   try {
@@ -286,15 +319,23 @@ async function stop(status = 'stopped', reason = '') {
   $('status-badge').textContent = status === 'confirmed' ? t("CONFIRMED BY YOU") : t("IDLE");
   if (stored && profileStored) notify(message, status === 'interrupted');
   busy = false;
+  syncJourney.finished(trial, stored);
   setControls();
+  lastSecond = -1;
   update();
 }
 
 function renderHistory() {
   receptionLab.refresh();
-  const all = mergeSynchronizationHistory(history, bluetoothHistory);
+  const watches=new Map(profiles.map(profile=>[profile.id,profile.name]));
+  for(const trial of history)if(trial.snapshot?.profileId&&!watches.has(trial.snapshot.profileId))watches.set(trial.snapshot.profileId,trial.snapshot.watch.name||t('Archived watch'));
+  const filter=$('history-watch');filter.replaceChildren(new Option(t('All watches'),''));
+  for(const [id,name]of watches)filter.append(new Option(name,id));
+  if(historyWatchId&&!watches.has(historyWatchId))historyWatchId='';
+  filter.value=historyWatchId;
+  const all = mergeSynchronizationHistory(history, bluetoothHistory).filter(item=>!historyWatchId||item.snapshot?.profileId===historyWatchId);
   $('history-list').replaceChildren();
-  $('clear-history').hidden = !all.length;
+  $('clear-history').hidden = !all.length || Boolean(historyWatchId);
   historyPage = Math.max(0, Math.min(historyPage, Math.ceil(all.length / 8) - 1));
   $('history-count').textContent = `· ${all.length}`;
   $('history-prev').disabled = historyPage === 0;
@@ -303,7 +344,7 @@ function renderHistory() {
   if (!all.length) {
     const p = document.createElement('p');
     p.className = 'empty-history';
-    p.textContent = t('No synchronizations yet. Start a radio or Bluetooth attempt.');
+    p.textContent = historyWatchId ? t('No trials for this watch yet.') : t('No synchronizations yet. Start a radio or Bluetooth attempt.');
     $('history-list').append(p);
   }
   const statuses = { confirmed: t("Outcome not verified"), complete: t("Finished · check reception"), interrupted: t("Interrupted by audio or system"), stopped: t("Stopped manually") };
@@ -340,6 +381,7 @@ function fillFacts(container, entries) {
 }
 
 function renderProfileOptions() {
+  collectionView.refresh();
   receptionLab.refresh();
   accuracyView.refresh();
   for (const id of ['profile-select', 'profile-edit-select']) {
@@ -355,21 +397,27 @@ function showProfile(id) {
   const profile = profiles.find(p => p.id === editingProfileId);
   const metadata = watchMetadata(profile);
   for (const [key, input] of Object.entries({ name: 'profile-name', model: 'profile-model', homeCity: 'profile-city', position: 'profile-position', systemVolume: 'profile-system-volume' })) $(input).value = metadata[key];
+  collectionView.showDetails(profile);
   $('profile-form-title').textContent = profile ? t("Edit watch") : t("New watch");
   $('profile-delete').hidden = !profile;
   renderProfileOptions(); renderProfileSummary(); setControls();
 }
 
+function profileSettingsToSave(){
+  const profile=profiles.find(item=>item.id===editingProfileId);
+  return normalizePreferences(profile&&profile.id!==activeProfileId?profile.settings:preferences);
+}
+
 function renderProfileSummary() {
-  const station = getStation(preferences.stationId);
+  const settings=profileSettingsToSave(),station = getStation(settings.stationId);
   fillFacts($('profile-settings-summary'), [
-    [t("Station"), station.name], [t("Channel"), t(CHANNEL_LABELS[preferences.channel])],
-    [t("Waveform"), t(WAVE_LABELS[preferences.wave])], [t("App volume"), `${preferences.volume}%`],
-    [t("Duration"), t("{0} minutes", preferences.duration)], [t("Manual advance"), `${preferences.advanceMs} ms`],
-    [t("Output"), $('audio-output').selectedOptions[0]?.textContent || t("System default")],
+    [t("Station"), station.name], [t("Channel"), t(CHANNEL_LABELS[settings.channel])],
+    [t("Waveform"), t(WAVE_LABELS[settings.wave])], [t("App volume"), `${settings.volume}%`],
+    [t("Duration"), t("{0} minutes", settings.duration)], [t("Manual advance"), `${settings.advanceMs} ms`],
+    [t("Output"), [...$('audio-output').options].find(option=>option.value===settings.deviceId)?.textContent || t("System default")],
   ]);
   const profile = profiles.find(p => p.id === editingProfileId);
-  const changed = profile && JSON.stringify(profile.settings) !== JSON.stringify(normalizePreferences(preferences));
+  const changed = profile && JSON.stringify(profile.settings) !== JSON.stringify(settings);
   $('profile-saved-state').textContent = profile ? changed ? t("UNSAVED") : t("SAVED") : t("NEW");
   $('profile-last-success').textContent = profile?.lastSuccess
     ? `${historyFormatter.format(profile.lastSuccess.at)} · ${getStation(profile.lastSuccess.settings.stationId).name} · ${t(CHANNEL_LABELS[profile.lastSuccess.settings.channel])} · ${t(WAVE_LABELS[profile.lastSuccess.settings.wave])} · ${profile.lastSuccess.settings.volume}%`
@@ -540,6 +588,7 @@ function renderFrame(epoch) {
 function update() {
   const epoch = now();
   const secondKey = Math.floor(epoch / 1000);
+  syncJourney.update({ session, busy, epoch });
   if (secondKey !== lastSecond) {
     const time = stationTime(preferences.stationId, epoch);
     const symbolSecond = time.second % getStation(preferences.stationId).cycle;
@@ -607,8 +656,14 @@ document.body.classList.toggle('non-mac', desktop.platform !== 'darwin');
 document.querySelectorAll('[data-page]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.page)));
 document.querySelectorAll('[data-goto]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.goto)));
 document.querySelectorAll('[data-reference]').forEach(button => button.addEventListener('click', () => desktop.openReference(button.dataset.reference)));
-document.querySelector('.brand').addEventListener('click', event => { event.preventDefault(); navigate('sync'); });
-$('help-button').addEventListener('click', () => { const page = document.querySelector('.page.active').id.replace('page-', ''); if (page !== 'guide') guideView.openChapter(page); navigate('guide'); });
+document.querySelector('.brand').addEventListener('click', event => { event.preventDefault(); navigate('home'); });
+$('help-button').addEventListener('click', () => { const page = document.querySelector('.page.active').id.replace('page-', ''); if (page !== 'guide') guideView.openChapter(page === 'home' ? 'start' : page); navigate('guide'); });
+$('profile-adjust-transmission').addEventListener('click',()=>{
+  if(session||busy||bluetoothBusy)return;
+  const profile=profiles.find(item=>item.id===editingProfileId);
+  if(profile&&profile.id!==activeProfileId)applyConfiguration(profile.settings,profile.id);
+  navigate('sync');
+});
 $('profile-accuracy').addEventListener('click', () => { accuracyView.openWatch(editingProfileId); navigate('watch-accuracy'); });
 $('trial-accuracy').addEventListener('click', () => { if (accuracyView.openForTrial(history.find(item => item.id === selectedTrialId))) navigate('watch-accuracy'); });
 $('start-button').addEventListener('click', () => session ? stop() : start());
@@ -660,29 +715,33 @@ $('profile-select').addEventListener('change', event => {
 $('profile-edit-select').addEventListener('change', event => {
   if (session || busy) { event.target.value = editingProfileId || ''; return; }
   const profile = profiles.find(p => p.id === event.target.value);
-  if (profile) applyConfiguration(profile.settings, profile.id);
-  else showProfile(null);
+  showProfile(profile?.id||null);
 });
-$('profile-new').addEventListener('click', () => { if (!session && !busy) { showProfile(null); $('profile-name').focus(); } });
+$('profile-new').addEventListener('click', () => { if (!session && !busy && !bluetoothBusy) { showProfile(null); collectionView.openEditor($('profile-new')); } });
 $('profile-form').addEventListener('submit', event => {
   event.preventDefault();
-  if (session || busy || !$('profile-form').reportValidity()) return;
+  if (session || busy || bluetoothBusy || !$('profile-form').reportValidity()) return;
+  if(collectionView.isPhotoPending()){notify(t('Preparing photo…'));return;}
+  if(!collectionView.validateModel())return;
   const metadata = watchMetadata({ name: $('profile-name').value, model: $('profile-model').value, homeCity: $('profile-city').value,
     position: $('profile-position').value, systemVolume: $('profile-system-volume').value });
   if (!metadata.name) { $('profile-name').focus(); return; }
   const existing = profiles.find(p => p.id === editingProfileId);
-  const profile = { id: existing?.id || crypto.randomUUID(), ...metadata, settings: normalizePreferences(preferences), lastSuccess: existing?.lastSuccess || null };
-  if (existing) profiles = profiles.map(p => p.id === existing.id ? profile : p); else profiles.push(profile);
-  activeProfileId = profile.id;
-  const saved = saveProfiles(); showProfile(profile.id);
-  if (saved) notify(t("Profile «{0}» saved with the current settings.", profile.name));
+  const profile = { id: existing?.id || crypto.randomUUID(), ...metadata, details: collectionView.getDetails(), settings: profileSettingsToSave(), lastSuccess: existing?.lastSuccess || null };
+  const previousProfiles=profiles,previousActive=activeProfileId;
+  profiles = existing ? profiles.map(p => p.id === existing.id ? profile : p) : [...profiles,profile];
+  const saved = saveProfiles();
+  if(!saved){profiles=previousProfiles;activeProfileId=previousActive;return;}
+  showProfile(profile.id);
+  collectionView.closeEditor();
+  if (saved) notify(t("Profile «{0}» saved.", profile.name));
 });
 $('profile-delete').addEventListener('click', () => {
   if (session || busy || !editingProfileId) return;
   const oldProfiles = profiles, oldActive = activeProfileId, removedId = editingProfileId;
   profiles = profiles.filter(p => p.id !== removedId);
   if (activeProfileId === removedId) activeProfileId = null;
-  saveProfiles(); showProfile(null);
+  saveProfiles(); showProfile(null); collectionView.closeEditor();
   notify(t("Profile deleted. Existing trials remain in history."));
   const undo = document.createElement('button'); undo.className = 'text-button'; undo.textContent = t("Undo");
   undo.onclick = () => { profiles = oldProfiles; activeProfileId = oldActive; saveProfiles(); showProfile(removedId); $('toast').hidden = true; };
@@ -695,6 +754,7 @@ $('profile-restore-success').addEventListener('click', () => {
     if (available) notify(t("Successful settings restored. Check the system volume and placement recorded in the trial."));
   }
 });
+$('history-watch').addEventListener('change',event=>{historyWatchId=event.target.value;historyPage=0;renderHistory();});
 $('history-prev').addEventListener('click', () => { historyPage--; renderHistory(); });
 $('history-next').addEventListener('click', () => { historyPage++; renderHistory(); });
 $('trial-save-outcome').addEventListener('click', () => {
@@ -780,6 +840,6 @@ renderStation();
 showProfile(activeProfileId);
 persist('atomic.history', history);
 persist(BLUETOOTH_HISTORY_KEY, bluetoothHistory);
-renderHistory(); renderReference(); setControls(); update(); refreshDevices(); syncClock(true);
+renderHistory(); renderReference(); setControls(); update(); navigate('home'); refreshDevices(); syncClock(true);
 setInterval(update, 100);
 setInterval(() => { if (!session && !busy && (!reference || now() - reference.nowMs > 15 * 60000)) syncClock(true); }, 60000);

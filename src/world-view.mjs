@@ -1,5 +1,7 @@
+import {createWorldProjection} from './world-map-geometry.mjs';
+import {createWorldMapControls} from './world-map-controls.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
-import { geoNaturalEarth1, geoPath, geoGraticule10, geoCircle, feature, mesh } from '../assets/world/vendor.mjs';
+import { geoPath, geoGraticule10, geoCircle, feature, mesh } from '../assets/world/vendor.mjs';
 import { solarPosition, solarAltitude, lightPhase, seasonEvents, sunEvents, localDateKey, validCity, distanceKm, DAY, wrapLongitude } from './world-math.mjs';
 import { STATIONS } from './stations.mjs';
 
@@ -34,27 +36,29 @@ const coord = (value, positive, negative) => `${decimal(Math.abs(value), 1)}° $
 const hhmm = minutes => `${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
 const midnightUTC = epoch => Math.floor(epoch/DAY)*DAY;
 
-export function createWorldView({ getNow, getReference, getStationId, isTransmitting, useStation, persist, notify }) {
+export function createWorldView({ onPreviewChange, getNow, getReference, getStationId, isTransmitting, useStation, persist, notify }) {
   let saved;
   try { saved = JSON.parse(localStorage.getItem('atomic.world')); } catch { /* Fresh defaults. */ }
   let city = validCity(saved?.city) || ROME;
   let coverage = ['off','selected','all'].includes(saved?.coverage) ? saved.coverage : 'selected';
   let twilight = saved?.twilight === true;
+  let basemap=saved?.basemap==='atlas'?'atlas':'satellite';
   let stationId = getStationId();
   let visible = false, loaded = false, loading, timer = null;
   let preview = null, playing = false, lastTick = 0, lastMapEpoch = null, lastCityDay = '', events;
   let worker = null, workerReady = false, catalogCount = 0, request = 0, searchTimer, results = [], focusedResult = -1;
-  const projection = geoNaturalEarth1().fitExtent([[24,20],[976,424]],{type:'Sphere'});
+  const projection = createWorldProjection();
   const path = geoPath(projection);
   const markers = new Map(), coveragePaths = new Map(), shadePaths = [], lightMasks = [], twilightPaths = [];
-  function save() { persist('atomic.world',{city,coverage,twilight}); }
+  const mapControls=createWorldMapControls({projection,getCity:()=>city,basemap,onBasemapChange(value){basemap=value;save();}});
+  function save() { persist('atomic.world',{city,coverage,twilight,basemap}); }
   function epoch() { return preview ?? getNow(); }
   function pause() { playing=false; $('world-play').textContent='▶'; $('world-play').setAttribute('aria-pressed','false'); $('world-play').setAttribute('aria-label',t("Play accelerated day")); }
   function closeResults() { $('world-city-results').hidden=true; $('world-city-search').setAttribute('aria-expanded','false'); $('world-city-search').removeAttribute('aria-activedescendant'); focusedResult=-1; }
   function setCity(value) {
     const checked=validCity(value);
     if(!checked){notify(t("This city’s time zone is unavailable in this runtime. Choose another city."),true);return;}
-    city = checked; lastCityDay=''; save(); closeResults(); $('world-city-search').value='';
+    city = checked; mapControls.ensureCityVisible();lastCityDay=''; save(); closeResults(); $('world-city-search').value='';
     render(true);
   }
   function selectedStation() { return WORLD_STATIONS.find(s=>s.id===stationId); }
@@ -79,7 +83,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     $('world-land').setAttribute('stroke','#829fa6'); $('world-land').setAttribute('stroke-width','.45');
     $('world-borders').setAttribute('d',path(mesh(topology,topology.objects.countries,(a,b)=>a!==b)));
     for(let i=0;i<22;i++) shadePaths.push(svg('path',{fill:i<3?'#b69369':'#020914',opacity:i<3?'.025':'.105'},$('world-shade')));
-    // Geographic light masks brighten progressively through twilight, without a raster texture.
+    // Geographic masks reveal the illustrative settlement lights progressively through twilight.
     for(let i=0;i<8;i++) lightMasks.push(svg('path',{fill:'white',opacity:'.25'},$('world-lights-mask-bands')));
     const dotPaths = Array.from({length:5},()=>[]);
     for(const [lon,lat,population] of lights) {
@@ -108,6 +112,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
       const offsets={dcf77:[11,-9],msf:[-12,-12],wwvb:[13,4],jjy:[12,4],bpc:[-12,19]};
       const [dx,dy]=offsets[station.id];
       svg('text',{x:dx,y:dy,'text-anchor':dx<0?'end':'start'},group).textContent=station.name;
+      mapControls.placeMarker(group,x,y);
       const title=svg('title',{},group);title.textContent=`${station.name} · ${station.frequency/1000} kHz · ${station.location}`;
       group.addEventListener('click',()=>chooseStation(station.id));
       group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chooseStation(station.id);}});
@@ -120,7 +125,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     shadePaths.forEach((node,i)=>node.setAttribute('d',path(geoCircle().center(anti).radius(93-i*1.25).precision(1.5)())));
     lightMasks.forEach((node,i)=>node.setAttribute('d',path(geoCircle().center(anti).radius(89-i*1.6).precision(1.5)())));
     twilightPaths.forEach(({alt,node})=>node.setAttribute('d',path(geoCircle().center(anti).radius(90+alt).precision(1)())));
-    const [x,y]=projection([sun.longitude,sun.latitude]); $('world-sun').setAttribute('transform',`translate(${x},${y})`);
+    const [x,y]=projection([sun.longitude,sun.latitude]); mapControls.placeMarker($('world-sun'),x,y);
     $('world-subsolar').textContent=`${coord(sun.latitude,'N','S')} · ${coord(sun.longitude,'E','W')}`;
     $('world-city-phase').textContent=t(events?.polar || lightPhase(solarAltitude(city,sun)));
     return sun;
@@ -151,7 +156,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
       $('world-daylength').textContent=`${Math.floor(length/60)}h ${String(length%60).padStart(2,'0')}m`;
     }
     if(force||lastMapEpoch===null||Math.abs(time-lastMapEpoch)>=10000) { drawSun(time); lastMapEpoch=time; }
-    const [x,y]=projection([city.longitude,city.latitude]);$('world-city-marker').setAttribute('transform',`translate(${x},${y})`);
+    const [x,y]=projection([city.longitude,city.latitude]);mapControls.placeMarker($('world-city-marker'),x,y);
     const label=$('world-city-map-label');label.textContent=city.name.length>24?city.name.slice(0,23)+'…':city.name;
     // Keep labels inside the fixed viewport, including Pacific and polar selections.
     label.setAttribute('text-anchor',x<100?'start':x>900?'end':'middle'); label.setAttribute('y',y<65?'29':'-21');
@@ -166,7 +171,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     loading=Promise.all(['countries-50m.json','lights.json','catalog.json'].map(async name=>{
       const r=await fetch(new URL(`../assets/world/${name}`,import.meta.url));if(!r.ok)throw Error(t("Atlas data unavailable"));return r.json();
     })).then(([topology,lights,manifest])=>{
-      buildMap(topology,lights);catalogCount=manifest.cityCount;
+      buildMap(topology,lights);mapControls.loadSurface();catalogCount=manifest.cityCount;
       $('world-catalog-status').textContent=t("{0} cities · offline", catalogCount.toLocaleString(locale()));
       loaded=true;$('world-loading').hidden=true;render(true);
     }).catch(()=>{
@@ -240,9 +245,9 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     button.onclick=()=>chooseStation(station.id);$('world-station-tabs').append(button);
   }
   $('world-use-station').onclick=()=>{if(!isTransmitting()){useStation(stationId);notify(t("{0} selected for transmission.", selectedStation().name));}};
-  function previewAt(time) {
+  function previewAt(time, announce=true) {
     if(!Number.isFinite(time)||time<Date.UTC(1900,0,1)||time>=Date.UTC(2101,0,1))return;
-    preview=time;document.querySelectorAll('[data-world-season]').forEach(b=>b.setAttribute('aria-pressed','false'));render(true);
+    preview=time;document.querySelectorAll('[data-world-season]').forEach(b=>b.setAttribute('aria-pressed','false'));render(true);if(announce)onPreviewChange?.(time);
   }
   $('world-date').onchange=()=>{
     pause();const value=$('world-date').value;
@@ -250,7 +255,7 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
     previewAt(Date.parse(value+'T00:00:00Z')+Number($('world-time-slider').value)*60000);
   };
   $('world-time-slider').oninput=()=>{pause();previewAt(midnightUTC(epoch())+Number($('world-time-slider').value)*60000);};
-  $('world-now').onclick=()=>{pause();preview=null;document.querySelectorAll('[data-world-season]').forEach(b=>b.setAttribute('aria-pressed','false'));render(true);};
+  $('world-now').onclick=()=>{pause();preview=null;document.querySelectorAll('[data-world-season]').forEach(b=>b.setAttribute('aria-pressed','false'));render(true);onPreviewChange?.(null);};
   $('world-play').onclick=()=>{
     if(playing){pause();return;}
     previewAt(epoch());playing=true;lastTick=performance.now();$('world-play').textContent='Ⅱ';$('world-play').setAttribute('aria-pressed','true');$('world-play').setAttribute('aria-label',t("Pause accelerated day"));
@@ -264,16 +269,16 @@ export function createWorldView({ getNow, getReference, getStationId, isTransmit
   function tick() {
     if(!visible||document.hidden){lastTick=performance.now();return;}
     if(playing){const current=performance.now();const next=preview+Math.min(1000,current-lastTick)*1440;lastTick=current;
-      if(next>=Date.UTC(2101,0,1)){pause();preview=Date.UTC(2101,0,1)-1000;}else preview=next;}
+      if(next>=Date.UTC(2101,0,1)){pause();preview=Date.UTC(2101,0,1)-1000;}else preview=next;onPreviewChange?.(preview);}
     render();
   }
   document.addEventListener('visibilitychange',()=>{lastTick=performance.now();if(!document.hidden&&visible)render(true);});
   window.addEventListener('beforeunload',()=>{clearInterval(timer);worker?.terminate();});
   onLanguageChange(() => { lastCityDay = null; renderCoverage(); if (visible) render(true); });
-  return { getCity: () => ({...city}), setVisible(value) {
+  return {getBasemap:()=>basemap, getEpoch: epoch, setPreview(value){pause();if(value===null){preview=null;render(true);}else previewAt(value,false);}, getCity: () => ({...city}), setVisible(value) {
     if(value&&!visible){stationId=getStationId();renderCoverage();}
     visible=value;closeResults();
     if(value){lastTick=performance.now();load();render(true);if(!timer)timer=setInterval(tick,250);}
-    else {pause();clearInterval(timer);timer=null;}
+    else {mapControls.cancelDrag();pause();clearInterval(timer);timer=null;}
   }};
 }

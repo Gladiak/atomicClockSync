@@ -30,7 +30,7 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 - **Time Machine:** 96 sourced historical journeys, precision-aware elapsed counters, personal memories, countdowns and locally stored time capsules.
 - **Back in Time:** a playful time-circuit dashboard inspired by Back to the Future, with five movie destinations, live elapsed-time counters and an animated 88 mph trip.
 - **ISS Orbital Observatory:** live orbital estimates, offline prediction cache, local sighting passes, a sky plot and an educational time-dilation explorer.
-- **World View:** an offline vector Earth with astronomical day/night, amber city lights, five stations, nominal coverage rings, 171,637 searchable cities and a seasonal timeline.
+- **World View:** an offline NASA Blue Marble Earth with Satellite/Map layers, zoom/pan, city centring and astronomical day/night, amber city lights, five stations, nominal coverage rings, 171,637 searchable cities and a seasonal timeline.
 
 - **Five station protocols:** individual time-code encoders, markers and modulation envelopes.
 - **NTP time checks:** PTB and Cloudflare references, with visible system-clock fallback when offline.
@@ -45,6 +45,18 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 - **Fluid navigation:** directional section reveals, animated headings and a moving sidebar indicator, with instant reduced-motion navigation.
 - **Six interface languages:** offline translations of navigation, settings, notifications, astronomy, historical journeys and native menus, with a bundled Japanese font. Language changes preserve personal text and do not interrupt transmission.
 - **Local data:** no account, cloud storage or telemetry.
+
+## Your now and personal time
+
+The app opens on **Your now**: a local reference clock, the selected watch, a photographic world map with calculated daylight, the photographic Moon and the next full Moon, and an ISS card with current coordinates, speed and altitude. **Synchronize my watch** opens the existing transmission desk. The home map follows the Satellite/Map choice in World View and marks the ISS when a valid position is available. The ISS card uses the same orbital estimates and recent position reports as the observatory, showing their source and timestamp; expired or missing data remain unavailable. Selecting the Moon or ISS card opens its observatory. The home clock uses the World View city's time zone; the transmission clock continues to use the selected station. The source label distinguishes fresh NTP, a stale check and the unverified system clock. The clock, watch values and astronomical highlights use the selected theme accent, with subtle panel tints. Rainbow uses mint for the live clock, violet for watch/Moon data and orange for ISS telemetry; unverified reference labels stay neutral. Daily drift appears only when the current observation period supports an estimate, its readings are recent and no newer confirmed radio reception has occurred.
+
+- **Synchronization journey:** Prepare → Align → Transmit → Confirm follows the actual audio session, including alignment to the first complete minute. After you confirm reception, a local acknowledgement shows the watch, settings, elapsed transmission and reference, with a link to the recorded trial. Finishing the timer alone never produces a confirmed receipt.
+- **Model specifications:** open a dedicated technical-sheet view in the watch’s editor, with Back/Escape returning to draft details, double-arrow update and red trash actions. Import normalized ShockBase data: module, release, materials, colours, display, battery, measurements and feature states, with matching official Casio manuals. Exact variant and regional-suffix checks protect photo/spec imports and profile saving; source and retrieval time remain visible. Saved sheets work offline.
+- **Personal collection:** My watches shows a local name/model search, a New watch button and collection cards. New watch opens a modal editor; clicking an existing watch opens the same editor for changes. Save settings closes the editor, while Cancel or Escape dismisses unsaved edits. The watch/check icon at the top right of each tile selects the active watch and stays accented after restarting. Editing or saving a different watch preserves the active selection and its own stored audio settings. Watches can include a local photo, acquisition date and personal story. Open **Photo & personal story** in the profile editor, then save the watch. Choose **Find photo on ShockBase** from a collection card or the editor to search by Casio model and pick the exact colour variant. PNG, JPEG and WebP images up to 12 MB are cropped around the subject, centred in a transparent 480 × 480 WebP frame with equal margins and saved locally; photos are excluded from trial snapshots. Uniform border-connected backgrounds are removed while enclosed dial details remain intact; busy backgrounds are preserved. **Center & resize** also prepares an existing saved image. Online photos retain a clickable ShockBase/Casio source credit. Cards link to the watch's accuracy journal, Reception Lab and filtered history. Choose **All watches** in History to restore the full list.
+- **Shared instant:** In World View, Moon Observatory or Light Travel, choose **Explore together**, select a UTC instant and **Link previews**, or open one of the three views in that dialog. Date controls then update linked previews. **Unlink previews** keeps each preview; **Return all to live** restores the present. Supported dates are 1900–2100. Personal moments and supported historical journeys offer **Explore the sky of this day**; date-only historical records explicitly use 12:00 UTC. ISS remains within its own orbital validity window.
+- **Immersive observatory:** Choose **Observatory ⛶** from Earth, Moon or Light Travel. The existing scene fills the screen, with an observing clock and controls that fade after inactivity. Move the pointer or use the keyboard to reveal them. Switch scenes inside the observatory; **Esc** returns to the tools and preserves an active transmission.
+
+These additions support all six languages and all fifteen palettes. Shared previews are session-local and do not change NTP, audio settings or transmitted time. Collection details use the existing local profile storage and backup directory.
 
 ## Application Guide
 
@@ -122,13 +134,15 @@ Legacy trials without snapshots, interrupted sessions and sessions with live vol
 
 ![World View — solstice, city lights and nominal radio coverage](docs/images/world-view.png)
 
-Explore a vector Earth with a moving day/night terminator, gradual twilight and amber lights from 18,650 geographically grouped settlements. The map uses the app's time reference in **Live** mode. Scrub a UTC day, play one day per minute, or jump to an equinox or solstice. **Preview** time never changes the transmitted time.
+Explore a photographic Earth with a locally bundled NASA Blue Marble mosaic, a vector-map alternative and a moving day/night terminator, gradual twilight and amber lights from 18,650 geographically grouped settlements. The map uses the app's time reference in **Live** mode. Scrub a UTC day, play one day per minute, or jump to an equinox or solstice. **Preview** time never changes the transmitted time.
 
 Search **171,637 localities offline**, including local spellings and accented names. Select a city to see its local clock, sunrise, sunset, day length and distance to the selected station. City search loads its catalog in a dedicated worker on first focus; approximately 20 MB of data is kept separate from the much smaller map/light layer.
 
 Explore all five station markers. **Coverage → Off / Selected / All stations** shows nominal Casio reception-range rings, not live signal measurements or reception guarantees. **Use station** explicitly selects a station for transmission and is unavailable during an active session. City lights illustrate settlement locations and are not measured light emissions.
 
-Map: Natural Earth. Cities: GeoNames, CC BY 4.0. See [data sources, licenses and asset rebuild instructions](docs/THIRD_PARTY.md).
+Zoom up to 4×, drag to pan, focus your city or reset to the whole world; keyboard controls and full-screen exploration are supported. Surface imagery is a static August 2004 NASA composite, while daylight remains calculated for the chosen time.
+
+Map: Natural Earth. Imagery: NASA Earth Observatory Blue Marble ([source and processing](assets/world/IMAGERY.md)). Cities: GeoNames, CC BY 4.0. See [data sources, licenses and asset rebuild instructions](docs/THIRD_PARTY.md).
 
 ## ISS Orbital Observatory
 
@@ -141,7 +155,7 @@ Track the International Space Station over the day/night Earth, with a predicted
 - **Station:** a vector station schematic, mission facts and links to official crew/visiting-vehicle information and live video.
 - **Time in Orbit:** an educational weak-field model of gravitational and velocity clock shifts, plus an introduction to ESA's ACES atomic clocks aboard the ISS. It does not receive ACES measurements.
 
-The observer is your World View city; click its name to choose another location. Your coordinates stay local. Public HTTPS requests retrieve ISS data only while the observatory is visible. CelesTrak orbital elements are cached for at least two hours; Where the ISS at position reports are requested at most every ten seconds, with failure backoff and Retry-After handling. No API key is required.
+The observer is your World View city; click its name to choose another location. Your coordinates stay local. Public HTTPS requests retrieve ISS data only while Your now or ISS Observatory is visible. CelesTrak orbital elements are cached for at least two hours; Where the ISS at position reports are requested at most every ten seconds, with failure backoff and Retry-After handling. No API key is required.
 
 Tracking uses SGP4 orbital calculations, **not onboard telemetry**. The interface distinguishes online prediction, offline cached prediction, position-only reports and unavailable/stale data. Offline propagation is limited to an explicitly displayed orbital age; elements older than 72 hours do not drive current tracking or new forecasts. Passes are clipped to that validity window. Estimated visibility requires a sunlit ISS and a dark local sky; weather, terrain, buildings and apparent brightness are not modeled.
 
@@ -165,7 +179,7 @@ Astronomy Engine calculates the source's earlier position relative to Earth at r
 
 Explore the Moon from your World View city, with calculated illumination, distance from Earth's centre, lunar age, altitude, azimuth and local moonrise/moonset. A full-Moon countdown and the next four phase events use the same observing city and time zone. Click a phase, select a UTC date or scrub the time of day to preview independently; **Live** restores the app's time reference.
 
-Calculations run offline using Astronomy Engine. The original procedural lunar terrain and phase orientation are illustrative, rather than a photographic map or telescope view. Rise/set estimates assume a level horizon and standard atmospheric conditions. Dates from 1900 through 2100 are supported.
+Calculations run offline using Astronomy Engine. The surface uses real NASA/LRO/LROC imagery from an 8K source, bundled as a 2048 × 2048 near-side disc (about 1.1 MB). The canvas adapts to display density and full-screen size, up to 2048 pixels. Illumination is calculated; orientation remains north-up and schematic, with no libration, eclipse shadows or topographic self-shadowing. The texture loads locally and works offline. [Image credit and source](assets/moon/SOURCES.md). Rise/set estimates assume a level horizon and standard atmospheric conditions. Dates from 1900 through 2100 are supported.
 
 ## Time Machine
 
@@ -252,6 +266,8 @@ node node_modules/electron/install.js
 npm start
 ```
 
+On macOS, `npm start` and `npm run start:debug` prepare a cached development bundle under `build/dev/` with the AtomicClockSync name, icon and helper identity. Its bootstrap loads the current checkout, so source changes do not require packaging. This fixes the generic Electron Dock/menu-bar identity of the raw development executable and preserves the existing data location and source Bluetooth worker selection. Other platforms keep the standard Electron development launch.
+
 The explicit runtime download is needed for the Electron version used here. No web server is required.
 For Bluetooth development, also prepare the project-local Python environment described in [Bluetooth setup](docs/BLUETOOTH.md). Packaged applications include that runtime.
 
@@ -260,6 +276,10 @@ For Bluetooth development, also prepare the project-local Python environment des
 ```sh
 npm test                 # Protocol, PCM, stereo routing, profile, migration and NTP tests
 npm run test:desktop     # Real Electron and AudioWorklet; audio muted
+npm run test:watch-specs # Normalized sheets, model sanity checks, manual links and persistence
+npm run test:watch-photos # Online-photo picker, uniform frames, attribution, persistence and offline recovery
+npm run test:personal-time # Home, collection/photos, linked previews, full screen and live audio isolation
+npm run test:mac-identity # macOS native name/icon, source worker, dashboard colors/contrast in all themes
 npm run test:navigation  # App identity, motion, rapid clicks, focus and live audio isolation
 npm run test:guide         # All manual prose/images in six languages, footer links and preview audio isolation
 npm run capture:guide      # Regenerate the manual screenshots from a temporary sample profile
@@ -306,6 +326,8 @@ The storage directory keeps its original name after the app is renamed to Atomic
 Close the app before backing up that entire directory. Replacing the app or cleaning the build directory does not delete it.
 
 World View remembers its selected city, coverage mode and twilight-line preference separately from watch profiles. City queries stay offline.
+
+Photo and technical-sheet import contact ShockBase only when requested, sending the model query and fetching the displayed catalogue thumbnails and selected picture. No watch notes, history or accuracy measurements are sent. Selected photos, normalized technical sheets and their source links stay in local profiles and remain available offline; unselected search results are cached only in memory.
 
 ISS source data are cached separately in `iss-cache.json` inside the same app data directory. Opening ISS Observatory contacts CelesTrak and Where the ISS at over HTTPS, with no city coordinates sent to either service.
 

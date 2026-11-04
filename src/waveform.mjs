@@ -94,5 +94,5 @@ export function createWaveform({ svg, getNow, getSettings }) {
   }).observe(svg);
   document.addEventListener('visibilitychange', schedule);
   schedule();
-  return { setVisible(value) { visible = value; schedule(); } };
+  return { setVisible(value) { visible = value; if(value)draw(getNow()); schedule(); } };
 }

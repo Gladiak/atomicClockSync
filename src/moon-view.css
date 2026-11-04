@@ -21,3 +21,6 @@
 .moon-quarter>span[data-quarter="2"] { background:var(--accent-text); }
 .moon-quarter>span[data-quarter="3"] { background:linear-gradient(to right,var(--accent-text) 50%,transparent 50%); }
 .moon-timeline input[type=date] { border:1px solid var(--border-control); border-radius:4px; background:var(--surface-input); color:var(--text); }
+.moon-texture-source{display:inline-block;margin-top:5px;padding:2px 4px;border-radius:3px;background:transparent;color:#b5c6d2;font:7px var(--mono)}
+.moon-texture-source:hover{color:#fff;text-decoration:underline}
+.observatory-scene .moon-texture-source{font-size:10px;margin-top:9px}

@@ -3,6 +3,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { performance } = require('node:perf_hooks');
 const { synchronize } = require('./ntp.cjs');
+const { createWatchPhotoService } = require('./watch-photos.cjs');
 const { createIssDataService } = require('./iss-data.cjs');
 const { createBluetoothService, helperCommand } = require('./bluetooth.cjs');
 
@@ -17,9 +18,11 @@ let mainWindow;
 let blocker = null;
 let syncing = null;
 let issData;
+const watchPhotos = createWatchPhotoService();
+const sourceRuntime = process.env.ATOMIC_SOURCE_ROOT === path.resolve(__dirname, '..');
 const bluetooth = createBluetoothService({
   version: app.getVersion(),
-  command: () => helperCommand({ packaged: app.isPackaged, resourcesPath: process.resourcesPath, root: path.join(__dirname, '..') }),
+  command: () => helperCommand({ packaged: app.isPackaged && !sourceRuntime, resourcesPath: process.resourcesPath, root: path.join(__dirname, '..') }),
   synchronize,
   onEvent: value => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('bluetooth:event', value); },
 });
@@ -43,6 +46,8 @@ const historicalSources = require('../assets/time-machine/sources.json');
 const references = {
   ...Object.fromEntries(Object.entries(historicalSources).map(([key, source]) => [key, source.url])),
   moonScience: 'https://science.nasa.gov/moon/moon-phases/',
+  moonTexture: 'https://svs.gsfc.nasa.gov/4720/',
+  earthTexture: 'https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/',
   lightScience: 'https://science.nasa.gov/mission/webb/science-overview/science-explainers/how-does-webb-see-back-in-time/',
   lightJpl: 'https://ssd.jpl.nasa.gov/horizons/manual.html',
   bttf: 'https://www.backtothefuture.com/movies/faq',
@@ -75,7 +80,7 @@ function interrupt(reason) {
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100, height: 740, useContentSize: true,
-    resizable: false, maximizable: false, fullscreenable: false,
+    resizable: false, maximizable: false, fullscreenable: true,
     backgroundColor: '#10110E', title: 'AtomicClockSync',
     titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 21, y: 15 },
     icon: path.join(__dirname, '../assets/icon.png'),
@@ -90,10 +95,17 @@ function createWindow() {
     mainWindow.webContents.on('console-message', details => { if (details.level === 'error') console.error('[Renderer]', details.message); });
   }
   mainWindow.loadFile(path.join(__dirname, '../src/index.html'));
+  mainWindow.on('leave-full-screen', () => mainWindow?.webContents.send('observatory:exit'));
   mainWindow.on('closed', () => { releasePower(); bluetooth.cancel(); mainWindow = null; });
   mainWindow.webContents.on('render-process-gone', () => { releasePower(); bluetooth.cancel(); });
   mainWindow.webContents.on('did-start-loading', () => { releasePower(); bluetooth.cancel(); });
 }
+
+ipcMain.handle('observatory:fullscreen', (event, active) => {
+  if(event.sender!==mainWindow?.webContents || typeof active!=='boolean')return false;
+  mainWindow.setFullScreen(active);
+  return true;
+});
 
 ipcMain.handle('clock:sync', async () => {
   if (blocker !== null) return { ok: false, error: 'Stop transmission before checking the time.' };
@@ -132,6 +144,33 @@ ipcMain.handle('bluetooth:copy-diagnostics', event => {
   try { clipboard.writeText(text); return { ok: true, text }; }
   catch { return { ok: false, code: 'clipboard' }; }
 });
+ipcMain.handle('watch-photos:search', async (event, query) => {
+  if(!bluetoothClient(event))return {ok:false,code:'client'};
+  try{return {ok:true,results:await watchPhotos.search(query)};}catch(error){return {ok:false,code:error.message};}
+});
+ipcMain.handle('watch-photos:image', async (event, id, full) => {
+  if(!bluetoothClient(event)||typeof full!=='boolean')return {ok:false,code:'client'};
+  try{return {ok:true,...await watchPhotos.photo(id,full)};}catch(error){return {ok:false,code:error.message};}
+});
+ipcMain.handle('watch-specs:get', async (event, id, model, refresh=false) => {
+  if(!bluetoothClient(event))return {ok:false,code:'client'};
+  try{return {ok:true,...await watchPhotos.specs(id,model,refresh)};}catch(error){return {ok:false,code:error.message};}
+});
+ipcMain.handle('watch-specs:manual', async (event, value) => {
+  if(!bluetoothClient(event))return false;
+  const {officialManualURL}=await import('../src/watch-spec-data.mjs');
+  const url=officialManualURL(value);if(!url)return false;
+  try{await shell.openExternal(url);return true;}catch{return false;}
+});
+ipcMain.handle('watch-photos:source', async (event, value) => {
+  if(!bluetoothClient(event))return false;
+  try{
+    const {siteURL}=require('./watch-photos.cjs'),url=siteURL(value);
+    if(url.pathname!=='/watches/watch_dyn.php'||!url.searchParams.get('model'))return false;
+    await shell.openExternal(url.href);return true;
+  }catch{return false;}
+});
+
 ipcMain.handle('iss:refresh', async event => {
   if(event.sender!==mainWindow?.webContents)throw Error('Unknown ISS client');
   issData ||= createIssDataService({storagePath:path.join(app.getPath('userData'),'iss-cache.json')});

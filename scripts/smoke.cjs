@@ -47,7 +47,7 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.documentElement.scrollWidth <= window.innerWidth"), true);
     assert.equal(window.isResizable(), false);
     assert.equal(window.isMaximizable(), false);
-    assert.equal(window.isFullScreenable(), false);
+    assert.equal(window.isFullScreenable(), true);
     assert.deepEqual(window.getContentSize(), [1100, 740]);
     const assertFits = async () => {
       if (await run("!document.getElementById('page-world').hidden")) await until("document.getElementById('world-loading').hidden");
@@ -57,7 +57,7 @@ app.whenReady().then(async () => {
         return [...page.querySelectorAll('*')].filter(el => {
           if (el.parentElement.closest('#page-settings .settings-panel,.manual-reader,.manual-index-list')) return false; // Intentionally scrollable for longer translations.
           const r = el.getBoundingClientRect();
-          return r.width && r.height && (r.bottom > bounds.bottom + 1 || r.right > bounds.right + 1);
+          return r.width && r.height && ((page.id !== 'page-profiles' && r.bottom > bounds.bottom + 1) || r.right > bounds.right + 1);
         }).map(el => el.id || el.className || el.tagName);
       })()`);
       assert.deepEqual(overflow, [], `Content exceeds fixed page: ${overflow}`);
@@ -305,6 +305,9 @@ app.whenReady().then(async () => {
     await run("document.getElementById('profile-save').click()");
     assert.equal(await run("document.querySelector('.page.active').id"), 'page-profiles');
     const firstProfileId = await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].id");
+    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.activeProfile'))"),null);
+    await run("document.querySelector('.watch-card-active').click()");
+    assert.equal(await run("JSON.parse(localStorage.getItem('atomic.activeProfile'))"),firstProfileId);
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].settings.channel"), 'left');
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].homeCity"), 'ROM');
     await assertFits();

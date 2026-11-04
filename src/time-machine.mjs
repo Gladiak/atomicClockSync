@@ -1,3 +1,4 @@
+import { validSharedEpoch } from './shared-instant.mjs';
 import { t, locale, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
 import { HISTORICAL_EVENTS, HISTORICAL_SOURCES, historicalElapsed, normalizeMoments, parseMomentDate, capsuleIsOpen } from './time-machine-data.mjs';
 
@@ -5,7 +6,7 @@ const count = numberFormat();
 const pad = value => String(value).padStart(2, '0');
 const utcDate = dateTimeFormat({ timeZone:'UTC', day:'2-digit', month:'short', year:'numeric' });
 const utcTime = dateTimeFormat({ timeZone:'UTC', hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23' });
-export function createTimeMachineView({ getNow, persist, notify }) {
+export function createTimeMachineView({ getNow, persist, notify, exploreSky }) {
   const $ = id => document.getElementById(`tm-${id}`);
   let saved;
   try { saved = JSON.parse(localStorage.getItem('atomic.moments')); } catch { /* Fresh local archive. */ }
@@ -42,6 +43,7 @@ export function createTimeMachineView({ getNow, persist, notify }) {
   function render() {
     const now = getNow(), elapsed = historicalElapsed(selected, now);
     for (const [id, row] of rows) row.setAttribute('aria-pressed', String(id === selected.id));
+    $('explore-sky').disabled = !validSharedEpoch(selected.epoch);
     $('stage').dataset.scene = selected.scene;
     $('stage').dataset.event = selected.id;
     $('era').textContent = t(selected.era);
@@ -99,9 +101,10 @@ export function createTimeMachineView({ getNow, persist, notify }) {
           $('kind').value = moment.kind; $('kind').disabled = moment.kind === 'capsule'; $('note').value = moment.note;
           $('save').textContent = t("Save changes"); $('cancel').hidden = false; $('title-input').focus();
         });
-        const remove = document.createElement('button'); remove.className = 'text-button'; remove.textContent = t("Delete");
+        const remove = document.createElement('button'); remove.className = 'text-button'; remove.textContent = t("Delete"); remove.dataset.action = 'delete';
         remove.addEventListener('click', () => { deleting = moment.id; personalKey = ''; renderPersonal(getNow()); });
-        actions.append(edit,remove);
+        const sky=document.createElement('button');sky.className='text-button';sky.textContent=t('Explore the sky of this day →');sky.disabled=!validSharedEpoch(moment.epoch);sky.onclick=()=>exploreSky?.(moment.epoch);
+        actions.append(edit,remove,sky);
         if (deleting === moment.id) {
           actions.replaceChildren();
           const label = document.createElement('span'); label.textContent = t("Delete this keepsake?");
@@ -146,6 +149,11 @@ export function createTimeMachineView({ getNow, persist, notify }) {
     // Invalidate the DOM identity when an existing title/date/note changes.
     if (save(next)) { $('moments').dataset.ids = ''; personalKey = ''; renderPersonal(getNow()); resetForm(); notify(kind === 'capsule' ? t("Time capsule sealed on this device.") : t("Your moment is saved on this device.")); }
   });
+  $('explore-sky').onclick=()=>{
+    const epoch=selected.precision==='day'?Math.floor(selected.epoch/86400000)*86400000+43200000:selected.epoch;
+    if(selected.precision==='day')notify(t('Date-only record: the sky preview uses 12:00 UTC.'));
+    exploreSky?.(epoch);
+  };
   onLanguageChange(() => { $('save').textContent = t(editing ? 'Save changes' : 'Save moment'); personalKey = ''; $('moments').dataset.ids = ''; renderList(); });
   renderList();
   return { setVisible(value) {

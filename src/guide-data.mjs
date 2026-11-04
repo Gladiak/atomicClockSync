@@ -16,7 +16,9 @@ export const MANUAL_CHAPTERS = [
     "note": "The sidebar expands on hover or keyboard focus. Settings and Guide stay at its foot. Each manual chapter links to its section.",
     "body": [
       "The app brings two activities together: helping a compatible watch synchronize and understanding how time is measured. Signals contains transmission tools, Watches keeps your records, and Explore opens the scientific views.",
-      "Begin with a single watch and a supported station. The app generates audio, while the watch performs its own reception. Keeping those roles separate makes the outcome meaningful: a finished countdown describes the transmission, and GET describes the result you observed."
+      "Begin with a single watch and a supported station. The app generates audio, while the watch performs its own reception. Keeping those roles separate makes the outcome meaningful: a finished countdown describes the transmission, and GET describes the result you observed.",
+      "Your now opens with your local reference clock, your selected watch, daylight on Earth, the photographic Moon and current ISS telemetry. Synchronize my watch opens the transmission desk.",
+      "The dashboard shares the World View map appearance and photographic lunar surface. Its ISS card shows current coordinates, speed and altitude from a usable orbit estimate or a recent position report, with source and time. Old or missing data are shown as unavailable. ISS data refresh only while the dashboard is visible; these requests share the observatory cache and rate limits. Sky previews do not change the live dashboard."
     ],
     "example": "For a first attempt in Italy, a compatible watch might use DCF77 and ROM. Check your module manual, place the watch near a speaker and save the result to begin your own reception history.",
     "image": "sync"
@@ -86,7 +88,11 @@ export const MANUAL_CHAPTERS = [
     "note": "Manual notes do not change the watch or operating system. Temporary audio changes are saved to a profile only when you explicitly save it.",
     "body": [
       "A profile gives an experiment a stable identity. A watch name connects reception attempts and accuracy observations even when you later rename the profile. Notes preserve the details the app cannot discover, such as the watch’s home city or its position beside a speaker.",
-      "Saving a profile captures the current audio configuration. Loading it restores those settings for another attempt, while later adjustments remain temporary until saved again. The last successful configuration offers a starting point drawn from a GET you confirmed."
+      "Save settings saves the watch without changing the active selection. Use the watch/check icon in the top-right corner of its collection tile to activate it and restore its saved transmission settings. The active icon stays accented after restarting. Editing an inactive watch preserves its saved audio settings. The last successful configuration can restore settings from a GET you confirmed.",
+      "Add a local photo, acquisition date and personal story under Photo & personal story, then save the watch. Collection cards open its accuracy journal, Reception Lab and filtered history.",
+      "Find photo on ShockBase searches the Model field and lets you choose the exact colour variant. The selected photo is centred in a transparent square with uniform margins; save the watch to keep it. Center & resize also prepares an existing photo. The source credit opens its catalogue page.",
+      "Technical sheet imports normalized ShockBase specifications with source and retrieval date. Present, absent and unavailable are distinct states. Review the exact model before importing; regional suffixes are accepted, while a different variant requires choosing the exact catalogue model. Save the watch to keep the sheet offline. Editing the Model field triggers another check before saving. Official manuals match the module number.",
+      "The collection page contains search, New watch and your saved watch tiles. Search by name or model. New watch opens a modal editor; click an existing watch to edit it there. Save closes the editor, while Cancel or Escape dismisses unsaved changes."
     ],
     "example": "Keep one profile for a daily watch and another for a desk watch. Each can retain its preferred station and placement notes while its historical attempts remain separate.",
     "image": "profiles"
@@ -127,8 +133,10 @@ export const MANUAL_CHAPTERS = [
     "purpose": "Explore an offline Earth, local solar times, station locations and the shared observing city.",
     "note": "City lights and coverage rings are illustrations, not live measurements or reception guarantees. The city is shared with Moon and ISS; previews never alter transmitted time.",
     "body": [
+      "Satellite shows the offline NASA Blue Marble mosaic; Map restores the vector atlas. Zoom up to 4× with the buttons or wheel, drag to pan, centre on your city or reset to the whole world. Keyboard focus on the map enables plus/minus, arrows and Home. Geographic overlays stay aligned at every zoom. The surface is a historical composite; the calculated daylight follows the selected time.",
       "World View connects the clock to a place. Choosing a city establishes the observer used by the Moon and ISS views, while the map shows the moving boundary between daylight and night. Local clocks and solar times help explain why the same instant looks different around Earth.",
-      "The timeline lets you explore another date without changing the transmitted time. Station markers and optional range rings add geographical context to reception. Their circles are nominal illustrations; they do not measure current propagation, buildings or the output hardware beside your watch."
+      "The timeline lets you explore another date without changing the transmitted time. Station markers and optional range rings add geographical context to reception. Their circles are nominal illustrations; they do not measure current propagation, buildings or the output hardware beside your watch.",
+      "Explore together links one UTC instant across Earth, Moon and Light Travel. Their date controls then update the linked views. Unlink previews keeps their current previews; Return all to live restores the present. Observatory opens Earth, Moon or light full screen. Escape returns to the tools without stopping transmission."
     ],
     "example": "Choose Rome, compare a winter day with the June solstice and watch the daylight boundary change. Open Moon Observatory afterward: it uses the same observing city.",
     "image": "world"

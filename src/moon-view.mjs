@@ -1,37 +1,16 @@
+import {createMoonSurface} from './moon-surface.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
-import { moonState, lunarEvents, moonSurfaceLight } from './moon-math.mjs';
+import { moonState, lunarEvents } from './moon-math.mjs';
 import { DAY, localDateKey } from './world-math.mjs';
 
 const pad = value => String(value).padStart(2, '0');
 const count = numberFormat({ maximumFractionDigits: 0 });
 const utcDay = epoch => new Date(epoch).toISOString().slice(0, 10);
-const validEpoch = epoch => Number.isFinite(epoch) && epoch >= Date.parse('1900-01-01T00:00Z') && epoch <= Date.parse('2100-12-31T23:59Z');
-function texture(canvas) {
-  const ctx = canvas.getContext('2d'), size = canvas.width;
-  let seed = 88;
-  const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
-  ctx.fillStyle = '#b7b8b4'; ctx.fillRect(0, 0, size, size);
-  for (let i = 0; i < 180; i++) {
-    const x = random()*size, y = random()*size, radius = 2 + random()*30;
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-    gradient.addColorStop(0, i < 35 ? '#333a3d70' : '#45484935'); gradient.addColorStop(1, '#6b6b6b00');
-    ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI*2); ctx.fill();
-    if (i > 35) {
-      ctx.strokeStyle = '#eef0dd55'; ctx.lineWidth = .6;
-      ctx.beginPath(); ctx.arc(x, y, radius*.62, .2, 3.5); ctx.stroke();
-    }
-  }
-  const data = ctx.getImageData(0, 0, size, size);
-  for (let i = 0; i < data.data.length; i += 4) {
-    const grain = (random() - .5)*14;
-    for (let c = 0; c < 3; c++) data.data[i+c] += grain;
-  }
-  return data;
-}
-export function createMoonView({ getNow, getObserver, chooseCity, getReference }) {
+const validEpoch = epoch => Number.isFinite(epoch) && epoch >= Date.parse('1900-01-01T00:00Z') && epoch < Date.UTC(2101,0,1);
+export function createMoonView({ onPreviewChange, getNow, getObserver, chooseCity, getReference }) {
   const $ = id => document.getElementById(`moon-${id}`);
-  const canvas = $('disc'), ctx = canvas.getContext('2d'), base = texture(canvas);
-  let visible = false, timer, preview = null, cacheKey = '', state, events, drawnPhase = null;
+  const surface=createMoonSurface($('disc'),{minimumSize:512,onSurfaceChange:paintSurfaceCredit});
+  let visible = false, timer, preview = null, cacheKey = '', state, events;
   const eventCache = new Map();
   const quarterButtons = Array.from({length:4}, () => {
     const button = document.createElement('button'); button.className = 'moon-quarter';
@@ -42,19 +21,13 @@ export function createMoonView({ getNow, getObserver, chooseCity, getReference }
   });
   $('quarters').append(...quarterButtons);
   const localFormat = (epoch, city, options) => dateTimeFormat({ timeZone: city.timeZone, ...options }).format(epoch);
-  function draw(phase) {
-    if (drawnPhase !== null && Math.abs(phase - drawnPhase) < .01) return;
-    drawnPhase = phase;
-    const size = canvas.width, image = ctx.createImageData(size, size);
-    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-      const index = (y*size + x)*4, nx = (x+.5-size/2)/(size/2), ny = (y+.5-size/2)/(size/2);
-      const light = moonSurfaceLight(nx, ny, phase);
-      if (light === null) continue;
-      const shade = .055 + .945*Math.pow(light, .57);
-      for (let c = 0; c < 3; c++) image.data[index+c] = base.data[index+c]*shade;
-      image.data[index+3] = Math.round(255*Math.min(1, (1 - Math.hypot(nx, ny))*size/2));
-    }
-    ctx.putImageData(image, 0, 0);
+  function paintSurfaceCredit(){
+    const photographic=surface.isPhotographic();
+    $('terrain').hidden=photographic;
+    $('terrain').textContent=t('ILLUSTRATIVE TERRAIN · PHASE ORIENTATION SCHEMATIC');
+    $('texture-source').textContent=t('NASA LRO / LROC · CALCULATED PHASE')+' ↗';
+    $('texture-source').hidden=!photographic;
+    $('stage').setAttribute('aria-label',t(photographic?'Calculated lunar phase with NASA surface imagery':'Calculated lunar phase with illustrative terrain'));
   }
   function render(force = false) {
     const epoch = preview ?? getNow(), city = getObserver();
@@ -69,7 +42,7 @@ export function createMoonView({ getNow, getObserver, chooseCity, getReference }
         eventCache.set(dayKey, events);
         if (eventCache.size > 40) eventCache.delete(eventCache.keys().next().value);
       }
-      draw(state.phase);
+      surface.draw(state.phase);
       $('phase').textContent = t(state.name);
       $('illumination').textContent = `${decimal(state.fraction*100, 1)}%`;
       $('distance').textContent = `${count.format(state.distanceKm)} km`;
@@ -107,9 +80,9 @@ export function createMoonView({ getNow, getObserver, chooseCity, getReference }
     $('previous').disabled = !validEpoch(epoch-DAY);
     $('next').disabled = !validEpoch(epoch+DAY);
   }
-  function setPreview(epoch) {
+  function setPreview(epoch, announce=true) {
     if (!validEpoch(epoch)) return false;
-    preview = epoch; render(true); return true;
+    preview = epoch; if(visible)render(true); if(announce)onPreviewChange?.(epoch); return true;
   }
   $('observer').addEventListener('click', chooseCity);
   $('date').addEventListener('change', () => {
@@ -121,11 +94,11 @@ export function createMoonView({ getNow, getObserver, chooseCity, getReference }
     setPreview(day + Number($('hour').value)*60000);
   });
   for (const [id, days] of [['previous', -1], ['next', 1]]) $(id).addEventListener('click', () => setPreview((preview ?? getNow()) + days*DAY));
-  $('live').addEventListener('click', () => { preview = null; cacheKey = ''; render(true); });
-  onLanguageChange(() => { if (visible) render(true); });
-  return { setVisible(value) {
+  $('live').addEventListener('click', () => { preview = null; cacheKey = ''; render(true); onPreviewChange?.(null); });
+  onLanguageChange(() => { paintSurfaceCredit();if (visible) render(true); });
+  return {getEpoch:()=>preview??getNow(),setPreview(value){if(value===null){preview=null;cacheKey='';if(visible)render(true);}else setPreview(value,false);}, setVisible(value) {
     if (visible === value) return;
-    visible = value; clearInterval(timer);
+    visible = value;surface.setVisible(value); clearInterval(timer);
     if (value) { render(true); timer = setInterval(render, 1000); }
   } };
 }
