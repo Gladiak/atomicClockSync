@@ -22,6 +22,8 @@
 <link rel="stylesheet" href="../assets/weather/weather-icons.css">
 <link rel="stylesheet" href="./clock-view.css">
 <link rel="stylesheet" href="./dashboard-weather.css">
+<link rel="stylesheet" href="./weather-trend.css">
+<link rel="stylesheet" href="./solar-atmosphere.css">
 </head>
 <body>
 <div class="titlebar"><span>AtomicClockSync</span><span>DESKTOP / <span id="platform">MAC</span></span></div>
@@ -69,7 +71,12 @@
         <div class="panel-top"><span class="tiny-label">Weather estimate</span><button id="now-weather-open" class="text-button" aria-label="Clock and weather">↗</button></div>
         <div class="now-weather-current"><span id="now-weather-icon" role="img" aria-label="Weather unavailable"></span><div><strong id="now-weather-temperature">—</strong><span id="now-weather-condition"></span><span id="now-weather-city"></span></div></div>
         <div class="now-weather-facts"><div><span>Rain chance</span><strong id="now-weather-rain">—</strong></div><div><span>Humidity</span><strong id="now-weather-humidity">—</strong></div><div><span>Wind</span><strong id="now-weather-wind">—</strong></div></div>
-        <div id="now-weather-daily" class="now-weather-daily" aria-label="Five-day forecast"></div>
+        <div id="now-weather-outlook" class="now-weather-outlook" data-range="hourly">
+          <div class="now-weather-outlook-heading"><span id="now-weather-outlook-title">Temperature trend</span><div class="weather-range" role="group" aria-label="Forecast range"><button type="button" data-weather-range="hourly" aria-pressed="true">24 h</button><button type="button" data-weather-range="daily" aria-pressed="false">5 days</button></div></div>
+          <div id="now-weather-trend" aria-label="Next 24 hours"></div>
+          <div id="now-weather-daily" class="now-weather-daily" aria-label="Five-day forecast" hidden></div>
+          <p id="now-weather-daily-empty" class="trend-empty" hidden>Weather unavailable</p>
+        </div>
         <div class="now-weather-footer"><span id="now-weather-status"></span><button id="now-weather-source" class="text-button">Open-Meteo ↗</button></div>
       </section>
       <section class="panel now-watch">
@@ -458,7 +465,7 @@
       <div class="dial-accessories"><div class="dial-weather-facts"><div><span>Feels like</span><strong id="dial-feels">—</strong></div><div><span>Humidity</span><strong id="dial-humidity">—</strong></div><div><span>Wind</span><strong id="dial-wind">—</strong></div><div><span>Rain chance</span><strong id="dial-rain">—</strong></div></div>
       <div class="dial-solar"><div><span>Sunrise</span><strong id="dial-sunrise">—</strong></div><div class="dial-solar-duration"><svg viewBox="0 0 140 35" aria-hidden="true"><path d="M5 30Q70-22 135 30"/><circle cx="5" cy="30" r="2"/><circle cx="135" cy="30" r="2"/></svg><span id="dial-daylight">—</span></div><div><span>Sunset</span><strong id="dial-sunset">—</strong></div></div></div>
     </section>
-    <section class="dial-outlook"><div class="dial-outlook-heading"><h3>Next hours</h3><span>Rain chance</span></div><div id="dial-hourly" class="dial-hourly"></div><p id="dial-hourly-empty" class="dial-empty">Weather unavailable</p>
+    <section class="dial-outlook"><div class="dial-trend"><div class="dial-outlook-heading"><h3>Temperature trend</h3><span>Next 24 hours</span></div><div id="dial-trend" aria-label="Next 24 hours"></div></div><div class="dial-outlook-heading"><h3>Next hours</h3><span>Rain chance</span></div><div id="dial-hourly" class="dial-hourly"></div><p id="dial-hourly-empty" class="dial-empty">Weather unavailable</p>
       <div class="dial-outlook-heading"><h3>Five-day forecast</h3><span>High / low</span></div><div id="dial-daily" class="dial-daily"></div><p id="dial-daily-empty" class="dial-empty">Weather unavailable</p>
     </section>
   </div>

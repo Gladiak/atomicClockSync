@@ -1,0 +1,11 @@
+/* Light follows the selected city's Sun, without changing the chosen palette. */
+[data-atmosphere]{--sky-x:75%;--sky-y:0%;--sky-strength:6%;--sky-ink:var(--accent);--sky-horizon:color-mix(in srgb,var(--accent-text) 2%,transparent)}
+[data-atmosphere=day]{--sky-x:75%;--sky-y:0%;--sky-strength:8%;--sky-horizon:color-mix(in srgb,var(--accent-text) 3%,transparent)}
+[data-atmosphere=twilight]{--sky-x:12%;--sky-y:90%;--sky-strength:10%;--sky-ink:var(--accent-secondary,var(--accent));--sky-horizon:color-mix(in srgb,var(--accent-text) 4%,transparent)}
+[data-atmosphere=night]{--sky-x:85%;--sky-y:100%;--sky-strength:3%;--sky-horizon:color-mix(in srgb,var(--accent-text) 1%,transparent)}
+[data-atmosphere=neutral]{--sky-strength:5%}
+.now-grid[data-atmosphere]>.panel{background:radial-gradient(ellipse at var(--sky-x) var(--sky-y),color-mix(in srgb,var(--sky-ink) var(--sky-strength),transparent),transparent 76%),linear-gradient(160deg,var(--sky-horizon),transparent 70%),var(--panel)}
+.now-grid[data-atmosphere]>.panel:hover{background:radial-gradient(ellipse at var(--sky-x) var(--sky-y),color-mix(in srgb,var(--sky-ink) var(--sky-strength),transparent),transparent 76%),linear-gradient(160deg,var(--sky-horizon),transparent 70%),var(--panel)}
+.now-grid[data-atmosphere]>button.panel:hover{background-color:var(--surface-hover)}
+.clock-stage[data-atmosphere]::before{background:radial-gradient(ellipse at var(--sky-x) var(--sky-y),color-mix(in srgb,var(--sky-ink) var(--sky-strength),transparent),transparent 65%),linear-gradient(160deg,var(--sky-horizon),transparent 70%)}
+.clock-stage[data-atmosphere] .dial-conditions{background:radial-gradient(ellipse at var(--sky-x) var(--sky-y),color-mix(in srgb,var(--sky-ink) var(--sky-strength),transparent),transparent 80%),color-mix(in srgb,var(--panel) 85%,transparent)}

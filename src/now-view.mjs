@@ -1,3 +1,4 @@
+import {solarAtmosphere} from './solar-atmosphere.mjs';
 import {createNowWeather} from './now-weather.mjs';
 import {sunEvents} from './world-math.mjs';
 import { t, decimal, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
@@ -93,6 +94,7 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
     const key=city.id+':'+Math.floor(epoch/60000);
     if(force||key!==cacheKey){
       cacheKey=key;
+      document.querySelector('.now-grid').dataset.atmosphere=solarAtmosphere(epoch,city);
       if(validSharedEpoch(epoch)){
         const sun=sunEvents(epoch,city),minutes=Math.round(sun.daylightMs/60000);
         const solarTime=value=>dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(value);

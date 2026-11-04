@@ -1,0 +1,19 @@
+/* Shared 24-hour forecast: exact UTC spacing, city-local time labels. */
+.temperature-trend{color:var(--accent-text);height:68px;min-width:0;display:flex;flex-direction:column;gap:2px;position:relative}
+.trend-caption{display:flex;justify-content:space-between;gap:8px;min-height:11px;line-height:1.3;font-size:7px;color:var(--muted)}
+.trend-range{flex-shrink:0}.trend-reading{font:inherit;color:var(--accent-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trend-chart{display:block;width:100%;height:42px;flex:1;min-height:0;overflow:visible;border-radius:var(--radius-sm);touch-action:pan-y}
+.trend-line{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.trend-cursor line{stroke:currentColor;stroke-width:.7;stroke-dasharray:2 3;opacity:.45;vector-effect:non-scaling-stroke}.trend-cursor circle{fill:var(--panel);stroke:currentColor;stroke-width:1.6;vector-effect:non-scaling-stroke}
+.trend-axis{display:flex;justify-content:space-between;font:7px/1.3 var(--mono);color:var(--faint)}
+.trend-empty{margin:0;min-height:66px;display:flex;align-items:center;color:var(--faint);font-size:9px;line-height:1.4}
+:where(:root:not([data-focus-mode=pointer])) .trend-chart:focus-visible{outline:1px solid var(--accent-text);outline-offset:3px}
+.now-weather-outlook{min-width:0;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.now-weather-outlook-heading{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--muted);font-size:8px;min-height:17px}
+#now-weather-outlook-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.weather-range{display:flex;gap:2px;flex-shrink:0}.weather-range button{font-family:inherit;font-size:7px;line-height:1.3;padding:3px 5px;border-radius:var(--radius-sm);background:transparent;color:var(--faint);white-space:nowrap}
+.weather-range button:hover{color:var(--accent-text);background:color-mix(in srgb,var(--accent) 7%,transparent)}.weather-range button[aria-pressed=true]{color:var(--accent-text);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.now-weather-outlook .now-weather-day{gap:2px;padding:4px 2px}
+.dial-outlook{grid-template-rows:auto auto auto auto auto}.dial-trend{display:grid;gap:5px;min-width:0}.dial-trend .temperature-trend{height:66px}
+@media(min-height:900px){.now-weather-outlook{gap:7px}.now-weather-outlook-heading{font-size:10px}.weather-range button{font-size:9px}.now-weather-outlook .temperature-trend{height:92px}.trend-caption,.trend-axis{font-size:9px}.now-weather-outlook .now-weather-day{gap:4px;padding:7px 2px}}
+@media(min-height:1000px){.dial-trend .temperature-trend{height:92px}.dial-trend .trend-caption,.dial-trend .trend-axis{font-size:10px}}

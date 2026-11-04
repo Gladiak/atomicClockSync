@@ -24,11 +24,26 @@ app.whenReady().then(async()=>{
  async function enterHome(){await run("document.querySelector('[data-page=profiles]').click();document.querySelector('[data-page=home]').click()");}
  async function capture(name){fs.mkdirSync('artifacts/dashboard',{recursive:true});await run("document.getElementById('toast').hidden=true");await pause(400);for(let i=0;i<3;i++)try{fs.writeFileSync('artifacts/dashboard/'+name+'.png',(await win.webContents.capturePage()).toPNG());return;}catch(error){if(i===2)throw error;await pause(300);}}
  async function fits(){assert.equal(await run("document.getElementById('now-moon-illumination').getBoundingClientRect().bottom<=document.querySelector('.now-full-moon').getBoundingClientRect().top"),true,'Lunar caption stays above its divider');const overflow=await run("(()=>{const root=document.getElementById('page-home'),b=root.getBoundingClientRect();return {language:document.documentElement.lang,height:root.clientHeight,scroll:root.scrollHeight,nodes:[...root.querySelectorAll('*')].filter(n=>!n.closest('svg')).map(n=>({id:n.id||n.className,top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom})).filter(n=>n.bottom>b.bottom+1)}})()");if(overflow.scroll>overflow.height||overflow.nodes.length)console.log(overflow);assert.equal(await run("(()=>{const root=document.getElementById('page-home'),bounds=root.getBoundingClientRect();return root.scrollWidth<=root.clientWidth+1&&root.scrollHeight<=root.clientHeight+1&&[...root.querySelectorAll('*')].filter(node=>!node.closest('svg')).every(node=>{const r=node.getBoundingClientRect();return !r.width||!r.height||r.right<=bounds.right+1&&r.bottom<=bounds.bottom+1})})()"),true,'Dashboard fits the fixed window');}
+ async function forecastModes(){
+  for(const range of ['daily','hourly']){await run(`document.querySelector('[data-weather-range=${range}]').click()`);await fits();
+   assert.equal(await run("(()=>{const box=document.getElementById('now-weather-card').getBoundingClientRect();return [...document.getElementById('now-weather-card').querySelectorAll('*')].filter(n=>!n.closest('svg')).every(n=>{const r=n.getBoundingClientRect();return !r.width||!r.height||r.right<=box.right+1&&r.bottom<=box.bottom+1})})()"),true,'Both forecast ranges fit inside the weather card');
+  }
+ }
  try{
   if(win.webContents.isLoading())await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));win.showInactive();
   await until("!document.getElementById('start-button').disabled&&document.getElementById('now-earth').dataset.basemap==='satellite'&&document.getElementById('now-moon-disc').dataset.texture==='nasa-lro'&&document.getElementById('now-iss-card').dataset.state==='estimated'&&!document.getElementById('now-earth-credit').hidden");
   await until("document.getElementById('now-weather-card').dataset.weather==='available'");
   assert.equal(await run("document.getElementById('now-weather-daily').children.length"),5);
+  assert.equal(await run("document.getElementById('now-weather-trend').dataset.state"),'available');
+  assert.equal(await run("document.querySelector('.now-grid').dataset.atmosphere"),'day');
+  assert.match(await run("document.querySelector('#now-weather-trend .trend-line').getAttribute('d')"),/^M/);
+  await run("(()=>{const svg=document.querySelector('#now-weather-trend svg'),r=svg.getBoundingClientRect();svg.dispatchEvent(new PointerEvent('pointermove',{clientX:r.left+r.width*.6,bubbles:true}))})()");
+  assert.match(await run("document.querySelector('#now-weather-trend output').textContent"),/°/);
+  await run("document.querySelector('#now-weather-trend svg').dispatchEvent(new PointerEvent('pointerleave'))");
+  assert.equal(await run("document.querySelector('#now-weather-trend output').textContent"),'');
+  await run("(()=>{const svg=document.querySelector('#now-weather-trend svg');svg.focus();svg.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true}))})()");
+  assert.equal(await run("document.querySelector('#now-weather-trend .trend-cursor').getAttribute('visibility')"),'visible');
+  await run("document.querySelector('#now-weather-trend svg').blur()");
   assert.match(await run("document.getElementById('now-weather-city').textContent"),/Rome/);
   assert.match(await run("document.getElementById('now-sunrise').textContent"),/\d\d:\d\d/);
   await until("document.fonts.check('32px weathericons')");
@@ -40,17 +55,18 @@ app.whenReady().then(async()=>{
   await run("document.querySelector('#page-home [data-goto=moon]').click()");await until("document.getElementById('moon-disc').dataset.texture==='nasa-lro'");
   await run("document.querySelector('.moon-quarter').click();document.querySelector('[data-page=home]').click()");
   assert.equal(await run("document.getElementById('now-moon-phase').textContent"),phase,'Lunar previews do not change the live home Moon');
+  assert.equal(await run("document.querySelector('.now-grid').dataset.atmosphere"),'day','Atmosphere is independent of astronomical previews');
   await run("document.querySelector('[data-page=world]').click();document.getElementById('world-basemap-atlas').click();document.querySelector('[data-page=home]').click()");await until("document.getElementById('now-earth').dataset.basemap==='atlas'");
   assert.equal(await run("document.getElementById('now-earth-credit').hidden"),true);
   await run("document.querySelector('[data-page=world]').click();document.getElementById('world-basemap-satellite').click();document.querySelector('[data-page=home]').click()");await until("document.getElementById('now-earth').dataset.basemap==='satellite'");
   for(const language of ['en','it','fr','de','es','ja']){
-   await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);await fits();
+   await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);await forecastModes();
    if(language==='it'){await run("document.getElementById('theme-select').value='rainbow';document.getElementById('theme-select').dispatchEvent(new Event('change'))");await capture('home-it');}
   }
   await run("document.getElementById('language-select').value='en';document.getElementById('language-select').dispatchEvent(new Event('change'))");
-  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);await fits();if(['lime','atlantic'].includes(theme))await capture('home-'+theme);}
-  weatherMode='offline';await enterHome();await until("document.getElementById('now-weather-status').textContent.includes('Offline')");
-  weatherMode='expired';await enterHome();await until("document.getElementById('now-weather-temperature').textContent==='—'");assert.equal(await run("document.getElementById('now-weather-daily').children.length"),0);
+  for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);await forecastModes();if(['lime','atlantic'].includes(theme))await capture('home-'+theme);}
+  weatherMode='offline';await enterHome();await until("document.getElementById('now-weather-status').textContent.includes('Offline')");assert.equal(await run("document.getElementById('now-weather-trend').dataset.state"),'available');
+  weatherMode='expired';await enterHome();await until("document.getElementById('now-weather-temperature').textContent==='—'");assert.equal(await run("document.getElementById('now-weather-daily').children.length"),0);assert.equal(await run("document.getElementById('now-weather-trend').dataset.state"),'unavailable');
   weatherMode='empty';await enterHome();await until("document.getElementById('now-weather-card').dataset.weather==='unavailable'");assert.match(await run("document.getElementById('now-sunset').textContent"),/\d\d:\d\d/);
   weatherMode='online';await enterHome();await until("document.getElementById('now-weather-card').dataset.weather==='available'");
   await run("document.getElementById('now-weather-open').click()");await until("document.getElementById('observatory-dialog').dataset.scene==='clock'&&document.getElementById('clock-stage').dataset.weather==='available'");await run("document.getElementById('observatory-close').click()");
@@ -62,13 +78,17 @@ app.whenReady().then(async()=>{
   }
   weatherMode='pending';await enterHome();
   await chooseCity('Tokyo');await until("document.getElementById('now-weather-city').textContent.includes('Tokyo')");
+  assert.equal(await run("document.querySelector('.now-grid').dataset.atmosphere"),'night','Tokyo night is calculated before weather arrives');
+  assert.equal(await run("document.getElementById('now-weather-trend').dataset.state"),'unavailable');
   const pendingEnd=Date.now()+10000;while(!weatherPending.some(row=>row.city.timeZone==='Asia/Tokyo')&&Date.now()<pendingEnd)await pause(50);
   const tokyo=weatherPending.find(row=>row.city.timeZone==='Asia/Tokyo');assert.ok(tokyo);
   weatherMode='online';for(const row of weatherPending.filter(row=>row!==tokyo))row.resolve(forecast(row.city));await pause(200);
   assert.equal(await run("document.getElementById('now-weather-temperature').textContent"),'—','Late Rome data cannot populate Tokyo weather');
-  tokyo.resolve(forecast(tokyo.city));await until("document.getElementById('now-weather-card').dataset.weather==='available'");
+  tokyo.resolve(forecast(tokyo.city));await until("document.getElementById('now-weather-card').dataset.weather==='available'");await run("document.getElementById('theme-select').value='rainbow';document.getElementById('theme-select').dispatchEvent(new Event('change'))");await capture('home-night');
   await chooseCity('Longyearbyen');await until("document.getElementById('now-daylight').textContent==='Polar night'");await fits();
   await chooseCity('Rome');await until("document.getElementById('now-weather-card').dataset.weather==='available'");
+  clockEpoch=Date.parse('2026-11-04T16:05Z');await run("document.getElementById('sync-button').click()");await until("!document.getElementById('start-button').disabled&&document.querySelector('.now-grid').dataset.atmosphere==='twilight'");await capture('home-twilight');
+  clockEpoch=epoch;await run("document.getElementById('sync-button').click()");await until("!document.getElementById('start-button').disabled&&document.querySelector('.now-grid').dataset.atmosphere==='day'");
   await run("document.querySelector('#page-home [data-goto=iss]').click()");await until("document.getElementById('iss-speed').textContent!=='—'");await enterHome();
   mode='stale';await enterHome();await until("document.getElementById('now-iss-card').dataset.state==='stale'");assert.equal(await run("document.getElementById('now-iss-speed').textContent"),'—');assert.equal(await run("document.getElementById('now-iss-altitude').textContent"),'—');
   mode='report';await enterHome();await until("document.getElementById('now-iss-card').dataset.state==='report'");assert.match(await run("document.getElementById('now-iss-speed').textContent"),/27,552/);assert.match(await run("document.getElementById('now-iss-altitude').textContent"),/431.5/);
@@ -81,7 +101,7 @@ app.whenReady().then(async()=>{
   mode='online';await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("document.getElementById('start-label').textContent==='Stop'");await enterHome();await pause(1600);assert.equal(await run("document.getElementById('start-label').textContent"),'Stop');
   assert.equal(await run("localStorage.getItem('atomic.preferences')"),prefs);
   await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");assert.deepEqual(errors,[]);
-  console.log('PASS: dashboard weather, five-day forecast, local solar events, offline/stale/unavailable weather, city and late-response isolation, polar night, Clock shortcut, photographic map/lunar previews, shared map appearance, live home independent of previews, ISS estimate/report/offline/stale/expired/unavailable states, units, visible-only polling, links, six languages, fifteen themes and audio isolation.');
+  console.log('PASS: solar day/twilight/night atmosphere, 24-hour temperature trend, pointer/keyboard chart readings, both forecast ranges, dashboard weather, five-day forecast, local solar events, offline/stale/unavailable weather, city and late-response isolation, polar night, Clock shortcut, photographic map/lunar previews, shared map appearance, live home independent of previews, ISS estimate/report/offline/stale/expired/unavailable states, units, visible-only polling, links, six languages, fifteen themes and audio isolation.');
  }catch(error){console.error(error.stack||error,errors);try{await capture('failure');}catch{}process.exitCode=1;}
  finally{app.exit(process.exitCode||0);}
 });

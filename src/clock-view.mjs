@@ -1,9 +1,12 @@
+import {solarAtmosphere} from './solar-atmosphere.mjs';
+import {createWeatherTrend} from './weather-trend.mjs';
 import {t,decimal,dateTimeFormat,numberFormat,onLanguageChange} from './i18n.mjs';
 import {sunEvents,localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
 import {weatherCondition,weatherIcon,weatherSnapshot} from './clock-weather.mjs';
 
 export function createClockView({desktop,getNow,getObserver,getReference}){
   const $=id=>document.getElementById('dial-'+id),root=document.getElementById('clock-stage');
+  const trend=createWeatherTrend($('trend'),'dial-weather-curve');
   const digits=[...$('digits').querySelectorAll('.dial-digit')];
   let visible=false,timer,poll,busy=false,generation=0,locationKey='',packet=null,connectivity='unknown',requested=false,solarKey='',weatherKey='',previous='';
   const temperature=value=>Number.isFinite(value)?numberFormat({maximumFractionDigits:0}).format(value)+'°':'—';
@@ -38,6 +41,8 @@ export function createClockView({desktop,getNow,getObserver,getReference}){
   function paintWeather(epoch,city,force){
     const key=locationKey+':'+Math.floor(epoch/60000);if(!force&&key===weatherKey)return;weatherKey=key;
     const {age,current,forecast}=weatherSnapshot(packet,epoch,localDateKey(epoch,city.timeZone));
+    trend.render(packet,epoch,city);
+    root.dataset.atmosphere=solarAtmosphere(epoch,city);
     $('temperature').textContent=temperature(current?.temperature);
     $('condition').textContent=t(current?weatherCondition(current.code)[0]:!requested?'Fetching forecast…':'Weather unavailable');
     $('weather-icon').innerHTML=weatherIcon(current?.code,current?.isDay??solarAltitude(city,solarPosition(epoch))>=0);

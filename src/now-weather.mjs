@@ -1,3 +1,4 @@
+import {createWeatherTrend} from './weather-trend.mjs';
 import {t,decimal,dateTimeFormat,onLanguageChange} from './i18n.mjs';
 import {localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
 import {weatherCondition,weatherIcon,weatherSnapshot} from './clock-weather.mjs';
@@ -5,6 +6,15 @@ import {weatherCondition,weatherIcon,weatherSnapshot} from './clock-weather.mjs'
 // The dashboard and full-screen clock use the same native, per-city cache.
 export function createNowWeather({desktop,getNow,getObserver,openClock}){
   const $=id=>document.getElementById('now-weather-'+id);
+  const trend=createWeatherTrend($('trend'),'now-weather-curve');
+  let range='hourly',hasDaily=false;
+  function outlook(){
+    $('outlook').dataset.range=range;$('trend').hidden=range!=='hourly';$('daily').hidden=range!=='daily'||!hasDaily;
+    $('daily-empty').hidden=range!=='daily'||hasDaily;
+    $('outlook-title').textContent=t(range==='hourly'?'Temperature trend':'Five-day forecast');
+    for(const button of $('outlook').querySelectorAll('[data-weather-range]'))button.setAttribute('aria-pressed',String(button.dataset.weatherRange===range));
+  }
+  for(const button of $('outlook').querySelectorAll('[data-weather-range]'))button.onclick=()=>{range=button.dataset.weatherRange;outlook();};
   let visible=false,poll,generation=0,busy=false,locationKey='',paintKey='',packet=null,connectivity='unknown',requested=false;
   const temperature=value=>Number.isFinite(value)?decimal(value,0)+'°':'—';
   const time=(epoch,city)=>dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(epoch);
@@ -41,7 +51,7 @@ export function createNowWeather({desktop,getNow,getObserver,openClock}){
       icon.className='now-weather-day-icon';icon.innerHTML=weatherIcon(row.code);icon.setAttribute('role','img');icon.setAttribute('aria-label',t(weatherCondition(row.code)[0]));
       high.textContent=temperature(row.high);high.title=t('High / low');low.textContent=temperature(row.low);low.title=t('Low temperature');item.append(label,icon,high,low);return item;
     }));
-    $('daily').hidden=!forecast.daily.length;
+    hasDaily=forecast.daily.length>0;trend.render(packet,epoch,city);outlook();
     const status=!requested?t('Fetching forecast…'):!packet?t('Weather unavailable'):age< -1800000||age>=6*3600000?t('Forecast is out of date'):
       (connectivity==='offline'?t('Offline · cached forecast')+' · ':'')+t('Forecast updated · {0}',time(packet.current.time,city));
     $('status').textContent=status;$('status').title=status;

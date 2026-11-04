@@ -52,7 +52,7 @@
 .sync-journey p{font-size:10px;color:var(--muted);line-height:1.5;min-height:15px;margin:8px 0 0}
 #journey-steps[data-stage=sending] .current::before{animation:precision-beat 1s ease-out infinite}
 @keyframes precision-beat{0%{opacity:1}85%{opacity:.4}100%{opacity:1}}
-.precision-receipt{width:min(470px,90vw);border:1px solid var(--line);border-radius:16px;background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--accent) 10%,transparent),transparent 65%),var(--panel);color:var(--text);padding:36px;text-align:center;box-shadow:0 20px 90px #0008}
+.precision-receipt{width:min(470px,90vw);border:1px solid var(--line);border-radius:var(--radius-dialog);background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--accent) 10%,transparent),transparent 65%),var(--panel);color:var(--text);padding:36px;text-align:center;box-shadow:0 20px 90px #0008}
 .precision-receipt::backdrop{background:#0009;backdrop-filter:blur(7px)}
 .precision-receipt .receipt-close{position:absolute;right:12px;top:12px}
 .precision-receipt h2{font-size:30px;letter-spacing:-1px;font-weight:400;margin:18px 0}
@@ -66,9 +66,9 @@
 .collection-gallery>.section-heading{margin:0 0 12px}
 .collection-watches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .watch-card{padding:14px;min-width:0;display:flex;flex-direction:column}
-.watch-card-select{display:flex;align-items:center;gap:12px;text-align:left;background:transparent;color:var(--text);font-family:inherit;padding:0;width:100%;border-radius:7px}
+.watch-card-select{display:flex;align-items:center;gap:12px;text-align:left;background:transparent;color:var(--text);font-family:inherit;padding:0;width:100%;border-radius:var(--radius-md)}
 .watch-card-select[aria-pressed=true]{color:var(--accent-text)}
-.watch-photo,.watch-placeholder{width:70px;height:80px;object-fit:contain;background:color-mix(in srgb,var(--accent) 4%,var(--bg));border:1px solid var(--line);border-radius:8px;flex-shrink:0}
+.watch-photo,.watch-placeholder{width:70px;height:80px;object-fit:contain;background:color-mix(in srgb,var(--accent) 4%,var(--bg));border:1px solid var(--line);border-radius:var(--radius-md);flex-shrink:0}
 .watch-placeholder{display:grid;place-items:center;font-size:42px;font-weight:300;color:var(--accent-text)}
 .watch-card-caption{display:grid;gap:8px;min-width:0}
 .watch-card-caption strong{font-size:15px;font-weight:500;overflow-wrap:anywhere}
@@ -84,17 +84,17 @@
 .watch-photo-editor input{font-size:10px;width:100%;color:var(--muted)}
 .watch-photo-editor>div:last-child{min-width:0}
 .watch-photo-editor .position-label{margin-top:0}
-#collection-acquired{font-family:inherit;background:var(--surface-input);color:var(--text);border:1px solid var(--border-control);border-radius:4px;padding:8px}
+#collection-acquired{font-family:inherit;background:var(--surface-input);color:var(--text);border:1px solid var(--border-control);border-radius:var(--radius-sm);padding:8px}
 @media(max-width:850px){.collection-watches{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .page-tools{display:flex;align-items:center;gap:14px;flex-shrink:0}
 .page-tools .text-button{font-size:10px;max-width:145px;line-height:1.4}
 .page-tools .instant-linked::before{content:'●';margin-right:7px;color:var(--reference-accent,var(--accent-text))}
-.instant-dialog{position:relative;width:min(480px,90vw);padding:30px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:var(--panel)}
+.instant-dialog{position:relative;width:min(480px,90vw);padding:30px;border:1px solid var(--line);border-radius:var(--radius-dialog);color:var(--text);background:var(--panel)}
 .instant-dialog::backdrop{background:#0009;backdrop-filter:blur(5px)}
 .instant-dialog h2{font-size:27px;font-weight:400;letter-spacing:-.7px}
 .instant-dialog p{font-size:12px;line-height:1.7;color:var(--muted)}
 .instant-dialog label{display:block;font-size:11px;margin:20px 0 9px;color:var(--muted)}
-.instant-dialog input{width:100%;padding:10px;font:12px var(--mono);background:var(--surface-input);color:var(--text);border:1px solid var(--border-control);border-radius:5px;margin-bottom:14px}
+.instant-dialog input{width:100%;padding:10px;font:12px var(--mono);background:var(--surface-input);color:var(--text);border:1px solid var(--border-control);border-radius:var(--radius-sm);margin-bottom:14px}
 .instant-dialog>.primary-button{width:100%}
 .receipt-close{position:absolute;right:12px;top:12px}
 #instant-routes{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap}
@@ -144,14 +144,14 @@
 .watch-photo-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
 .watch-photo-tools .secondary-button{font-size:10px}
 .watch-photo-credit{font-size:8px;text-align:left;align-self:flex-start;margin:0 0 12px}
-.photo-picker-dialog{width:min(680px,92vw);max-height:88vh;padding:25px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);overflow:auto}
+.photo-picker-dialog{width:min(680px,92vw);max-height:88vh;padding:25px;border:1px solid var(--line);border-radius:var(--radius-dialog);background:var(--panel);color:var(--text);overflow:auto}
 .photo-picker-dialog::backdrop{background:#0009;backdrop-filter:blur(5px)}
 .photo-picker-dialog h2{font-size:22px;font-weight:450;letter-spacing:-.6px;margin-top:9px}
 .photo-picker-search{display:flex;gap:10px;margin:20px 0 12px}
-.photo-picker-search input{min-width:0;flex:1;background:var(--surface-input);border:1px solid var(--border-control);border-radius:5px;padding:10px;color:var(--text);font:12px var(--mono)}
+.photo-picker-search input{min-width:0;flex:1;background:var(--surface-input);border:1px solid var(--border-control);border-radius:var(--radius-sm);padding:10px;color:var(--text);font:12px var(--mono)}
 .photo-picker-search button{font-size:12px}
 .photo-picker-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
-.photo-candidate{display:flex;flex-direction:column;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);padding:12px;font-family:inherit;min-width:0}
+.photo-candidate{display:flex;flex-direction:column;align-items:center;gap:10px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--bg);color:var(--text);padding:12px;font-family:inherit;min-width:0}
 .photo-candidate:hover{border-color:var(--accent-text);background:var(--surface-hover)}
 .photo-candidate img,.photo-candidate-placeholder{width:100%;height:120px;object-fit:contain;min-width:0}
 .photo-candidate-placeholder{display:grid;place-items:center;font-size:40px;color:var(--muted)}
@@ -164,7 +164,7 @@
 #page-profiles{display:grid;grid-template-rows:auto minmax(0,1fr);gap:18px;overflow:hidden;padding-right:0}
 .collection-toolbar{display:flex;align-items:center;gap:14px;min-width:0}
 .collection-toolbar>.primary-button{font-size:11px;flex-shrink:0;padding:12px 18px}
-.collection-search{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border:1px solid var(--border-control);border-radius:6px;background:var(--panel);padding:0 13px;color:var(--muted)}
+.collection-search{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border:1px solid var(--border-control);border-radius:var(--radius-sm);background:var(--panel);padding:0 13px;color:var(--muted)}
 :where(:root:not([data-focus-mode=pointer])) .collection-search:focus-within{border-color:var(--accent-text)}
 .collection-search svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;flex-shrink:0}
 #collection-search{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font-family:inherit;font-size:12px;padding:13px 0}
@@ -172,7 +172,7 @@
 .collection-gallery{min-height:0;overflow:auto;margin:0;padding-right:4px;scrollbar-width:thin}
 .collection-watches{align-items:start;padding-bottom:4px}
 #collection-empty{font-size:12px;line-height:1.6;padding:26px 0;text-align:center}
-.profile-editor-dialog{width:min(940px,94vw);max-height:90vh;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);overflow:hidden}
+.profile-editor-dialog{width:min(940px,94vw);max-height:90vh;padding:20px;border:1px solid var(--line);border-radius:var(--radius-dialog);background:var(--bg);color:var(--text);overflow:hidden}
 .profile-editor-dialog[open]{display:flex;flex-direction:column;gap:16px}
 .profile-editor-dialog::backdrop{background:#0009;backdrop-filter:blur(5px)}
 .profile-editor-header{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-shrink:0}
@@ -186,7 +186,7 @@
 @media(max-width:760px){.profile-editor-dialog .profiles-grid{grid-template-columns:1fr}.collection-toolbar>.primary-button{padding:11px}}
 /* Editing a card and choosing the watch in use are separate actions. */
 .watch-card{position:relative}.watch-card-select{padding-right:34px}
-.watch-card-active{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:6px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--muted)}
+.watch-card-active{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:6px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel);color:var(--muted)}
 .watch-card-active svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .watch-card-active:not(:disabled):hover{color:var(--accent-text);border-color:var(--accent-text);background:var(--surface-hover)}
 .watch-card-active[aria-pressed=true]{color:var(--accent-text);border-color:color-mix(in srgb,var(--accent-text),transparent 50%);background:color-mix(in srgb,var(--accent),var(--panel) 88%)}
