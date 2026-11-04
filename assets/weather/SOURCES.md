@@ -7,4 +7,4 @@ Bundled unmodified: `font/weathericons-regular-webfont.woff2` (44,720 bytes).
 
 Icon art by Lukas Bischoff; v1.1+ art and code by Erik Flowers, continued by Weatherfonts. Font/icons: SIL Open Font License 1.1 (LICENSE-OFL.txt). CSS/code: MIT (LICENSE-MIT.txt). No documentation artwork is bundled.
 
-These are single-layer monochrome outline glyphs, mapped through one `:before` code point. Upstream provides no duotone CSS or separately addressable sun/cloud layers. They therefore use neutral light ink, with neutral dark ink in the Atlantic light theme. No CDN or external font requests.
+These are single-layer monochrome outline glyphs, mapped through one `:before` code point. Upstream provides no duotone CSS or separately addressable sun/cloud layers. They use the selected theme’s `--accent-text` color, including the contrasting accent for the Atlantic light theme. Each icon remains monochrome. No CDN or external font requests.

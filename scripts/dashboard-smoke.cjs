@@ -30,7 +30,7 @@ app.whenReady().then(async()=>{
   await until("document.getElementById('now-weather-card').dataset.weather==='available'");
   assert.equal(await run("document.getElementById('now-weather-daily').children.length"),5);
   assert.match(await run("document.getElementById('now-weather-city').textContent"),/Rome/);
-  assert.match(await run("document.getElementById('now-weather-sunrise').textContent"),/\d\d:\d\d/);
+  assert.match(await run("document.getElementById('now-sunrise').textContent"),/\d\d:\d\d/);
   await until("document.fonts.check('32px weathericons')");
   assert.equal(await run("(()=>{const a=document.querySelector('.now-hero').getBoundingClientRect(),b=document.querySelector('.now-weather').getBoundingClientRect(),c=document.querySelector('.now-watch').getBoundingClientRect();return a.right<b.left&&b.right<c.left})()"),true);
   assert.equal(await run("document.getElementById('now-light-age')"),null);
@@ -51,7 +51,7 @@ app.whenReady().then(async()=>{
   for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);await fits();if(['lime','atlantic'].includes(theme))await capture('home-'+theme);}
   weatherMode='offline';await enterHome();await until("document.getElementById('now-weather-status').textContent.includes('Offline')");
   weatherMode='expired';await enterHome();await until("document.getElementById('now-weather-temperature').textContent==='—'");assert.equal(await run("document.getElementById('now-weather-daily').children.length"),0);
-  weatherMode='empty';await enterHome();await until("document.getElementById('now-weather-card').dataset.weather==='unavailable'");assert.match(await run("document.getElementById('now-weather-sunset').textContent"),/\d\d:\d\d/);
+  weatherMode='empty';await enterHome();await until("document.getElementById('now-weather-card').dataset.weather==='unavailable'");assert.match(await run("document.getElementById('now-sunset').textContent"),/\d\d:\d\d/);
   weatherMode='online';await enterHome();await until("document.getElementById('now-weather-card').dataset.weather==='available'");
   await run("document.getElementById('now-weather-open').click()");await until("document.getElementById('observatory-dialog').dataset.scene==='clock'&&document.getElementById('clock-stage').dataset.weather==='available'");await run("document.getElementById('observatory-close').click()");
   async function chooseCity(name){
@@ -67,7 +67,7 @@ app.whenReady().then(async()=>{
   weatherMode='online';for(const row of weatherPending.filter(row=>row!==tokyo))row.resolve(forecast(row.city));await pause(200);
   assert.equal(await run("document.getElementById('now-weather-temperature').textContent"),'—','Late Rome data cannot populate Tokyo weather');
   tokyo.resolve(forecast(tokyo.city));await until("document.getElementById('now-weather-card').dataset.weather==='available'");
-  await chooseCity('Longyearbyen');await until("document.getElementById('now-weather-daylight').textContent==='Polar night'");await fits();
+  await chooseCity('Longyearbyen');await until("document.getElementById('now-daylight').textContent==='Polar night'");await fits();
   await chooseCity('Rome');await until("document.getElementById('now-weather-card').dataset.weather==='available'");
   await run("document.querySelector('#page-home [data-goto=iss]').click()");await until("document.getElementById('iss-speed').textContent!=='—'");await enterHome();
   mode='stale';await enterHome();await until("document.getElementById('now-iss-card').dataset.state==='stale'");assert.equal(await run("document.getElementById('now-iss-speed').textContent"),'—');assert.equal(await run("document.getElementById('now-iss-altitude').textContent"),'—');
@@ -75,7 +75,9 @@ app.whenReady().then(async()=>{
   clockEpoch=epoch+45000;await run("document.getElementById('sync-button').click()");await until("!document.getElementById('start-button').disabled&&document.getElementById('now-iss-speed').textContent==='—'");
   mode='offline';await enterHome();await until("document.getElementById('now-iss-status').textContent==='OFFLINE · PREDICTED'");assert.match(await run("document.getElementById('now-iss-source').textContent"),/CelesTrak/);
   mode='empty';await enterHome();await until("document.getElementById('now-iss-status').textContent==='UNAVAILABLE'");assert.equal(await run("document.getElementById('now-iss-speed').textContent"),'—');
-  await run("document.querySelector('[data-page=profiles]').click()");const stopped=requests,stoppedWeather=weatherRequests;await pause(10500);assert.equal(weatherRequests,stoppedWeather);assert.equal(requests,stopped,'Home polling stops when another page is visible');
+  // Flush requests already sent by Home before measuring whether its polling stops.
+  await run("document.querySelector('[data-page=profiles]').click();window.desktop.setObservatoryFullscreen(false)");
+  const stopped=requests,stoppedWeather=weatherRequests;await pause(10500);assert.equal(weatherRequests,stoppedWeather);assert.equal(requests,stopped,'Home polling stops when another page is visible');
   mode='online';await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("document.getElementById('start-label').textContent==='Stop'");await enterHome();await pause(1600);assert.equal(await run("document.getElementById('start-label').textContent"),'Stop');
   assert.equal(await run("localStorage.getItem('atomic.preferences')"),prefs);
   await run("document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");assert.deepEqual(errors,[]);

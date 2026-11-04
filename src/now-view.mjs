@@ -1,4 +1,5 @@
 import {createNowWeather} from './now-weather.mjs';
+import {sunEvents} from './world-math.mjs';
 import { t, decimal, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
 import { createEarthScene } from './earth-scene.mjs';
 import { lunarEvents, moonState } from './moon-math.mjs';
@@ -93,11 +94,16 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
     if(force||key!==cacheKey){
       cacheKey=key;
       if(validSharedEpoch(epoch)){
+        const sun=sunEvents(epoch,city),minutes=Math.round(sun.daylightMs/60000);
+        const solarTime=value=>dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(value);
+        $('sunrise').textContent=sun.rise===null?t('No sunrise'):solarTime(sun.rise);
+        $('sunset').textContent=sun.set===null?t('No sunset'):solarTime(sun.set);
+        $('daylight').textContent=sun.polar?t(sun.polar):t('{0} h {1} min',Math.floor(minutes/60),minutes%60);
         const events=lunarEvents(epoch,city),state=moonState(epoch,city);
         $('full-moon').textContent=dateTimeFormat({timeZone:city.timeZone,day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(events.fullMoon);
         $('moon-phase').textContent=t(state.name);
         $('moon-illumination').textContent=t('Illumination')+' · '+numberFormat({style:'percent',maximumFractionDigits:0}).format(state.fraction);moon.draw(state.phase);
-      }else{for(const id of ['full-moon','moon-phase','moon-illumination'])$(id).textContent=t('Unavailable');}
+      }else{for(const id of ['full-moon','moon-phase','moon-illumination','sunrise','sunset','daylight'])$(id).textContent=t('Unavailable');}
     }
   }
   onLanguageChange(()=>render(true));

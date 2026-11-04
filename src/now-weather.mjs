@@ -1,5 +1,5 @@
 import {t,decimal,dateTimeFormat,onLanguageChange} from './i18n.mjs';
-import {sunEvents,localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
+import {localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
 import {weatherCondition,weatherIcon,weatherSnapshot} from './clock-weather.mjs';
 
 // The dashboard and full-screen clock use the same native, per-city cache.
@@ -35,9 +35,6 @@ export function createNowWeather({desktop,getNow,getObserver,openClock}){
     $('humidity').textContent=Number.isFinite(current?.humidity)?decimal(current.humidity,0)+'%':'—';
     $('wind').textContent=Number.isFinite(current?.wind)?decimal(current.wind,0)+' km/h':'—';
     const day=forecast.daily.find(row=>row.date===today);$('rain').textContent=Number.isFinite(day?.rain)?decimal(day.rain,0)+'%':'—';
-    const sun=sunEvents(epoch,city),minutes=Math.round(sun.daylightMs/60000);
-    $('sunrise').textContent=sun.rise===null?t('No sunrise'):time(sun.rise,city);$('sunset').textContent=sun.set===null?t('No sunset'):time(sun.set,city);
-    $('daylight').textContent=sun.polar?t(sun.polar):t('{0} h {1} min',Math.floor(minutes/60),minutes%60);
     $('daily').replaceChildren(...forecast.daily.map(row=>{
       const item=document.createElement('div'),label=document.createElement('span'),icon=document.createElement('span'),high=document.createElement('strong'),low=document.createElement('span');
       item.className='now-weather-day';label.textContent=row.date===today?t('Today'):dateTimeFormat({timeZone:'UTC',weekday:'short'}).format(Date.parse(row.date+'T12:00:00Z'));

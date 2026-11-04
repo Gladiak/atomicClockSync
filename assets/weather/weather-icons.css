@@ -20,8 +20,7 @@
  *    "Font Awesome by Dave Gandy - http://fontawesome.io"
  */
 @font-face{font-family:'weathericons';src:url('./weathericons.woff2') format('woff2');font-weight:normal;font-style:normal;font-display:block}
-.wi{display:inline-block;font-family:'weathericons';font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:var(--weather-ink,#f3f5f6)}
-:root[data-theme=atlantic]{--weather-ink:#243642}
+.wi{display:inline-block;font-family:'weathericons';font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:var(--weather-ink,var(--accent-text))}
 .wi-day-sunny:before {
   content: "\f00d";
 }
