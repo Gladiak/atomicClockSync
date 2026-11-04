@@ -32,7 +32,7 @@ Each package includes Electron and the native Bluetooth worker/runtime; no separ
 ## Validation and compatibility
 
 - **143 JavaScript tests and 28 Python Bluetooth tests.** Native Electron checks cover the updated Guide, six languages, fifteen themes, dashboard and Clock weather, offline/stale states, delayed city responses, DST/polar calculations and uninterrupted muted radio transmission.
-- The release workflow builds on macOS, Windows and Ubuntu with tests enabled. It verifies packaged source/assets, the 2.0.0 version, the bundled Bluetooth worker and its runtime self-test on each OS, then validates all five package checksums before staging the assets.
+- Windows and Linux packages were built and verified by the [release workflow](https://github.com/Gladiak/atomicClockSync/actions/runs/41868710203) with tests enabled. A [GitHub Actions outage](https://www.githubstatus.com/incidents/xr3myzj7ms51) left its macOS job queued, so the Apple Silicon package was built and verified locally from the same `v2.0.0` source commit (`da45a20`). All three platforms passed packaged source/asset, version and bundled Bluetooth runtime self-tests; all five package checksums were validated before upload.
 - This release does not extend the verified Bluetooth model registry or claim new physical watch validation. Previously reported successful GA-B2100C / 5689, GWG-B1000 / 5713 and GST-B1000 / 5748 updates on macOS remain the available hardware evidence. Physical Windows/Linux Bluetooth and audio validation remains pending. ISS positions are estimates/reports, not onboard telemetry; weather values are model forecasts, not sensor observations.
 
 
