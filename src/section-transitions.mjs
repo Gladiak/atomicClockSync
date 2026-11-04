@@ -63,14 +63,14 @@ export function createSectionTransitions() {
     positionIndicator();
     if (reducedMotion.matches || document.hidden) return;
 
-    if (!indicator.hidden && nav.dataset.reflow !== 'true') animate(indicator, [{ transform: from }, { transform: indicator.style.transform }], 440);
+    if (!indicator.hidden && nav.dataset.reflow !== 'true') animate(indicator, [{ transform: from }, { transform: indicator.style.transform }], 240);
     animate(nextPage, [
-      { opacity: 0, transform: `translate3d(${direction * 22}px, 8px, 0) scale(0.985)` },
+      { opacity: 0, transform: `translate3d(${direction * 12}px, 4px, 0) scale(0.995)` },
       { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)', offset: 1 },
-    ], 460);
+    ], 320);
     animate(heading, [
-      { opacity: 0, transform: 'translate3d(0, 7px, 0)' },
+      { opacity: 0, transform: 'translate3d(0, 4px, 0)' },
       { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-    ], 340);
+    ], 240);
   };
 }

@@ -78,7 +78,7 @@ app.whenReady().then(async()=>{
   assert.equal(await run("document.getElementById('profile-editor-dialog').open"),false,'Activation does not open the editor');
   assert.equal(await run("document.querySelector('.watch-card-active').getAttribute('aria-pressed')"),'true');
   await run("document.querySelector('.watch-card-select').click()");
-  await run("(async()=>{const canvas=document.createElement('canvas');canvas.width=800;canvas.height=600;const ctx=canvas.getContext('2d');ctx.fillStyle='#4f718e';ctx.fillRect(0,0,800,600);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));const transfer=new DataTransfer();transfer.items.add(new File([blob],'watch.png',{type:'image/png'}));document.getElementById('collection-photo').files=transfer.files;document.getElementById('collection-photo').dispatchEvent(new Event('change'))})()");
+  await run("(async()=>{const canvas=document.createElement('canvas');canvas.width=800;canvas.height=600;const ctx=canvas.getContext('2d');ctx.fillStyle='#fafafa';ctx.fillRect(0,0,800,600);ctx.fillStyle='#20272e';ctx.fillRect(330,20,140,560);ctx.beginPath();ctx.roundRect(260,120,280,360,55);ctx.fill();ctx.strokeStyle='#58646c';ctx.lineWidth=12;ctx.stroke();ctx.fillStyle='#b9c7b6';ctx.fillRect(292,200,216,170);ctx.fillStyle='#253c37';ctx.font='54px monospace';ctx.fillText('10:08',306,305);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));const transfer=new DataTransfer();transfer.items.add(new File([blob],'watch.png',{type:'image/png'}));document.getElementById('collection-photo').files=transfer.files;document.getElementById('collection-photo').dispatchEvent(new Event('change'))})()");
   await until("document.getElementById('collection-photo-status').textContent.includes('Photo ready')");
   await run("document.getElementById('profile-form').requestSubmit()");
   assert.match(await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].details.photo"),/^data:image\/webp;base64,/);
@@ -105,12 +105,17 @@ app.whenReady().then(async()=>{
   assert.equal(await run("document.activeElement.dataset.watchAction"),'activate','Activation keeps keyboard focus on its icon');
   await run("document.getElementById('volume').value='25';document.getElementById('volume').dispatchEvent(new Event('input'));document.querySelectorAll('.watch-card-active')[1].click()");
   assert.equal(await run("document.getElementById('volume').value"),'25','Clicking the active icon does not reset unsaved audio settings');
+  await run("document.querySelector('[data-page=home]').click()");
+  assert.equal(await run("document.getElementById('now-watch-photo').hidden&&getComputedStyle(document.getElementById('now-watch-placeholder')).display!=='none'"),true,'An active watch without a photo has the local schematic');
+  await run("document.querySelector('[data-page=profiles]').click()");
   await run("document.querySelector('.watch-card-active').click();document.querySelectorAll('.watch-card-select')[1].click();document.getElementById('profile-delete').click()");
   assert.equal(await run("JSON.parse(localStorage.getItem('atomic.activeProfile'))"),id);
   assert.deepEqual(await run("JSON.parse(localStorage.getItem('atomic.profiles'))[0].settings"),firstSettings);
   await win.webContents.reload();
   await until("document.querySelector('.page.active')?.id==='page-home' && !document.getElementById('start-button').disabled");
   assert.equal(await run("document.getElementById('now-watch-name').textContent"),'Daily companion');
+  await until("!document.getElementById('now-watch-photo').hidden&&document.getElementById('now-watch-photo').naturalWidth>0");
+  assert.equal(await run("document.getElementById('now-watch-photo').getAttribute('src')===JSON.parse(localStorage.getItem('atomic.profiles'))[0].details.photo&&getComputedStyle(document.getElementById('now-watch-placeholder')).display==='none'"),true,'The home portrait is the selected watch’s saved photo');
   await run("document.getElementById('language-select').value='it';document.getElementById('language-select').dispatchEvent(new Event('change'));document.getElementById('theme-select').value='rainbow';document.getElementById('theme-select').dispatchEvent(new Event('change'));document.getElementById('toast').hidden=true");
   await pause(650);await capture('personal-home-it.png');
   await run("document.getElementById('language-select').value='en';document.getElementById('language-select').dispatchEvent(new Event('change'));document.querySelector('[data-page=profiles]').click()");
@@ -171,11 +176,23 @@ app.whenReady().then(async()=>{
   await until("document.getElementById('world-loading').hidden");
   assert.equal(await run("document.querySelector('#observatory-scene #world-map')!==null"),true);
   await until("document.getElementById('world-map').dataset.imagery==='nasa-blue-marble'");
+  assert.equal(await run("getComputedStyle(document.querySelector('#observatory-scene .world-map-bottom')).display"),'none','The immersive Earth has no permanent legend ribbon');
+  assert.match(await run("document.getElementById('observatory-clock').textContent"),/^\d{2}:\d{2}:\d{2} UTC$/,'The HUD keeps a compact UTC clock');
   await run("document.getElementById('world-city-focus').click()");
   assert.equal(await run("document.getElementById('world-map').dataset.zoom"),'2.5');
   const controlsFit=await run("(()=>{const root=document.getElementById('observatory-scene').getBoundingClientRect();return [...document.querySelectorAll('.world-basemap-controls,.world-navigation-controls')].every(node=>{const r=node.getBoundingClientRect();return r.left>=root.left&&r.right<=root.right&&r.bottom<=root.bottom})})()");
   assert.equal(controlsFit,true,'Map navigation remains available inside the full-screen scene');
   await pause(600);await capture('personal-observatory-earth.png');
+  // The HUD fades away; consumed map keys must still wake its controls.
+  await run("document.getElementById('observatory-dialog').focus()");
+  win.webContents.debugger.attach('1.3');
+  const center=await run("({x:Math.round(innerWidth/2),y:Math.round(innerHeight/2)})");
+  await win.webContents.debugger.sendCommand('Input.dispatchMouseEvent',{type:'mouseMoved',...center,button:'none'});
+  await until("document.getElementById('observatory-dialog').classList.contains('controls-hidden')&&getComputedStyle(document.querySelector('#observatory-scene .world-navigation-controls')).opacity==='0'&&getComputedStyle(document.getElementById('observatory-controls')).opacity==='0'");
+  assert.equal(await run("getComputedStyle(document.querySelector('#observatory-scene .world-basemap-controls')).pointerEvents"),'none');
+  await capture('personal-observatory-earth-idle.png');
+  await run("document.getElementById('world-map').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',code:'ArrowRight',bubbles:true,cancelable:true}))");
+  assert.equal(await run("document.getElementById('observatory-dialog').classList.contains('controls-hidden')"),false,'Map keyboard navigation wakes the HUD before the map consumes the event');
   await run("document.getElementById('world-map').focus();document.getElementById('world-map').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true,cancelable:true}))");
   assert.equal(await run("document.getElementById('world-map').dataset.zoom"),'1');
   assert.equal(await run("document.getElementById('observatory-dialog').open"),true,'First Escape resets the zoomed map');
@@ -184,6 +201,7 @@ app.whenReady().then(async()=>{
   await until("!document.getElementById('observatory-dialog').open");
   await pause(1500);
   assert.equal(win.isFullScreen(),false);
+  assert.notEqual(await run("getComputedStyle(document.querySelector('#page-world .world-map-bottom')).display"),'none','Regular World View retains the legend and source links');
   assert.equal(await run("document.querySelector('#page-light-travel #lt-system')!==null"),true);
   assert.equal(await run("document.getElementById('start-label').textContent"),'Stop');
   await run("document.getElementById('observatory-open').click()");

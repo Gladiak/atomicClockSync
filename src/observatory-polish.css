@@ -1,0 +1,98 @@
+/* Shared finish: palette-owned surfaces, restrained depth and immediate feedback. */
+:root{--finish-line:color-mix(in srgb,var(--line) 82%,transparent);--finish-shadow:0 8px 28px color-mix(in srgb,var(--bg) 18%,transparent);--finish-ease:cubic-bezier(.16,1,.3,1)}
+.panel{border-color:var(--finish-line);border-radius:12px;box-shadow:var(--finish-shadow),inset 0 1px color-mix(in srgb,var(--text) 3%,transparent)}
+.page-header h1{font-size:27px;font-weight:500;letter-spacing:-1px}
+.page-header .eyebrow{font-size:7px;letter-spacing:1.15px;color:var(--faint)}
+.page-header p{color:var(--muted)}
+.primary-button,.secondary-button{border-radius:8px;transition:background-color .18s,border-color .18s,box-shadow .18s,transform .18s var(--finish-ease)}
+.primary-button{box-shadow:inset 0 1px color-mix(in srgb,var(--on-accent) 14%,transparent),0 3px 12px color-mix(in srgb,var(--accent) 12%,transparent)}
+.primary-button:not(:disabled):hover{box-shadow:inset 0 1px color-mix(in srgb,var(--on-accent) 14%,transparent),0 5px 18px color-mix(in srgb,var(--accent) 20%,transparent)}
+:is(.primary-button,.secondary-button,.icon-button):not(:disabled):active{transform:translateY(1px) scale(.985)}
+.text-button{transition:color .18s,border-color .18s,opacity .18s}
+.text-button:not(:disabled):hover{color:var(--text)}
+.icon-button{transition:background-color .18s,border-color .18s,transform .18s}
+.icon-button:hover{background:var(--surface-hover)}
+.watch-card{border-radius:12px;transition:border-color .2s,box-shadow .2s}
+.watch-card:focus-within,.watch-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));box-shadow:0 7px 24px color-mix(in srgb,var(--bg) 30%,transparent)}
+/* Personal reference above; the three sky views form one visual sequence below. */
+.now-grid{grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,.86fr) minmax(0,1.14fr);gap:14px;--now-panel-line:color-mix(in srgb,var(--accent) 12%,var(--line))}
+.now-grid>.panel{background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--accent) 5%,transparent),transparent 75%),var(--panel);border-color:var(--now-panel-line);border-radius:14px}
+.now-hero{grid-column:1/6;grid-row:1;padding:20px 24px;justify-content:space-between;position:relative;overflow:hidden}
+.now-hero::before{content:'';position:absolute;inset:auto -100px -160px auto;width:300px;height:300px;border:1px solid color-mix(in srgb,var(--accent) 8%,transparent);border-radius:50%;pointer-events:none}
+.now-hero .panel-top{position:relative}
+.now-grid .tiny-label{font-family:inherit;font-size:10px;font-weight:600;line-height:1.4;letter-spacing:.1px}
+.now-grid .chip{font-size:6px;border-color:color-mix(in srgb,var(--accent) 20%,transparent);border-radius:20px;padding:4px 7px;letter-spacing:.6px}
+.now-clock{display:flex;align-items:baseline;gap:2px;white-space:nowrap;font-size:clamp(54px,6.1vw,78px);font-weight:350;letter-spacing:-3.5px;line-height:1.05;margin:9px 0 5px;text-shadow:none}
+#now-clock-seconds{font-size:.4em;font-weight:450;letter-spacing:-1px;opacity:.7}
+#now-date{font-size:10px;line-height:1.4;margin:0;color:var(--muted)}
+.now-reference{font-size:9px;margin:7px 0 0;line-height:1.4}
+.now-hero .primary-button{position:relative;margin-top:12px;min-height:35px;padding:8px 12px;font-size:11px;width:100%}
+#now-session{font-size:9px;line-height:1.45;margin:7px 0 0;color:var(--faint)}
+.now-watch{grid-column:6/13;grid-row:1;padding:18px 22px;position:relative;overflow:hidden;gap:0}
+.now-watch-main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 155px;gap:14px;min-height:0;align-items:center}
+.now-watch-copy{min-width:0}
+.now-watch h2{font-size:24px;line-height:1.15;font-weight:450;letter-spacing:-.7px;margin:8px 0 0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#now-watch-model{font-size:10px;line-height:1.4;margin:5px 0 0;overflow-wrap:anywhere}
+.now-facts{gap:9px;margin:14px 0 10px}
+.now-facts>div{gap:3px;border-left:0;padding-left:0}
+.now-facts span{font-size:9px;color:var(--faint)}
+.now-facts strong{font-size:11px;font-weight:450;line-height:1.35}
+.now-watch>.text-button{font-size:10px;flex-shrink:0;padding:4px 0 0}
+.now-watch-art{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;align-self:stretch;min-height:0}
+.now-watch-art::before{content:'';position:absolute;inset:0 -12px;background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 12%,transparent),transparent 68%);z-index:-1}
+.now-watch-orbit{position:absolute;left:50%;top:50%;width:145px;height:145px;border:1px solid color-mix(in srgb,var(--accent-text) 12%,transparent);border-radius:50%;transform:translate(-50%,-50%);z-index:-1}
+.now-watch-orbit::after{content:'';position:absolute;inset:10px;border:1px dashed color-mix(in srgb,var(--accent-text) 8%,transparent);border-radius:50%}
+#now-watch-photo{width:155px;height:170px;min-height:0;flex-shrink:1;object-fit:contain;filter:drop-shadow(0 9px 9px color-mix(in srgb,var(--bg) 35%,transparent))}
+#now-watch-source{font-size:7px;flex-shrink:0;margin-top:3px;color:var(--faint);white-space:nowrap}
+#now-watch-placeholder{min-height:0;flex-shrink:1;height:145px;width:100px;color:var(--now-data-accent);opacity:.55}
+.now-earth{grid-column:1/7;grid-row:2;padding:17px 20px;gap:8px}
+.now-earth svg{max-height:none;flex:1}
+.now-earth .panel-top .text-button{font-size:10px}
+.now-earth-caption{font-size:8px;gap:4px 8px;color:var(--faint)}
+.now-earth-caption .text-button{font-size:7px}
+.now-moon{grid-column:7/10;grid-row:2}
+.now-iss{grid-column:10/13;grid-row:2}
+.now-moon,.now-iss{padding:17px 16px;gap:8px;transition:border-color .2s,box-shadow .2s}
+.now-grid>button.panel:hover{background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--accent) 8%,transparent),transparent 75%),var(--surface-hover);box-shadow:0 8px 28px color-mix(in srgb,var(--bg) 25%,transparent)}
+.now-moon .now-discovery-link,.now-iss .now-discovery-link{font-size:10px;border-top:0;padding-top:5px}
+.now-full-moon{border-color:color-mix(in srgb,var(--line) 65%,transparent);padding-top:9px;gap:4px}
+.now-full-moon>span{font-family:inherit;font-size:9px;line-height:1.4;letter-spacing:0;color:var(--faint)}
+.now-full-moon strong{font-size:19px;letter-spacing:-.5px}
+.now-iss-facts{border-color:color-mix(in srgb,var(--line) 65%,transparent);padding-top:8px}
+.now-iss-facts strong{font-size:15px;letter-spacing:-.3px}
+.now-iss>#now-iss-source{color:var(--faint);font-size:8px}
+.now-iss-status{font-size:7px;letter-spacing:.1px}
+.now-iss-scene{max-height:102px}
+.now-iss>#now-iss-position{font-size:13px;font-weight:450}
+@media(max-width:850px){.now-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;height:auto}.now-hero{grid-column:1/3;grid-row:auto}.now-watch{grid-column:1/3;grid-row:auto;min-height:240px!important}.now-earth{grid-column:1/3;grid-row:auto;min-height:260px!important}.now-moon,.now-iss{grid-column:auto;grid-row:auto;min-height:290px!important}}
+@media(prefers-reduced-motion:reduce){.primary-button,.secondary-button,.text-button,.icon-button,.watch-card,.now-discovery{transition:none!important}.primary-button:active,.secondary-button:active,.icon-button:active{transform:none!important}}
+
+/* Immersive HUD: small edge readouts, no permanent legend or toolbar ribbons. */
+.observatory-scene .world-map-bottom,.observatory-scene .world-stage-heading{display:none}
+.observatory-controls{padding:22px 32px;background:linear-gradient(#04091288,transparent)}
+.observatory-controls>.tiny-label,.observatory-controls .tiny-label{font-size:7px;letter-spacing:1.6px;color:#90a6b8}
+.observatory-routes{gap:18px;margin-top:9px}.observatory-routes button{font-size:10px;letter-spacing:.2px}
+.observatory-actions button{font-size:10px;background:#0b172366;border-color:#607b9344;box-shadow:none}
+.observatory-caption{inset:auto auto 26px 32px;max-width:calc(100% - 64px);text-align:left;gap:5px;letter-spacing:.5px;transition:opacity .35s}
+.observatory-caption::before{content:'';position:absolute;left:-11px;top:0;bottom:1px;width:5px;border-left:1px solid #9ab5c044;border-top:1px solid #9ab5c044}
+.observatory-caption time{font:400 clamp(14px,1.3vw,19px)/1.3 var(--mono);letter-spacing:.2px;color:#c4d8e4}
+.observatory-caption .observatory-date{order:-1;font:8px/1.4 var(--mono);letter-spacing:.4px;color:#91a7b7}
+.observatory-caption>span{font-size:7px;color:#a3bac8}.observatory-caption .observatory-hint{font-size:7px;letter-spacing:.2px;margin-top:4px}
+.observatory-scene .world-solar-hud{top:116px;right:32px;max-width:40%;padding:0;margin:0;background:transparent;border:0;border-radius:0;box-shadow:none;gap:5px}
+.observatory-scene .world-solar-hud .world-overline{font-size:6px;letter-spacing:1.2px;color:#8ca3b5}
+.observatory-scene .world-solar-hud strong{font-size:10px;color:#bfd1db}.observatory-scene .world-solar-hud>span:last-child{font-size:7px}
+.observatory-scene #world-map{padding:60px 16px 70px}
+.observatory-scene .world-basemap-controls,.observatory-scene .world-navigation-controls{bottom:30px;padding:3px;border-color:#7c99ac33;background:#08142180;box-shadow:none}
+.observatory-scene .world-basemap-controls{left:50%;transform:translateX(-50%)}.observatory-scene .world-navigation-controls{right:32px}
+.observatory-scene .world-basemap-controls button{font-size:9px}
+.observatory-scene .moon-stage-top,.observatory-scene .lt-scene-heading{top:116px;left:32px;right:32px;font-size:7px}
+.observatory-scene .moon-stage-bottom{bottom:46px;left:260px;right:32px;text-align:right}
+.observatory-scene .moon-stage-bottom>span{font-size:8px;letter-spacing:1px}.observatory-scene .moon-texture-source{font-size:7px;margin-top:5px}
+.observatory-scene #moon-disc{width:min(68vh,850px);max-height:72vh}
+.observatory-scene #lt-system{padding:65px 32px 80px}
+.observatory-scene #lt-scene-note{display:none}.observatory-scene .lt-scene-bottom{left:auto;right:32px;bottom:32px}
+.observatory-scene :is(.world-basemap-controls,.world-navigation-controls,.world-solar-hud,.moon-stage-top,.moon-stage-bottom,.lt-scene-heading){transition:opacity .35s}
+.observatory-dialog.controls-hidden .observatory-scene :is(.world-basemap-controls,.world-navigation-controls,.world-solar-hud,.moon-stage-top,.moon-stage-bottom,.lt-scene-heading){opacity:0;pointer-events:none}
+.observatory-dialog.controls-hidden .observatory-caption{opacity:.65}
+.observatory-dialog.controls-hidden,.observatory-dialog.controls-hidden *{cursor:none!important}
+@media(prefers-reduced-motion:reduce){.observatory-caption,.observatory-scene :is(.world-basemap-controls,.world-navigation-controls,.world-solar-hud,.moon-stage-top,.moon-stage-bottom,.lt-scene-heading){transition:none}}

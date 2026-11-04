@@ -5,6 +5,7 @@ import {validSharedEpoch} from './shared-instant.mjs';
 import {createMoonSurface} from './moon-surface.mjs';
 import {prepareOrbit,orbitHealth} from './iss-orbit.mjs';
 import {currentIssState} from './iss-current-state.mjs';
+import {normalizeWatchDetails} from './watch-collection-data.mjs';
 import { accuracyPeriods, summarizeAccuracy } from './watch-accuracy-data.mjs';
 
 export function watchOverview(profile, history, archive, epoch) {
@@ -22,6 +23,11 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
   const $=id=>document.getElementById('now-'+id);
   const moon=createMoonSurface($('moon-disc'));
   let visible=false,timer,refreshTimer,scene,loading,cacheKey='',mapStep=-1;
+  let displayedPhoto='',displayedDetails,photoSource=null;
+  $('watch-source').onclick=()=>{if(photoSource)desktop.openWatchPhotoSource(photoSource);};
+  const watchPhoto=$('watch-photo');
+  watchPhoto.onload=()=>{if(displayedPhoto){watchPhoto.hidden=false;$('watch-placeholder').toggleAttribute('hidden',true);}};
+  watchPhoto.onerror=()=>{watchPhoto.hidden=true;$('watch-placeholder').toggleAttribute('hidden',false);$('watch-source').hidden=true;};
   let issData=null,issModel=null,issKey='',issBusy=false,issRequested=false;
   async function load(){
     if(scene||loading)return;loading=true;
@@ -55,13 +61,21 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
   function render(force=false){
     if(!visible||document.hidden)return;
     const epoch=getNow(),city=getObserver(),data=getData();
-    $('clock').textContent=dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(epoch);
+    const parts=dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(epoch);
+    const part=type=>parts.find(value=>value.type===type)?.value||'--';
+    $('clock-main').textContent=part('hour')+':'+part('minute');$('clock-seconds').textContent=':'+part('second');
     $('date').textContent=dateTimeFormat({timeZone:city.timeZone,weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(epoch)+' · '+city.timeZone;
     $('city').textContent=city.name+' ↗';
     $('reference').dataset.state=data.reference?(epoch-data.reference.nowMs<1800000?'verified':'stale'):'system';
     $('reference').textContent=data.reference?t(epoch-data.reference.nowMs<1800000?'NTP verified':'NTP check needed')+' · '+data.reference.host:t('System clock · unverified');
     $('session').textContent=data.session?t('Transmission in progress · open Synchronize for controls.'):t('Your reference. Your watch. Your universe.');
     const profile=data.profiles.find(p=>p.id===data.activeProfileId),summary=watchOverview(profile,data.history,getAccuracy(),epoch);
+    if(profile?.details!==displayedDetails){
+      displayedDetails=profile?.details;const details=normalizeWatchDetails(displayedDetails),photo=details.photo;
+      photoSource=details.photoSource?.pageURL||null;$('watch-source').hidden=!photo||!photoSource;
+      if(photo!==displayedPhoto){displayedPhoto=photo;watchPhoto.hidden=true;$('watch-placeholder').toggleAttribute('hidden',false);if(photo)watchPhoto.src=photo;else watchPhoto.removeAttribute('src');}
+    }
+    $('watch-name').title=profile?.name||'';
     $('watch-name').textContent=profile?.name||t('Start your collection');$('watch-model').textContent=profile?.model||t('Save your first watch and make this space yours.');
     $('last-sync').textContent=summary.last?dateTimeFormat({day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(summary.last.at):t('No confirmed reception yet');
     $('drift').textContent=summary.drift===null?t('More readings needed'):t('{0} s/day',numberFormat({maximumFractionDigits:summary.stats.digits,signDisplay:'exceptZero'}).format(summary.drift));

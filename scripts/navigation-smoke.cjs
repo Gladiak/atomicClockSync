@@ -23,8 +23,17 @@ app.whenReady().then(async () => {
     while (Date.now() < end) { if (await run(source)) return; await pause(50); }
     throw Error('Timeout: ' + source);
   }
+  // Trusted renderer input avoids macOS discarding events for a non-key window.
+  async function input(event){
+    if(event.type==='mouseMove')return win.webContents.debugger.sendCommand('Input.dispatchMouseEvent',{type:'mouseMoved',x:event.x,y:event.y,button:'none'});
+    return win.webContents.debugger.sendCommand('Input.dispatchKeyEvent',{type:event.type,key:event.keyCode,code:event.keyCode,windowsVirtualKeyCode:9,nativeVirtualKeyCode:9});
+  }
+  async function capture(file) {
+    for(let attempt=0;attempt<3;attempt++)try{fs.writeFileSync(file,(await win.webContents.capturePage()).toPNG());return;}
+    catch(error){if(!String(error).includes('UnknownVizError')||attempt===2)throw error;await pause(350);}
+  }
   async function exposeSidebar() {
-    win.webContents.sendInputEvent({type:'keyDown',keyCode:'Tab'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Tab'});
+    await input({type:'keyDown',keyCode:'Tab'});await input({type:'keyUp',keyCode:'Tab'});
     await run("(()=>{const item=document.querySelector('.sidebar .nav-item.selected'),group=item.closest('[data-nav-group]');(group?group.querySelector('.nav-group-toggle'):item).focus()})()");
     await until("document.querySelector('.sidebar').dataset.expanded==='true'");await pause(330);
   }
@@ -34,14 +43,19 @@ app.whenReady().then(async () => {
   }
   try {
     if (win.webContents.isLoading()) await new Promise(resolve => win.webContents.once('did-finish-load', resolve));
+    // Keep renderer keyboard focus deterministic when macOS focuses another app.
+    // Input events and :focus-visible still exercise the real sidebar handlers.
+    win.webContents.debugger.attach('1.3');
+    await win.webContents.debugger.sendCommand('Emulation.setFocusEmulationEnabled',{enabled:true});
     win.showInactive();
+    await input({type:'mouseMove',x:650,y:100});
     await until("!document.hidden && !document.getElementById('start-button').disabled");
     assert.equal(await run("document.querySelectorAll('[data-nav-group]').length"),3);
     assert.equal(await run("document.querySelector('.sidebar').dataset.expanded"),'false');
     assert.equal(await run("Math.round(document.querySelector('.sidebar').getBoundingClientRect().width)"),72);
     const contentLeft=await run("document.querySelector('main').getBoundingClientRect().left");
-    win.webContents.sendInputEvent({type:'mouseMove',x:30,y:180});
-    await until("document.querySelector('.sidebar').dataset.expanded==='true'");await pause(330);
+    await input({type:'mouseMove',x:30,y:180});
+    await until("document.querySelector('.sidebar').dataset.expanded==='true'&&Math.round(document.querySelector('.sidebar').getBoundingClientRect().width)===236");
     assert.equal(await run("Math.round(document.querySelector('.sidebar').getBoundingClientRect().width)"),236);
     assert.equal(await run("document.querySelector('main').getBoundingClientRect().left"),contentLeft,'Hover must not move the content');
     assert.equal(await run("document.querySelectorAll('.nav-group-toggle[aria-expanded=true]').length"),1);
@@ -51,7 +65,6 @@ app.whenReady().then(async () => {
     assert.equal(win.getTitle(), 'AtomicClockSync');
     assert.equal(await run("getComputedStyle(document.querySelector('.titlebar > span')).fontSize"), '13px');
     if (process.platform === 'darwin') assert.equal(Menu.getApplicationMenu().items[0].label, 'AtomicClockSync');
-    win.webContents.debugger.attach('1.3');
     await motion('no-preference');
     await run("document.getElementById('start-button').click()");
     await until("document.getElementById('status-badge').textContent === 'TRANSMITTING'");
@@ -86,11 +99,11 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.querySelector('.nav-indicator').getBoundingClientRect().width"),1);
     await pause(250);
     fs.mkdirSync('artifacts', { recursive: true });
-    fs.writeFileSync('artifacts/navigation-moon.png', (await win.webContents.capturePage()).toPNG());
+    await capture('artifacts/navigation-moon.png');
     assert.equal(await run("document.getElementById('status-badge').textContent"), 'TRANSMITTING');
     await until(`document.getElementById('clock').textContent !== ${JSON.stringify(clock)}`);
     const currentPage=await run("document.querySelector('.page.active').id");
-    win.webContents.sendInputEvent({type:'keyDown',keyCode:'Tab'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Tab'});
+    await input({type:'keyDown',keyCode:'Tab'});await input({type:'keyUp',keyCode:'Tab'});
     await run("document.getElementById('nav-signal-toggle').focus()");
     for(const language of ['en','it','fr','de','es','ja']) {
       await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);
@@ -103,7 +116,7 @@ app.whenReady().then(async () => {
         assert.equal(await run("document.querySelector('.page.active').id"),currentPage,'Group disclosure must not change the page');
         if(group==='explore'){
           fs.mkdirSync('artifacts/sidebar',{recursive:true});await run("document.getElementById('toast').hidden=true");
-          fs.writeFileSync(`artifacts/sidebar/${language}.png`,(await win.webContents.capturePage()).toPNG());
+          await capture(`artifacts/sidebar/${language}.png`);
         }
       }
     }
@@ -126,22 +139,22 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.getElementById('start-button').classList.contains('running')"),true,'Accordion changes preserve live audio');
     await run("document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");
     win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
-    win.webContents.sendInputEvent({type:'mouseMove',x:1000,y:100});win.webContents.sendInputEvent({type:'mouseMove',x:30,y:180});await until("document.querySelector('.sidebar').dataset.expanded==='true'");
+    await input({type:'mouseMove',x:1000,y:100});await input({type:'mouseMove',x:30,y:180});await until("document.querySelector('.sidebar').dataset.expanded==='true'");
     assert.equal(await run("document.getElementById('nav-watches-toggle').getAttribute('aria-expanded')"),'true','Saved expanded group survives restart');
     await run("document.getElementById('nav-watches-toggle').click()");
     assert.equal(await run("JSON.parse(localStorage.getItem('atomic.sidebar.v1')).expanded"),null);
     win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
     assert.equal(await run("document.querySelectorAll('.nav-group-toggle[aria-expanded=true]').length"),0,'All-folded state survives restart');
     await run("document.getElementById('language-select').value='en';document.getElementById('language-select').dispatchEvent(new Event('change'));document.getElementById('nav-signal-toggle').click();document.getElementById('toast').hidden=true");
-    await pause(500);fs.writeFileSync('artifacts/sidebar/expanded.png',(await win.webContents.capturePage()).toPNG());
-    await run("document.activeElement.blur()");win.webContents.sendInputEvent({type:'mouseMove',x:1000,y:100});
+    await pause(500);await capture('artifacts/sidebar/expanded.png');
+    await run("document.activeElement.blur()");await input({type:'mouseMove',x:1000,y:100});
     await until("document.querySelector('.sidebar').dataset.expanded==='false'");await pause(330);
     assert.equal(await run("Math.round(document.querySelector('.sidebar').getBoundingClientRect().width)"),72);
     assert.equal(await run("document.querySelector('main').getBoundingClientRect().left"),contentLeft);
     assert.equal(await run("document.querySelectorAll('.nav-group-collapse:not([inert]) [data-page]').length"),0,'Compact rail has no hidden tab stops');
     assert.equal(await run("document.querySelector('.sidebar .version').innerText.trim()"),'v'+require('../package.json').version);
     assert.equal(await run("(()=>{const a=document.querySelector('.sidebar .version').getBoundingClientRect(),b=document.querySelector('.sidebar').getBoundingClientRect();return Math.abs((a.left+a.right)/2-(b.left+b.right)/2)<1})()"),true,'Compact version is centred');
-    fs.writeFileSync('artifacts/sidebar/synchronization.png',(await win.webContents.capturePage()).toPNG());
+    await capture('artifacts/sidebar/synchronization.png');
     await run("document.getElementById('nav-explore-toggle').focus()");await until("document.querySelector('.sidebar').dataset.expanded==='true'");
     await run("document.getElementById('page-title').tabIndex=-1;document.getElementById('page-title').focus()");await until("document.querySelector('.sidebar').dataset.expanded==='false'");
     assert.deepEqual(errors, []);

@@ -6,12 +6,18 @@ export function createObservatory({views,goTo,desktop,notify}) {
   function restore(){if(scene&&placeholder?.parentNode)placeholder.replaceWith(scene);scene=null;placeholder=null;}
   function reveal(){
     $('dialog').classList.remove('controls-hidden');clearTimeout(hideTimer);
-    hideTimer=setTimeout(()=>{if(!$('controls').contains(document.activeElement)&&!$('controls').matches(':hover'))$('dialog').classList.add('controls-hidden');},4500);
+    hideTimer=setTimeout(()=>{
+      const active=document.activeElement;
+      const keyboardControl=$('dialog').contains(active)&&active.matches('button:focus-visible,input:focus-visible,select:focus-visible,[role=button]:focus-visible');
+      const hovering=$('controls').matches(':hover')||$('scene').querySelector('.world-basemap-controls:hover,.world-navigation-controls:hover,.moon-texture-source:hover');
+      if(!keyboardControl&&!hovering)$('dialog').classList.add('controls-hidden');
+    },4500);
   }
   function paint(){
     if(!$('dialog').open)return;
     const epoch=views[page].getEpoch();
-    $('clock').textContent=dateTimeFormat({timeZone:'UTC',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(epoch)+' UTC';
+    $('clock').textContent=dateTimeFormat({timeZone:'UTC',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(epoch)+' UTC';
+    $('date').textContent=dateTimeFormat({timeZone:'UTC',day:'numeric',month:'long',year:'numeric'}).format(epoch);
     $('clock').dateTime=new Date(epoch).toISOString();
     $('mode').textContent=document.getElementById({world:'world-mode',moon:'moon-mode','light-travel':'lt-mode'}[page])?.textContent||'';
     $('play').hidden=page!=='light-travel';
@@ -34,8 +40,9 @@ export function createObservatory({views,goTo,desktop,notify}) {
   };
   $('close').onclick=close;
   $('dialog').addEventListener('cancel',event=>{event.preventDefault();event.stopPropagation();close();});
-  $('dialog').addEventListener('keydown',event=>{event.stopPropagation();reveal();if(event.code==='Escape'){event.preventDefault();close();}});
-  $('dialog').addEventListener('pointermove',reveal);$('dialog').addEventListener('focusin',reveal);
+  $('dialog').addEventListener('keydown',reveal,{capture:true});
+  $('dialog').addEventListener('keydown',event=>{event.stopPropagation();if(event.code==='Escape'){event.preventDefault();close();}});
+  $('dialog').addEventListener('pointermove',reveal);$('dialog').addEventListener('pointerdown',reveal);$('dialog').addEventListener('wheel',reveal,{passive:true});$('dialog').addEventListener('focusin',reveal);
   for(const button of $('controls').querySelectorAll('[data-observatory-page]'))button.onclick=()=>{
     const next=button.dataset.observatoryPage;if(next===page)return;
     switching=true;restore();goTo(next);mount();switching=false;$('dialog').focus();reveal();

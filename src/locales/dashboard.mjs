@@ -1,4 +1,10 @@
 const rows=[
+['Your reference','Il tuo riferimento','Votre référence','Deine Referenz','Tu referencia','あなたの基準時刻'],
+['On your wrist','Al tuo polso','À votre poignet','An deinem Handgelenk','En tu muñeca','あなたの腕時計'],
+['Earth, right now','La Terra, adesso','La Terre, maintenant','Die Erde, jetzt','La Tierra, ahora','今の地球'],
+['Moon, right now','La Luna, adesso','La Lune, maintenant','Der Mond, jetzt','La Luna, ahora','今の月'],
+['ISS, right now','La ISS, adesso','L’ISS, maintenant','Die ISS, jetzt','La ISS, ahora','今のISS'],
+['Next full Moon','Prossima Luna piena','Prochaine pleine Lune','Nächster Vollmond','Próxima luna llena','次の満月'],
 ['MOON, RIGHT NOW','LA LUNA, ADESSO','LA LUNE, MAINTENANT','DER MOND, JETZT','LA LUNA, AHORA','今の月'],
 ['ISS, RIGHT NOW','LA ISS, ADESSO','L’ISS, MAINTENANT','DIE ISS, JETZT','LA ISS, AHORA','今のISS'],
 ['Speed','Velocità','Vitesse','Geschwindigkeit','Velocidad','速度'],
