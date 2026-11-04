@@ -1,3 +1,4 @@
+import {createClockView} from './clock-view.mjs';
 import { createObservatory } from './observatory.mjs';
 import { createSharedInstant } from './shared-instant.mjs';
 import { createWatchCollection } from './watch-collection.mjs';
@@ -121,7 +122,10 @@ const collectionView = createWatchCollection({desktop,getData:()=>({profiles,act
 
 sharedTime = createSharedInstant({ views: { world: worldView, moon: moonView, 'light-travel': lightTravelView },getNow:now,goTo:navigate,notify });
 
-const observatory = createObservatory({ views: {world:worldView,moon:moonView,'light-travel':lightTravelView},goTo:navigate,desktop,notify });
+const clockView=createClockView({desktop,getNow:now,getObserver:()=>worldView.getCity(),getReference:()=>({
+  text:reference?(now()-reference.nowMs<30*60000?t('NTP verified'):t('NTP check needed'))+' · '+reference.host:t('System clock · unverified'),
+  state:reference?(now()-reference.nowMs<30*60000?'verified':'stale'):'system'})});
+const observatory = createObservatory({ views: {home:nowView,clock:clockView,world:worldView,moon:moonView,'light-travel':lightTravelView},goTo:navigate,desktop,notify });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
 const bluetoothView = createBluetoothSync({ desktop,

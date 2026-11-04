@@ -213,6 +213,6 @@ app.whenReady().then(async()=>{
   await until("document.getElementById('start-label').textContent==='Start transmission'");
   assert.deepEqual(errors,[]);
   console.log('Personal time smoke passed');
- }catch(error){console.error(error);process.exitCode=1;}
- finally{win.destroy();app.quit();}
+ }catch(error){console.error(error.stack||error,errors);try{await capture('personal-time-failure.png');}catch{}process.exitCode=1;}
+ finally{win.destroy();app.exit(process.exitCode||0);}
 });

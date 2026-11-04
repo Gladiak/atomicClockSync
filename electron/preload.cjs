@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('desktop', {
   getWatchSpecs: (id, model, refresh=false) => ipcRenderer.invoke('watch-specs:get', id, model, refresh),
   openWatchManual: url => ipcRenderer.invoke('watch-specs:manual', url),
   openWatchPhotoSource: url => ipcRenderer.invoke('watch-photos:source', url),
+  getWeather: location => ipcRenderer.invoke('weather:get', location),
   refreshIss: () => ipcRenderer.invoke('iss:refresh'),
   setTransmitting: active => ipcRenderer.invoke('signal:active', Boolean(active)),
   openReference: key => ipcRenderer.invoke('reference:open', key),

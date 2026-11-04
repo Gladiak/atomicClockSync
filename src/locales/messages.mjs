@@ -1,3 +1,4 @@
+import {clockMessages} from './clock.mjs';
 import {dashboardMessages} from './dashboard.mjs';
 import {worldMapMessages} from './world-map.mjs';
 import {watchSpecMessages} from './watch-specs.mjs';
@@ -6342,4 +6343,4 @@ const coreMessages = {
   }
 };
 
-export const messages = { ...coreMessages, ...dashboardMessages, ...worldMapMessages, ...watchPhotoMessages,...watchSpecMessages, ...personalTimeMessages, ...bluetoothMessages, ...lightTravelMessages, ...receptionLabMessages, ...expandedJourneyMessages, ...watchAccuracyMessages, ...sidebarMessages, ...guideMessages };
+export const messages = { ...coreMessages, ...clockMessages, ...dashboardMessages, ...worldMapMessages, ...watchPhotoMessages,...watchSpecMessages, ...personalTimeMessages, ...bluetoothMessages, ...lightTravelMessages, ...receptionLabMessages, ...expandedJourneyMessages, ...watchAccuracyMessages, ...sidebarMessages, ...guideMessages };

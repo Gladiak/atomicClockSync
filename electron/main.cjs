@@ -5,6 +5,7 @@ const { performance } = require('node:perf_hooks');
 const { synchronize } = require('./ntp.cjs');
 const { createWatchPhotoService } = require('./watch-photos.cjs');
 const { createIssDataService } = require('./iss-data.cjs');
+const { createWeatherService } = require('./weather-data.cjs');
 const { createBluetoothService, helperCommand } = require('./bluetooth.cjs');
 
 app.setName('Atomic Clock Sync');
@@ -18,6 +19,7 @@ let mainWindow;
 let blocker = null;
 let syncing = null;
 let issData;
+let weatherData;
 const watchPhotos = createWatchPhotoService();
 const sourceRuntime = process.env.ATOMIC_SOURCE_ROOT === path.resolve(__dirname, '..');
 const bluetooth = createBluetoothService({
@@ -45,6 +47,7 @@ function applyMenu(language = 'en') {
 const historicalSources = require('../assets/time-machine/sources.json');
 const references = {
   ...Object.fromEntries(Object.entries(historicalSources).map(([key, source]) => [key, source.url])),
+  weather: 'https://open-meteo.com/',
   moonScience: 'https://science.nasa.gov/moon/moon-phases/',
   moonTexture: 'https://svs.gsfc.nasa.gov/4720/',
   earthTexture: 'https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/',
@@ -171,6 +174,11 @@ ipcMain.handle('watch-photos:source', async (event, value) => {
   }catch{return false;}
 });
 
+ipcMain.handle('weather:get', async (event, location) => {
+  if(event.sender!==mainWindow?.webContents)throw Error('Unknown weather client');
+  weatherData ||= createWeatherService({storagePath:path.join(app.getPath('userData'),'weather-cache.json')});
+  return weatherData.get(location);
+});
 ipcMain.handle('iss:refresh', async event => {
   if(event.sender!==mainWindow?.webContents)throw Error('Unknown ISS client');
   issData ||= createIssDataService({storagePath:path.join(app.getPath('userData'),'iss-cache.json')});

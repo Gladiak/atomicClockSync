@@ -58,6 +58,9 @@ The app opens on **Your now**: a local reference clock, the selected watch, a ph
 
 These additions support all six languages and all fifteen palettes. Shared previews are session-local and do not change NTP, audio settings or transmitted time. Collection details use the existing local profile storage and backup directory.
 
+
+**Observatory Clock** opens directly from Your now or from the Clock tab beside Earth, Moon and Light Travel. It presents equal-size hours, minutes and seconds in the bundled Manrope font, date, city coordinates and time zone, weather estimates, six upcoming forecast slots, a five-day forecast, humidity, wind and precipitation probability. Sunrise, sunset and day length are calculated locally, including polar conditions. The city follows World View; its astronomical previews do not affect current clock time. Weather comes from Open-Meteo via a validated native HTTPS service, with local cache, offline/expired states and visible-only refresh. Font Awesome Free symbols and the font are bundled with their licenses.
+
 ## Application Guide
 
 ![Application Guide — illustrated narrative with practical examples](docs/images/guide.png)

@@ -16,6 +16,7 @@
     "test:desktop": "electron scripts/smoke.cjs",
     "test:watch-specs": "electron scripts/watch-specs-smoke.cjs",
     "test:watch-photos": "electron scripts/watch-photos-smoke.cjs",
+    "test:clock": "electron scripts/clock-smoke.cjs",
     "test:dashboard": "electron scripts/dashboard-smoke.cjs",
     "test:personal-time": "electron scripts/personal-time-smoke.cjs",
     "test:mac-identity": "node scripts/mac-identity-smoke.cjs",
