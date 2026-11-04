@@ -1,4 +1,4 @@
-# Atomic Clock Sync — User Guide
+# AtomicClockSync 2.0.0 — User Guide
 
 [Project overview](../README.md)
 
@@ -8,20 +8,20 @@ AtomicClockSync is a **JavaScript and Electron desktop app** that synchronizes c
 
 ## Ready-to-use applications
 
-Current version: **1.11.0**, refreshed on 27 October 2026 to include six additional themes and the Pulse Sync logo/app icon. Download the individual packages and updated checksums from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0); the filenames and version number are unchanged.
+Current version: **2.0.0**, released on 4 November 2026. Download the individual packages and matching checksums from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v2.0.0). Updating the app preserves its separate local data directory.
 
-- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-1.11.0-arm64-mac.zip`.
-- Windows x64 portable: `release/AtomicClockSync-1.11.0-windows-x64-portable.exe`.
-- Linux x64 portable: `release/AtomicClockSync-1.11.0-linux-x86_64.AppImage`.
-- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-1.11.0-linux-amd64.deb`.
-- Fedora/openSUSE x64: `release/AtomicClockSync-1.11.0-linux-x86_64.rpm`.
+- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-2.0.0-arm64-mac.zip`.
+- Windows x64 portable: `release/AtomicClockSync-2.0.0-windows-x64-portable.exe`.
+- Linux x64 portable: `release/AtomicClockSync-2.0.0-linux-x86_64.AppImage`.
+- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-2.0.0-linux-amd64.deb`.
+- Fedora/openSUSE x64: `release/AtomicClockSync-2.0.0-linux-x86_64.rpm`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps include Electron and the Bluetooth/Python runtime and do not require Node.js or Python. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
 
 The Windows 11 x64 target requires a native Windows BLE worker built with the application on Windows. Physical Bluetooth and audio validation on a Windows desktop remain pending. It has no Windows digital signature. The portable executable requires no installation; profiles and history are stored in the local user profile rather than inside the executable.
 
-On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-1.11.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-1.11.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-1.11.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
+On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-2.0.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-2.0.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-2.0.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
 
 ## Stations
 
@@ -135,7 +135,7 @@ Chapters explain the purpose and meaning of a feature in connected prose, follow
 
 **Open section** navigates to the actual tool. The header’s **?** opens the chapter for the current section; trial details use the History chapter. Previous/Next and the chapter index support continuous reading. The last chapter is saved locally in `atomic.guide.chapter`; per-chapter scroll is remembered during the session. Language changes translate the whole explanation, examples, notes and screenshots, preserving the selected chapter. The reader and index scroll independently within the fixed window. Reduced motion is respected.
 
-The 84 screenshots are captured from the real app with the Rainbow theme, Pulse Sync branding and an isolated sample profile, never the user's records. The documentation layout shows the expanded sidebar, its current section and the active menu beside the full view. They are bundled for offline reading. Use `npm run capture:guide` after interface/version changes to regenerate all fourteen views in six languages.
+The 96 screenshots are captured from the real app with the Rainbow theme, Pulse Sync branding and an isolated sample profile, never the user's records. The documentation layout shows the expanded sidebar, its current section and the active menu beside the full view. They are bundled for offline reading. Use `npm run capture:guide` after interface/version changes to regenerate all sixteen views in six languages.
 
 ## Watch Accuracy
 
@@ -337,7 +337,7 @@ The main tool window has a fixed size. The Observatory command opens the astrono
 - **Time Machine:** sourced historical journeys, personal memories and locally stored time capsules; also opens Back in Time.
 - **Back in Time:** movie time circuits, live elapsed counters and a cinematic 88 mph jump.
 - **Settings:** output device, test tone, waveform, manual timing correction, NTP diagnostics and theme selection.
-- **Guide:** seventeen illustrated narrative chapters, practical examples, contextual help and full text/screenshots in six languages.
+- **Guide:** nineteen illustrated narrative chapters, practical examples, contextual help and full text/screenshots in six languages.
 
 ## Running from source
 
@@ -411,7 +411,7 @@ npm run checksums -- --github # Match GitHub's download filenames in SHA256SUMS.
 
 The desktop test uses a temporary profile. It checks all fifteen themes, selected text contrast ratios of at least 4.5:1, persistence, invalid saved-theme fallback, live theme changes and separation from audio settings. It also verifies isolation, fixed window size, all views and FAQs without overflow, the five station selections, channel/profile locking, profile CRUD and undo, settings restore, immutable history, GET/ERR updates, legacy migration, output tests, volume changes, offline fallback, window closing and sleep interruption.
 
-Screenshots are written to `artifacts/`. The app and Bluetooth worker were checked on macOS; the Linux worker was also built and self-tested in Docker. The 1.11.0 downloadable package set is published on GitHub Releases and refreshed with the new themes. Native platform builds use the manual GitHub workflow, which checks packaged source/assets and the bundled Bluetooth runtime on each OS. Linux desktop audio hardware and native RPM installation have not been tested.
+Screenshots are written to `artifacts/`. The app and Bluetooth worker were checked on macOS; the Linux worker was also built and self-tested in Docker. The 2.0.0 package set is published on GitHub Releases with the refreshed dashboard, collection, observatory and documentation. Native platform builds use the manual GitHub workflow, which checks packaged source/assets and the bundled Bluetooth runtime on each OS. Linux desktop audio hardware and native RPM installation have not been tested.
 
 ## Technical references
 
@@ -471,8 +471,18 @@ Open **Observatory** from Your now, or choose **Clock** while viewing Earth, Moo
 
 The weather panel emphasizes its symbol and temperature, with apparent temperature, humidity, wind in km/h and daily rain probability beneath. Upcoming slots are three hours apart; five daily cards show high and low temperatures. These are Open-Meteo model estimates, with a source/update label, not a sensor report. A response for a previous city cannot replace the newly selected city’s data. Local time formatting handles DST; forecast day keys retain the provider’s local calendar dates.
 
-Only while this clock is visible, the app requests forecasts for the selected city’s coordinates (rounded to four decimals) and time zone. No collection data, notes or device geolocation are sent. The native service uses a fixed HTTPS endpoint, bounds response size, validates coordinates/units/series, coalesces requests, caches up to eight cities for fifteen minutes and applies failure backoff and provider Retry-After. Cached forecasts may remain available offline for up to six hours; the current-condition estimate is hidden after ninety minutes. Missing or invalid values stay unavailable.
+Only while Your now or this clock is visible, the app requests forecasts for the selected city’s coordinates (rounded to four decimals) and time zone. No collection data, notes or device geolocation are sent. The native service uses a fixed HTTPS endpoint, bounds response size, validates coordinates/units/series, coalesces requests, caches up to eight cities for fifteen minutes and applies failure backoff and provider Retry-After. Cached forecasts may remain available offline for up to six hours; the current-condition estimate is hidden after ninety minutes. Missing or invalid values stay unavailable.
 
-Sunrise, sunset and day length use the existing offline astronomical calculation, so they remain available without weather access. Polar day/night and missing rise/set events are named explicitly. No weather alerts or background notifications are scheduled. All figures and icons render locally; the Manrope font and Font Awesome Free notices are included in the app assets.
+Sunrise, sunset and day length use the existing offline astronomical calculation, so they remain available without weather access. Polar day/night and missing rise/set events are named explicitly. No weather alerts or background notifications are scheduled. All figures and icons render locally; the Manrope and Weatherfonts / Weather Icons licenses are included in the app assets.
 
 Validation: `npm run test:clock` covers six languages, fifteen palettes, small/large layouts, city changes and delayed responses, Tokyo local time, polar night, independent sky previews, offline/expired forecasts and uninterrupted muted radio audio.
+
+## Dashboard atmosphere and temperature trend
+
+Your now uses the city chosen in World View for its live clock, sunrise, sunset and day length. Select the watch/check icon in the top-right corner of a collection tile to set the watch shown on the dashboard. Its saved photo appears centered above reception and supported drift estimates. The map follows the Satellite/Map choice in World View; Moon and ISS cards open their own tools.
+
+Soft gradients follow the Sun’s actual altitude: day, twilight and night are calculated locally without changing the selected theme. Sky preview dates never move this live atmosphere or the reference clock. Rectangular panels, dialogs and controls share smaller corner radii. Pointer clicks and closing a dialog do not leave a focus ring; Tab keeps keyboard focus visible.
+
+Use **24 h / 5 days** in the weather card to choose the temperature curve or daily outlook. The curve spans exactly 24 elapsed hours, including daylight-saving changes; its labels use the selected city’s time zone and identify the ending weekday. Low/high values cover available samples in that window. Hover or tap to inspect an estimate, or focus the chart and use Left, Right, Home and End. Missing values and gaps in hourly data remain gaps; stale forecasts are not extrapolated. The full-screen Clock shows the same curve above its hourly and daily cards, using the existing weather cache without extra requests.
+
+The offline Guide now has **19 chapters and 96 localized screenshots**. **?** on Your now opens its dashboard chapter; the Clock and weather chapter’s **Open section** opens the actual Clock Observatory. Screenshot generation uses an isolated sample profile, a synthetic watch illustration and date-shifted sample weather inside the ISS fixture’s real validity window. Documentation data are illustrative and never access the user’s records or Bluetooth adapter.

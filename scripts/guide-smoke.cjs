@@ -3,6 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),asse
 app.setPath('userData',fs.mkdtempSync(path.join(os.tmpdir(),'atomic-guide-')));
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT?path.resolve(process.env.ATOMIC_TEST_APP_ROOT):path.resolve(__dirname,'..'),'electron/main.cjs'));
 require('./offline-iss.cjs')();
+ipcMain.removeHandler('observatory:fullscreen');ipcMain.handle('observatory:fullscreen',()=>true);
 ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:Date.now(),host:'guide-test',offsetMs:0,uncertaintyMs:5,synchronizedAt:Date.now()}));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 app.whenReady().then(async()=>{
@@ -26,7 +27,7 @@ app.whenReady().then(async()=>{
   if(win.webContents.isLoading())await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
   assert.equal(await run("document.querySelectorAll('[data-nav-group]').length"),3);assert.equal(await run("document.querySelectorAll('.sidebar-utilities [data-page]').length"),2);
   await go('settings');assert.equal(await run("document.querySelector('.sidebar .selected').dataset.page"),'settings');
-  await go('guide');assert.equal(await run("document.querySelectorAll('.manual-chapter').length"),17);assert.equal(await run("document.querySelector('.sidebar .selected').dataset.page"),'guide');
+  await go('guide');assert.equal(await run("document.querySelectorAll('.manual-chapter').length"),19);assert.equal(await run("document.querySelector('.sidebar .selected').dataset.page"),'guide');
   await click('start-button');await until("document.getElementById('start-button').classList.contains('running')");
   await run("document.querySelector('[data-chapter=watch-accuracy]').click()");assert.ok(await run("document.getElementById('manual-article').getAnimations().length>0"));
   win.webContents.debugger.attach('1.3');await win.webContents.debugger.sendCommand('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
@@ -53,9 +54,13 @@ app.whenReady().then(async()=>{
   win.webContents.sendInputEvent({type:'keyDown',keyCode:'Escape'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Escape'});await until("!document.getElementById('manual-preview').open");
   assert.equal(await run("document.getElementById('start-button').classList.contains('running')"),true,'Closing preview must not stop audio');
   await click('manual-open');assert.equal(await run("document.querySelector('.page.active').id"),'page-light-travel');await click('help-button');assert.equal(await run("document.querySelector('.manual-chapter[aria-current]').dataset.chapter"),'light-travel','Contextual help');
+  await go('home');await click('help-button');assert.equal(await run("document.querySelector('.manual-chapter[aria-current]').dataset.chapter"),'home','Home has contextual help');
+  await run("document.querySelector('[data-chapter=clock]').click()");await click('manual-open');await until("document.getElementById('observatory-dialog').open&&document.getElementById('observatory-dialog').dataset.scene==='clock'");
+  assert.equal(await run("document.getElementById('start-button').classList.contains('running')"),true,'Guide Clock shortcut preserves transmission');
+  await click('observatory-close');await go('guide');
   await run("document.querySelector('[data-chapter=privacy]').click()");await click('start-button');await until("!document.getElementById('start-button').disabled");
   win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");await go('guide');assert.equal(await run("document.querySelector('.manual-chapter[aria-current]').dataset.chapter"),'privacy');
   assert.deepEqual(errors,[]);
-  console.log('PASS: three groups and pinned Settings/Guide, 17 narrative chapters, all 85 prose passages and 84 real screenshots in six languages, zoom/Escape audio isolation, fifteen themes, fixed layout, context links and chapter persistence.');app.exit(0);
+  console.log('PASS: three groups and pinned Settings/Guide, 19 narrative chapters, all 107 prose passages and 96 real screenshots in six languages, zoom/Escape audio isolation, fifteen themes, fixed layout, context links and chapter persistence.');app.exit(0);
  }catch(error){console.error(error.stack,errors);await capture('failure');app.exit(1)}
 });

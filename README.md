@@ -2,9 +2,9 @@
 
 Sync compatible Casio watches through **Bluetooth** or simulated **Multiband 6 time signals** through your speakers. Built with **JavaScript and Electron** for macOS, Windows and Linux.
 
-![Atomic Clock Sync — synchronization screen](docs/images/synchronization.png)
+![AtomicClockSync 2.0 — personal dashboard, city weather and watch](docs/images/dashboard.png)
 
-Screenshots use the Rainbow theme, Pulse Sync branding and illustrative sample data. The documentation layout shows expanded navigation beside each view, with the active menu visible and the full content unobscured.
+Screenshots use the Rainbow theme, Pulse Sync branding and illustrative sample data. Tool screenshots show expanded navigation beside the unobscured content; observatory screenshots show the immersive layout. Weather values and the original watch illustration are demonstration data, not observations or a catalogue photograph.
 
 <details>
 <summary>View the expanded Rainbow sidebar</summary>
@@ -40,13 +40,15 @@ See [localization notes](docs/LOCALIZATION.md) for adding interface strings and 
 - **Live signal view:** inspect the time code, current symbol, fields and parity checks.
 - **Fifteen themes:** fourteen dark palettes and one light palette, saved independently of watch profiles.
 - **Compact desktop interface:** a fixed 1100 × 740 window with separate views.
-- **Illustrated application Guide:** 17 narrative chapters, practical examples and 84 real UI screenshots across six languages, with image zoom and contextual help. Settings and Guide stay pinned above the sidebar version.
+- **Illustrated application Guide:** 19 narrative chapters, practical examples and 96 real UI screenshots across six languages, with image zoom and contextual help. Settings and Guide stay pinned above the sidebar version.
 - **Minimal sidebar:** a compact icon rail expands on hover or keyboard focus, overlaying the page without moving its content. Three animated groups keep navigation compact and remember the open theme.
 - **Fluid navigation:** directional section reveals, animated headings and a moving sidebar indicator, with instant reduced-motion navigation.
 - **Six interface languages:** offline translations of navigation, settings, notifications, astronomy, historical journeys and native menus, with a bundled Japanese font. Language changes preserve personal text and do not interrupt transmission.
 - **Local data:** no account, cloud storage or telemetry.
 
 ## Your now and personal time
+
+![Local collection with a selected watch and modal editing](docs/images/collection.png)
 
 The app opens on **Your now**: a local reference clock, the selected watch, a photographic world map with calculated daylight, the photographic Moon and the next full Moon, and an ISS card with current coordinates, speed and altitude. **Synchronize my watch** opens the existing transmission desk. The home map follows the Satellite/Map choice in World View and marks the ISS when a valid position is available. The ISS card uses the same orbital estimates and recent position reports as the observatory, showing their source and timestamp; expired or missing data remain unavailable. Selecting the Moon or ISS card opens its observatory. The dashboard places the reference clock, a compact city weather card and the active watch above the three sky views. The reference clock includes a compact sunrise/day-length/sunset row. The weather card shows enlarged, left-aligned current conditions, rain probability, humidity, wind and five forecast days; its arrow opens the full-screen Clock. The enlarged watch portrait is centered above compact reception/drift details. A saved watch photograph becomes the portrait; a local schematic fills in when no photograph is available. Subtle surfaces, sharper corners, sentence-case dashboard labels, quieter seconds and shared button feedback follow all 15 palettes, including Atlantic light. Rectangular cards, dialogs and controls use shared radius tokens; circular astronomical shapes and status dots retain their geometry. Navigation motion respects Reduce Motion. Focus indicators appear during keyboard navigation; pointer clicks and pointer-driven dialog returns keep controls free of focus rings. The home clock uses the World View city's time zone; the transmission clock continues to use the selected station. The source label distinguishes fresh NTP, a stale check and the unverified system clock. The clock, watch values and astronomical highlights use the selected theme accent, with subtle panel tints. Rainbow uses mint for the live clock, violet for watch/Moon data and orange for ISS telemetry; unverified reference labels stay neutral. Daily drift appears only when the current observation period supports an estimate, its readings are recent and no newer confirmed radio reception has occurred.
 
@@ -59,6 +61,8 @@ The app opens on **Your now**: a local reference clock, the selected watch, a ph
 These additions support all six languages and all fifteen palettes. Shared previews are session-local and do not change NTP, audio settings or transmitted time. Collection details use the existing local profile storage and backup directory.
 
 
+![Full-screen Clock with weather and the 24-hour temperature trend](docs/images/observatory-clock.png)
+
 **Observatory Clock** opens directly from Your now or from the Clock tab beside Earth, Moon and Light Travel. It presents equal-size hours, minutes and seconds in the bundled Manrope font, date, city coordinates and time zone, weather estimates, six upcoming forecast slots, a five-day forecast, humidity, wind and precipitation probability. Sunrise, sunset and day length are calculated locally, including polar conditions. The city follows World View; its astronomical previews do not affect current clock time. Weather comes from Open-Meteo via a validated native HTTPS service, with local cache, offline/expired states and visible-only refresh. Weatherfonts / Weather Icons glyphs and the Manrope font are bundled locally with their licenses. Weatherfonts has single-layer glyphs and no duotone CSS: icons follow the selected theme’s accessible text accent in both the dashboard and Observatory Clock. The dashboard places its compact, unboxed sunrise/day-length/sunset row in the reference clock, leaving more space for the current weather. Weather refreshes only while Your now or Observatory Clock is visible; both share the native cache.
 
 Your now and Observatory Clock share a restrained **day / twilight / night atmosphere**, calculated locally from the Sun’s altitude at the selected city. Soft gradients use the chosen palette; night does not switch your theme, and astronomical previews do not change this live atmosphere. The dashboard weather card switches between a **24-hour temperature trend** and the existing five-day forecast. The full-screen Clock shows the curve alongside its hourly and daily outlook. Hover/touch the curve or focus it and use Left/Right/Home/End to inspect estimates. The curve uses existing hourly data, with a true 24-hour timeline, city-local time labels and low/high values; missing samples remain gaps and expired forecasts are hidden. No extra network requests, dependencies or stored settings are introduced.
@@ -67,7 +71,7 @@ Your now and Observatory Clock share a restrained **day / twilight / night atmos
 
 ![Application Guide — illustrated narrative with practical examples](docs/images/guide.png)
 
-**Settings** and **Guide** are always available at the foot of the sidebar, including as icons in compact mode. Guide opens an offline manual with seventeen chapters covering every section, reception problems and data management. Each chapter combines its purpose, explanatory prose, a practical example and a real screenshot in the selected language; click the screenshot to enlarge it. Images use illustrative sample data. The **?** button opens the chapter for the current view, and **Open section** returns to the actual tool. Reading, changing chapters or closing an image preview does not interrupt audio.
+**Settings** and **Guide** are always available at the foot of the sidebar, including as icons in compact mode. Guide opens an offline manual with nineteen chapters covering every section, reception problems and data management. Each chapter combines its purpose, explanatory prose, a practical example and a real screenshot in the selected language; click the screenshot to enlarge it. Images use illustrative sample data. The **?** button opens the chapter for the current view, and **Open section** returns to the actual tool. Reading, changing chapters or closing an image preview does not interrupt audio.
 
 ## Supported stations
 
@@ -111,7 +115,7 @@ and Linux with **BlueZ 5.55 or later**, D-Bus access and a working BLE adapter.
 Physical Bluetooth validation on Windows/Linux remains pending. See
 [compatibility and build details](docs/BLUETOOTH.md), the
 [model catalogue](docs/BLUETOOTH_MODELS.md) and the
-[1.11.0 changelog](docs/RELEASE_NOTES.md).
+[2.0.0 changelog](docs/RELEASE_NOTES.md).
 
 ## Watch Accuracy
 
@@ -206,21 +210,23 @@ All circuits use **Hill Valley / Pacific time**. Jumping animates a cinematic pr
 
 ## How audio synchronization works
 
+![Radio synchronization desk](docs/images/synchronization.png)
+
 A normal audio output cannot directly generate the longwave radio carrier expected by the watch. The app produces a lower-frequency audio tone and relies on harmonics and electromagnetic coupling from the speaker or earphone electronics.
 
 **Reception depends on the output hardware, placement and interference.** A valid generated time code does not guarantee reception. The app cannot read the watch display or automatically confirm reception; GET/ERR outcomes are entered by the user.
 
 ## Downloads and platform status
 
-Current version: **1.11.0**, refreshed on 27 October 2026 with six additional themes and the Pulse Sync logo/app icon. The individual packages and updated checksums are available in [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v1.11.0), under the same filenames and version number. The 1.11.0 packages are:
+Current version: **2.0.0**, released on 4 November 2026. Download the five individual packages and the matching **SHA256SUMS.txt** from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v2.0.0). Existing local profiles, settings and history remain in the separate app data directory. The 2.0.0 packages are:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `AtomicClockSync-1.11.0-arm64-mac.zip` | macOS app for Apple Silicon | Build on macOS; local ad-hoc signature, not notarized |
-| `AtomicClockSync-1.11.0-windows-x64-portable.exe` | Windows 11 x64 portable executable | Build natively on Windows with bundled BLE worker; physical validation pending |
-| `AtomicClockSync-1.11.0-linux-x86_64.AppImage` | Portable Linux x64 application | Build on Ubuntu 22.04; physical Bluetooth validation pending |
-| `AtomicClockSync-1.11.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Same Linux application with bundled BLE worker |
-| `AtomicClockSync-1.11.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Same Linux application with bundled BLE worker |
+| `AtomicClockSync-2.0.0-arm64-mac.zip` | macOS app for Apple Silicon | Build on macOS; local ad-hoc signature, not notarized |
+| `AtomicClockSync-2.0.0-windows-x64-portable.exe` | Windows 11 x64 portable executable | Build natively on Windows with bundled BLE worker; physical validation pending |
+| `AtomicClockSync-2.0.0-linux-x86_64.AppImage` | Portable Linux x64 application | Build on Ubuntu 22.04; physical Bluetooth validation pending |
+| `AtomicClockSync-2.0.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Same Linux application with bundled BLE worker |
+| `AtomicClockSync-2.0.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Same Linux application with bundled BLE worker |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include Electron and the Bluetooth/Python runtime; **Node.js and Python are not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
@@ -228,14 +234,14 @@ Prebuilt apps include Electron and the Bluetooth/Python runtime; **Node.js and P
 On Linux x64, choose the AppImage for portable use, the DEB on Debian-based distributions, or the RPM on Fedora/openSUSE. The names `x86_64` and `amd64` both mean 64-bit Intel/AMD PCs. These builds do not target ARM64. From your download directory:
 
 ```sh
-chmod +x 'AtomicClockSync-1.11.0-linux-x86_64.AppImage'
-./'AtomicClockSync-1.11.0-linux-x86_64.AppImage'
+chmod +x 'AtomicClockSync-2.0.0-linux-x86_64.AppImage'
+./'AtomicClockSync-2.0.0-linux-x86_64.AppImage'
 # Alternatively, on Debian/Ubuntu/Mint:
-sudo apt install './AtomicClockSync-1.11.0-linux-amd64.deb'
+sudo apt install './AtomicClockSync-2.0.0-linux-amd64.deb'
 # Alternatively, on Fedora:
-sudo dnf install './AtomicClockSync-1.11.0-linux-x86_64.rpm'
+sudo dnf install './AtomicClockSync-2.0.0-linux-x86_64.rpm'
 # Or on openSUSE:
-sudo zypper install './AtomicClockSync-1.11.0-linux-x86_64.rpm'
+sudo zypper install './AtomicClockSync-2.0.0-linux-x86_64.rpm'
 ```
 
 Linux validation uses Ubuntu 22.04 x64 in Docker with a virtual display, muted audio and `--no-sandbox` for the container-only test. Normal launch commands retain Chromium's sandbox. Audio output and physical watch reception still need a real Linux desktop/hardware test. Release binaries are excluded from Git and are intended for GitHub Releases. Each platform package is distributed individually.

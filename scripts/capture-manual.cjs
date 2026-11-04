@@ -4,11 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 app.setPath('userData',fs.mkdtempSync(path.join(os.tmpdir(),'atomic-manual-capture-')));
 require('../electron/main.cjs');
 require('./offline-weather.cjs')();
-// Use the bundled orbital snapshot inside its actual validity window.
-const epoch=Date.parse('2026-10-25T14:33:11Z');
-ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:epoch,host:'Reference · sample',offsetMs:0,uncertaintyMs:6,synchronizedAt:epoch}));
-const {validateOrbit}=require('../electron/iss-data.cjs');const orbit=validateOrbit(JSON.parse(fs.readFileSync(path.join(__dirname,'../test/fixtures/iss-omm.json'))));
-ipcMain.removeHandler('iss:refresh');ipcMain.handle('iss:refresh',()=>({orbit,fix:null,connectivity:'online',lastSuccess:epoch,error:''}));
+const {epoch,install,seedPortrait}=require('./documentation-fixtures.cjs');install();
 // Documentation captures use a declared synthetic detection, never the user's
 // adapter, address, watch records or a claim of successful reception.
 const sampleWatch={id:'11111111-1111-1111-1111-111111111111',name:'CASIO GA-B2100',model:'GA-B2100',module:'5689',instructions:'ga',verified:true};
@@ -31,9 +27,10 @@ app.whenReady().then(async()=>{
   const entries=[0,2,5,9].map((n,i)=>({id:'manual-reading-'+i,profileId:'manual-watch',watchName:watch.name,type:'measurement',at:now-(10-n)*day,offsetSeconds:3+n*.8+(i===2?.2:0),readingStep:1,method:'manual-offset',reference:{kind:'manual'},conditions:{wear:'resting',position:'Dial up',temperature:21},note:''}));
   await run(`localStorage.setItem('atomic.theme',JSON.stringify('rainbow'));localStorage.setItem('atomic.profiles',JSON.stringify(${JSON.stringify(profiles)}));localStorage.setItem('atomic.activeProfile',JSON.stringify('manual-watch'));localStorage.setItem('atomic.history',JSON.stringify(${JSON.stringify(history)}));localStorage.setItem('atomic.accuracy.v1',JSON.stringify({version:1,entries:${JSON.stringify(entries)}}));`);
   await run(`localStorage.setItem('atomic.bluetooth.history.v1',JSON.stringify([{id:'manual-bluetooth',type:'bluetooth',at:${now-day/2},endedAt:${now-day/2+5000},seconds:5,outcome:'sent',code:'',watch:{name:'CASIO GST-B1000',model:'GST-B1000',module:'5748'},reference:{host:'Reference · sample',offsetMs:0,uncertaintyMs:12,synchronizedAt:${now-day/2+4000}}}]))`);
+  await seedPortrait(run,'manual-watch');
   win.webContents.reload();await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));await until("!document.getElementById('start-button').disabled");
   const showNavigation=await prepareCaptureNavigation(win);
-  const routes=['sync','reception-lab','signal','profiles','watch-accuracy','history','world','moon','iss','light-travel','time-machine','back-in-time','settings'];
+  const routes=['home','clock','sync','reception-lab','signal','profiles','watch-accuracy','history','world','moon','iss','light-travel','time-machine','back-in-time','settings'];
   for(const language of ['en','it','fr','de','es','ja']){
    if(process.env.ATOMIC_CAPTURE_LANGUAGE&&language!==process.env.ATOMIC_CAPTURE_LANGUAGE)continue;
    await change('language-select',language);await run("document.fonts.ready.then(()=>true)");
@@ -41,7 +38,10 @@ app.whenReady().then(async()=>{
    const output=path.join(__dirname,'../assets/guide',language);fs.mkdirSync(output,{recursive:true});
    const selectedRoutes=process.env.ATOMIC_CAPTURE_ROUTES?routes.filter(route=>process.env.ATOMIC_CAPTURE_ROUTES.split(',').includes(route)):routes;
    for(const route of selectedRoutes){
-    await run(`document.querySelector('[data-page="${route}"]').click()`);
+    await run(`document.querySelector('[data-page="${route==='clock'?'home':route}"]').click()`);
+    if(route==='home'||route==='clock')await until("document.getElementById('now-weather-trend').dataset.state==='available'&&document.getElementById('now-earth').children.length>0&&document.getElementById('now-moon-disc').dataset.texture==='nasa-lro'&&!document.getElementById('now-watch-photo').hidden");
+    if(route==='clock'){win.setContentSize(1600,1000);await run("document.getElementById('observatory-open').click()");await until("document.getElementById('observatory-dialog').open&&document.getElementById('dial-trend').dataset.state==='available'");}
+
     if(route==='world'){
      await until("document.getElementById('world-loading').hidden");
      await change('world-coverage','all');await change('world-date','2026-12-21');await change('world-time-slider','1185','input');
@@ -51,8 +51,9 @@ app.whenReady().then(async()=>{
     if(route==='time-machine')await run("document.querySelector('[data-event=einstein-gravity]').click()");
     if(route==='profiles')await change('profile-edit-select','manual-watch');
     await run("document.getElementById('page-title').tabIndex=-1;document.getElementById('page-title').focus();document.activeElement.blur();document.getElementById('toast').hidden=true");
-    await showNavigation();
+    if(route!=='clock')await showNavigation();else await pause(350);
     fs.writeFileSync(path.join(output,route+'.jpg'),(await win.webContents.capturePage()).toJPEG(85));
+    if(route==='clock'){await run("document.getElementById('observatory-close').click()");win.setContentSize(1264,740);}
     if(route==='sync'){
      await run("document.getElementById('bluetooth-button').click()");
      await until("document.getElementById('bluetooth-dialog').open&&!document.getElementById('bluetooth-update').disabled");

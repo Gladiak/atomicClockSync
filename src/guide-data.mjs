@@ -11,7 +11,7 @@ export const MANUAL_CHAPTERS = [
     "id": "start",
     "title": "Getting started",
     "group": "start",
-    "route": "sync",
+    "route": "home",
     "purpose": "AtomicClockSync simulates station time codes through audio, records your watch experiments and explores time and space. No account is required.",
     "note": "The sidebar expands on hover or keyboard focus. Settings and Guide stay at its foot. Each manual chapter links to its section.",
     "body": [
@@ -22,7 +22,22 @@ export const MANUAL_CHAPTERS = [
       "The Clock tab in Observatory shows current local time and weather for your World View city. Hours, minutes and seconds have equal size. Forecasts refresh only while Your now or the clock is visible; sunrise and sunset are calculated offline. Cached or unavailable weather is labeled, and astronomical previews never change the clock."
     ],
     "example": "For a first attempt in Italy, a compatible watch might use DCF77 and ROM. Check your module manual, place the watch near a speaker and save the result to begin your own reception history.",
-    "image": "sync"
+    "image": "home"
+  },
+  {
+    "id": "home",
+    "title": "Your now",
+    "group": "start",
+    "route": "home",
+    "purpose": "Your live time, selected watch, weather and sky in one personal dashboard.",
+    "note": "Weather values are forecasts, and ISS positions are orbital estimates or recent reports. Missing and expired data are labeled. Sky previews never alter the live dashboard or the transmitted time.",
+    "body": [
+      "Choose the city in World View. Your now follows its time zone, sunrise, sunset and day length. The reference label distinguishes verified NTP time from an unverified system clock.",
+      "Switch the weather card between 24 h and 5 days. Hover over the temperature curve, tap it, or focus it and use the arrow keys to read estimates. Low and high cover the next 24 hours; gaps remain gaps when data are missing.",
+      "The watch/check icon in My watches selects the watch shown here. Its saved photo is centered above reception and drift details. Earth, Moon and ISS open their tools; subtle daylight, twilight and night gradients keep the chosen theme."
+    ],
+    "example": "Select Rome, inspect tomorrow’s temperature on the curve, then open Observatory for a distraction-free clock with the same city and weather.",
+    "image": "home"
   },
   {
     "id": "sync",
@@ -125,6 +140,21 @@ export const MANUAL_CHAPTERS = [
     ],
     "example": "If you notice GET only after the transmission finishes, open that trial and update its outcome. The laboratory recomputes the rate; the original audio settings and duration remain unchanged.",
     "image": "history"
+  },
+  {
+    "id": "clock",
+    "title": "Clock and weather",
+    "group": "explore",
+    "route": "clock",
+    "purpose": "A full-screen local clock with weather, a temperature curve and offline sunrise and sunset calculations.",
+    "note": "Controls fade after inactivity and return with pointer movement or keyboard input. Closing the observatory does not stop an active transmission. Preview dates do not change the real clock.",
+    "body": [
+      "Open Observatory from Your now, or choose the Clock tab beside Earth, Moon and Light Travel. Hours, minutes and seconds have equal size. The city, coordinates, time zone and reference identify the displayed time.",
+      "The curve spans the next 24 elapsed hours, with local time labels even across a daylight-saving change. The hourly and five-day outlooks remain visible below it. Pointer inspection and Left, Right, Home and End reveal individual temperature estimates.",
+      "Weather refreshes only while Your now or Clock is visible and shares one local cache. Current conditions older than 90 minutes are hidden; cached forecasts expire after six hours. Sunrise, sunset, polar conditions and the atmosphere are calculated locally."
+    ],
+    "example": "Compare the curve with the hourly cards, then switch to Earth or Moon without leaving the observatory. Escape returns to the previous tools.",
+    "image": "clock"
   },
   {
     "id": "world",
@@ -249,7 +279,8 @@ export const MANUAL_CHAPTERS = [
     "note": "Accuracy exports do not back up the whole app and are not an import workflow. Personal capsules are unencrypted. Replacing the app does not normally clear its separate data folder.",
     "body": [
       "The app’s personal records live in its separate data directory, not inside the executable. Replacing a build normally keeps that directory, while clearing application data removes the records stored there. A useful backup therefore preserves the data folder as well as the app itself.",
-      "Network use has specific purposes: NTP checks the reference and ISS retrieves public orbital information. Local astronomy, the historical archive and your journals do not require a cloud account. Reference buttons open their external source sites only when you choose them."
+      "Network use has specific purposes: NTP checks the reference and ISS retrieves public orbital information. Local astronomy, the historical archive and your journals do not require a cloud account. Reference buttons open their external source sites only when you choose them.",
+      "Visible dashboard and clock views send only the selected city’s coordinates and time zone to Open-Meteo. ShockBase receives a model query only when you request a photo or technical sheet. Notes, photos and histories stay in local profiles; weather and ISS use separate bounded caches."
     ],
     "example": "Before moving to another computer, close the app and copy its full application data folder. Export the accuracy journal too if you want a readable JSON or spreadsheet copy, but do not treat it as a backup of profiles, capsules and reception history.",
     "image": "settings"

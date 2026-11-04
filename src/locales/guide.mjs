@@ -1,5 +1,97 @@
 // Original offline manual prose and interface text, in all supported languages.
 export const guideMessages = {
+  "Your live time, selected watch, weather and sky in one personal dashboard.": {
+    "it": "Ora attuale, orologio attivo, meteo e cielo in una dashboard personale.",
+    "fr": "Heure actuelle, montre active, météo et ciel dans un tableau de bord personnel.",
+    "de": "Aktuelle Zeit, aktive Uhr, Wetter und Himmel auf einer persönlichen Startseite.",
+    "es": "Hora actual, reloj activo, tiempo y cielo en un panel personal.",
+    "ja": "現在時刻、使用中の時計、天気、空を一つのダッシュボードに表示します。"
+  },
+  "Choose the city in World View. Your now follows its time zone, sunrise, sunset and day length. The reference label distinguishes verified NTP time from an unverified system clock.": {
+    "it": "Scegli la città in Mondo. Il tuo adesso ne segue fuso orario, alba, tramonto e durata del giorno. La fonte distingue l’ora NTP verificata dall’orologio di sistema non verificato.",
+    "fr": "Choisissez la ville dans la vue mondiale. Votre instant suit son fuseau, le lever et le coucher du Soleil et la durée du jour. La source distingue le NTP vérifié de l’horloge système non vérifiée.",
+    "de": "Wählen Sie die Stadt in der Weltansicht. Die Startseite folgt ihrer Zeitzone, dem Sonnenaufgang, Sonnenuntergang und der Tageslänge. Die Quelle unterscheidet geprüftes NTP von ungeprüfter Systemzeit.",
+    "es": "Elige la ciudad en el mapa mundial. Tu ahora sigue su zona horaria, amanecer, atardecer y duración del día. La fuente distingue NTP verificado del reloj del sistema sin verificar.",
+    "ja": "世界地図で都市を選択すると、そのタイムゾーン、日の出、日の入り、昼の長さを表示します。時刻の出典には、検証済みのNTPか未検証のシステム時計かが示されます。"
+  },
+  "Switch the weather card between 24 h and 5 days. Hover over the temperature curve, tap it, or focus it and use the arrow keys to read estimates. Low and high cover the next 24 hours; gaps remain gaps when data are missing.": {
+    "it": "Alterna il meteo tra 24 h e 5 giorni. Passa sulla curva, toccala oppure selezionala da tastiera e usa le frecce per leggere le stime. Minima e massima riguardano le prossime 24 ore; i dati mancanti restano interruzioni nel grafico.",
+    "fr": "Alternez entre 24 h et 5 jours. Survolez ou touchez la courbe, ou sélectionnez-la au clavier puis utilisez les flèches. Les extrêmes portent sur les prochaines 24 heures ; les données manquantes restent des interruptions.",
+    "de": "Wechseln Sie zwischen 24 Std. und 5 Tagen. Bewegen Sie den Zeiger über die Kurve, tippen Sie darauf oder verwenden Sie nach dem Fokussieren die Pfeiltasten. Tiefst- und Höchstwerte gelten für die nächsten 24 Stunden; fehlende Daten bleiben Lücken.",
+    "es": "Alterna entre 24 h y 5 días. Pasa el cursor por la curva, tócala o selecciónala con el teclado y usa las flechas. Los extremos corresponden a las próximas 24 horas; los datos ausentes dejan huecos.",
+    "ja": "天気を24時間と5日間で切り替えます。曲線にポインターを合わせるか、タップ、またはキーボードで選択して矢印キーを使うと予測値を確認できます。最低・最高気温は今後24時間の値で、欠測部分は空白のまま表示します。"
+  },
+  "The watch/check icon in My watches selects the watch shown here. Its saved photo is centered above reception and drift details. Earth, Moon and ISS open their tools; subtle daylight, twilight and night gradients keep the chosen theme.": {
+    "it": "L’icona orologio/spunta in I miei orologi seleziona quello mostrato qui. La foto salvata è centrata sopra ricezione e deriva. Terra, Luna e ISS aprono i rispettivi strumenti; sfumature leggere di giorno, crepuscolo e notte rispettano il tema scelto.",
+    "fr": "L’icône montre/coché dans Mes montres sélectionne celle affichée ici. Sa photo est centrée au-dessus de la réception et de la dérive. Terre, Lune et ISS ouvrent leurs outils ; les dégradés discrets suivent le Soleil et le thème choisi.",
+    "de": "Das Uhr-/Häkchensymbol in Meine Uhren wählt die hier gezeigte Uhr. Ihr Foto steht mittig über Empfang und Gangabweichung. Erde, Mond und ISS öffnen ihre Werkzeuge; dezente Tages-, Dämmerungs- und Nachtverläufe erhalten das gewählte Thema.",
+    "es": "El icono de reloj/marca en Mis relojes selecciona el mostrado aquí. Su foto queda centrada sobre recepción y deriva. Tierra, Luna e ISS abren sus herramientas; los degradados suaves de día, crepúsculo y noche respetan el tema.",
+    "ja": "コレクションの時計・チェックアイコンで、ここに表示する時計を選びます。保存した写真の下に受信と歩度の情報を表示します。地球、月、ISSから各ツールを開けます。昼・薄明・夜の控えめなグラデーションは、選択したテーマを保ちます。"
+  },
+  "Select Rome, inspect tomorrow’s temperature on the curve, then open Observatory for a distraction-free clock with the same city and weather.": {
+    "it": "Seleziona Roma, controlla la temperatura di domani sulla curva e apri Osservatorio per un orologio essenziale con la stessa città e lo stesso meteo.",
+    "fr": "Choisissez Rome, consultez la température de demain sur la courbe, puis ouvrez l’observatoire pour une horloge épurée avec la même ville et la même météo.",
+    "de": "Wählen Sie Rom, prüfen Sie die morgige Temperatur in der Kurve und öffnen Sie das Observatorium für eine ruhige Uhransicht derselben Stadt.",
+    "es": "Selecciona Roma, consulta la temperatura de mañana en la curva y abre el observatorio para ver un reloj limpio con la misma ciudad y previsión.",
+    "ja": "ローマを選び、曲線で明日の気温を確認してから観測所を開くと、同じ都市と天気のすっきりした時計画面を表示できます。"
+  },
+  "Weather values are forecasts, and ISS positions are orbital estimates or recent reports. Missing and expired data are labeled. Sky previews never alter the live dashboard or the transmitted time.": {
+    "it": "Il meteo mostra previsioni e la posizione ISS deriva da stime orbitali o rapporti recenti. Dati mancanti o scaduti sono indicati. Le anteprime del cielo non modificano la dashboard attuale né l’ora trasmessa.",
+    "fr": "La météo est prévisionnelle ; l’ISS utilise des estimations orbitales ou des positions récentes. Les données manquantes ou périmées sont signalées. Les aperçus du ciel ne changent ni la page en direct ni l’heure transmise.",
+    "de": "Wetterwerte sind Vorhersagen; ISS-Positionen sind Bahnschätzungen oder aktuelle Meldungen. Fehlende oder veraltete Daten werden gekennzeichnet. Himmelsvorschauen ändern weder die Live-Startseite noch die gesendete Zeit.",
+    "es": "El tiempo muestra previsiones y la ISS usa estimaciones orbitales o informes recientes. Se indican datos ausentes o caducados. Las vistas previas del cielo no alteran el panel en directo ni la hora transmitida.",
+    "ja": "天気は予報で、ISSの位置は軌道計算または最近の位置報告に基づきます。欠測・期限切れデータは明示されます。天体のプレビューで現在のダッシュボードや送信時刻が変わることはありません。"
+  },
+  "A full-screen local clock with weather, a temperature curve and offline sunrise and sunset calculations.": {
+    "it": "Un orologio locale a tutto schermo con meteo, curva della temperatura e calcolo offline di alba e tramonto.",
+    "fr": "Une horloge locale plein écran avec météo, courbe de température et calcul hors ligne du lever et du coucher du Soleil.",
+    "de": "Eine bildschirmfüllende Ortszeituhr mit Wetter, Temperaturkurve und offline berechnetem Sonnenauf- und -untergang.",
+    "es": "Un reloj local a pantalla completa con tiempo, curva de temperatura y cálculo sin conexión del amanecer y atardecer.",
+    "ja": "現地時刻を全画面で表示し、天気、気温曲線、オフライン計算の日の出・日の入りを確認できます。"
+  },
+  "Open Observatory from Your now, or choose the Clock tab beside Earth, Moon and Light Travel. Hours, minutes and seconds have equal size. The city, coordinates, time zone and reference identify the displayed time.": {
+    "it": "Apri Osservatorio da Il tuo adesso, oppure scegli Orologio accanto a Terra, Luna e Viaggio della luce. Ore, minuti e secondi hanno la stessa dimensione. Città, coordinate, fuso e fonte identificano l’ora mostrata.",
+    "fr": "Ouvrez l’observatoire depuis Votre instant, ou choisissez Horloge à côté de Terre, Lune et Voyage de la lumière. Heures, minutes et secondes ont la même taille. Ville, coordonnées, fuseau et source identifient l’heure.",
+    "de": "Öffnen Sie das Observatorium von der Startseite oder wählen Sie Uhr neben Erde, Mond und Lichtreise. Stunden, Minuten und Sekunden sind gleich groß. Stadt, Koordinaten, Zeitzone und Quelle kennzeichnen die Zeit.",
+    "es": "Abre el observatorio desde Tu ahora o elige Reloj junto a Tierra, Luna y Viaje de la luz. Horas, minutos y segundos tienen el mismo tamaño. Ciudad, coordenadas, zona horaria y fuente identifican la hora.",
+    "ja": "ホームから観測所を開くか、地球・月・光の旅の横にある時計タブを選びます。時・分・秒は同じ大きさです。都市、座標、タイムゾーン、時刻の出典を表示します。"
+  },
+  "The curve spans the next 24 elapsed hours, with local time labels even across a daylight-saving change. The hourly and five-day outlooks remain visible below it. Pointer inspection and Left, Right, Home and End reveal individual temperature estimates.": {
+    "it": "La curva copre le prossime 24 ore effettive, con etichette locali anche al cambio dell’ora legale. Sotto restano le previsioni orarie e a cinque giorni. Il puntatore e i tasti Sinistra, Destra, Home e Fine mostrano le singole stime di temperatura.",
+    "fr": "La courbe couvre les prochaines 24 heures réelles, avec des horaires locaux même au changement d’heure. Les prévisions horaires et sur cinq jours restent dessous. Le pointeur et les touches Gauche, Droite, Début et Fin affichent les estimations.",
+    "de": "Die Kurve umfasst die nächsten 24 verstrichenen Stunden mit Ortszeitbeschriftung, auch bei einer Zeitumstellung. Darunter bleiben Stunden- und Fünftagesvorhersagen sichtbar. Zeiger sowie Links, Rechts, Pos1 und Ende zeigen einzelne Temperaturschätzungen.",
+    "es": "La curva cubre las próximas 24 horas reales con etiquetas locales, incluso durante un cambio de hora. Debajo siguen las previsiones horarias y de cinco días. El cursor y las teclas Izquierda, Derecha, Inicio y Fin muestran cada estimación.",
+    "ja": "曲線は夏時間の切り替え時も実際に経過する24時間を対象とし、ラベルは現地時刻です。下には時間別・5日間の予報を表示します。ポインターや左右矢印、Home、Endキーで各気温予測を確認できます。"
+  },
+  "Weather refreshes only while Your now or Clock is visible and shares one local cache. Current conditions older than 90 minutes are hidden; cached forecasts expire after six hours. Sunrise, sunset, polar conditions and the atmosphere are calculated locally.": {
+    "it": "Il meteo si aggiorna solo con Il tuo adesso o Orologio visibili e condivide una cache locale. Le condizioni attuali oltre 90 minuti sono nascoste; le previsioni salvate scadono dopo sei ore. Alba, tramonto, condizioni polari e atmosfera sono calcolati localmente.",
+    "fr": "La météo s’actualise uniquement avec la page d’accueil ou Horloge visible, dans un cache partagé. Les conditions de plus de 90 minutes sont masquées et les prévisions expirent après six heures. Soleil, conditions polaires et ambiance sont calculés localement.",
+    "de": "Wetter wird nur bei sichtbarer Startseite oder Uhr aktualisiert und nutzt einen gemeinsamen lokalen Cache. Aktuelle Bedingungen über 90 Minuten werden verborgen; gespeicherte Vorhersagen verfallen nach sechs Stunden. Sonnenzeiten, Polarzustände und Atmosphäre werden lokal berechnet.",
+    "es": "El tiempo solo se actualiza con Tu ahora o Reloj visibles y comparte una caché local. Se ocultan condiciones de más de 90 minutos; las previsiones guardadas caducan a las seis horas. Los horarios solares, condiciones polares y ambiente se calculan localmente.",
+    "ja": "天気の更新はホームまたは時計の表示中だけ行い、共通のローカルキャッシュを使います。90分を過ぎた現在の状況は隠し、保存済み予報は6時間で期限切れになります。太陽時刻、極域の状態、背景の雰囲気はローカル計算です。"
+  },
+  "Compare the curve with the hourly cards, then switch to Earth or Moon without leaving the observatory. Escape returns to the previous tools.": {
+    "it": "Confronta la curva con le schede orarie, poi passa a Terra o Luna senza uscire dall’osservatorio. Esc riporta agli strumenti precedenti.",
+    "fr": "Comparez la courbe aux cartes horaires, puis passez à Terre ou Lune sans quitter l’observatoire. Échap revient aux outils précédents.",
+    "de": "Vergleichen Sie Kurve und Stundenkarten und wechseln Sie dann im Observatorium zu Erde oder Mond. Escape führt zu den vorherigen Werkzeugen zurück.",
+    "es": "Compara la curva con las tarjetas horarias y cambia a Tierra o Luna sin salir del observatorio. Escape vuelve a las herramientas anteriores.",
+    "ja": "曲線と時間別カードを比べ、観測所を閉じずに地球や月へ切り替えられます。Escapeで前のツールに戻ります。"
+  },
+  "Controls fade after inactivity and return with pointer movement or keyboard input. Closing the observatory does not stop an active transmission. Preview dates do not change the real clock.": {
+    "it": "I controlli sfumano dopo l’inattività e riappaiono muovendo il puntatore o usando la tastiera. Chiudere l’osservatorio non ferma la trasmissione attiva. Le date di anteprima non cambiano l’orologio reale.",
+    "fr": "Les commandes s’effacent après inactivité et reviennent au mouvement du pointeur ou au clavier. Fermer l’observatoire n’arrête pas une transmission active. Les dates d’aperçu ne changent pas l’horloge réelle.",
+    "de": "Bedienelemente blenden sich bei Inaktivität aus und erscheinen bei Zeigerbewegung oder Tastatureingabe wieder. Schließen stoppt keine laufende Übertragung. Vorschaudaten ändern nicht die aktuelle Uhrzeit.",
+    "es": "Los controles se ocultan tras la inactividad y vuelven con el cursor o el teclado. Cerrar el observatorio no detiene una transmisión activa. Las fechas de vista previa no cambian el reloj real.",
+    "ja": "操作部は操作がないと隠れ、ポインター移動やキーボード操作で再表示されます。観測所を閉じても送信中の信号は停止しません。プレビューの日付は現在時刻に影響しません。"
+  },
+  "Visible dashboard and clock views send only the selected city’s coordinates and time zone to Open-Meteo. ShockBase receives a model query only when you request a photo or technical sheet. Notes, photos and histories stay in local profiles; weather and ISS use separate bounded caches.": {
+    "it": "Dashboard e orologio visibili inviano a Open-Meteo solo coordinate e fuso della città scelta. ShockBase riceve il modello solo quando richiedi foto o scheda tecnica. Note, foto e cronologie restano nei profili locali; meteo e ISS usano cache separate e limitate.",
+    "fr": "Les vues d’accueil et d’horloge visibles envoient seulement les coordonnées et le fuseau de la ville à Open-Meteo. ShockBase reçoit le modèle uniquement à votre demande de photo ou de fiche. Notes, photos et historiques restent locaux ; météo et ISS utilisent des caches distincts et limités.",
+    "de": "Sichtbare Start- und Uhransichten senden nur Koordinaten und Zeitzone der gewählten Stadt an Open-Meteo. ShockBase erhält das Modell nur bei angeforderter Foto- oder Datenblattabfrage. Notizen, Fotos und Verläufe bleiben lokal; Wetter und ISS verwenden getrennte begrenzte Caches.",
+    "es": "El panel y reloj visibles envían a Open-Meteo solo coordenadas y zona horaria de la ciudad elegida. ShockBase recibe el modelo únicamente al pedir foto o ficha. Notas, fotos e historiales siguen locales; tiempo e ISS usan cachés separadas y limitadas.",
+    "ja": "表示中のホームと時計は、選択都市の座標とタイムゾーンだけをOpen-Meteoへ送信します。ShockBaseへのモデル検索は写真や仕様表を要求した時だけです。メモ、写真、履歴はローカルに保存し、天気とISSはそれぞれ容量制限付きの別キャッシュを使います。"
+  }
+,
 
   "Bluetooth time update": {
     "it": "Aggiornamento ora Bluetooth",

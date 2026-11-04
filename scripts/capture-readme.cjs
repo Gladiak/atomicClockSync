@@ -12,14 +12,7 @@ app.setPath('userData', profile);
 require('../electron/main.cjs');
 require('./offline-weather.cjs')();
 
-// Keep the documented orbital snapshot within its actual validity window.
-const epoch = Date.parse('2026-10-25T14:33:11Z');
-const { validateOrbit } = require('../electron/iss-data.cjs');
-const orbit = validateOrbit(require('../test/fixtures/iss-omm.json'));
-ipcMain.removeHandler('clock:sync');
-ipcMain.handle('clock:sync', () => ({ ok:true, nowMs:epoch, host:'Reference · sample', offsetMs:0, uncertaintyMs:6, synchronizedAt:epoch }));
-ipcMain.removeHandler('iss:refresh');
-ipcMain.handle('iss:refresh', () => ({ orbit, fix:null, connectivity:'online', lastSuccess:epoch, error:'' }));
+const {epoch,install,seedPortrait}=require('./documentation-fixtures.cjs');install();
 ipcMain.removeHandler('bluetooth:scan');
 ipcMain.handle('bluetooth:scan', () => ({ ok:true, devices:[{
   id:'11111111-1111-1111-1111-111111111111', name:'CASIO GA-B2100',
@@ -87,12 +80,21 @@ app.whenReady().then(async () => {
       'atomic.world':{ city:{ id:3169070, name:'Rome', country:'Italy', region:'Lazio', latitude:41.8919, longitude:12.5113, timeZone:'Europe/Rome' }, coverage:'all', twilight:true },
     };
     await run(`for(const [key,value] of Object.entries(${JSON.stringify(storage)}))localStorage.setItem(key,JSON.stringify(value))`);
+    await seedPortrait(run,'readme-watch');
     win.webContents.reload();
     await new Promise(resolve => win.webContents.once('did-finish-load', resolve));
     await until("!document.getElementById('start-button').disabled");
     await run('document.fonts.ready.then(()=>true)');
     showNavigation = await prepareCaptureNavigation(win);
 
+    await navigate('home');
+    await until("document.getElementById('now-weather-trend').dataset.state==='available'&&document.getElementById('now-moon-disc').dataset.texture==='nasa-lro'&&!document.getElementById('now-watch-photo').hidden");
+    await capture('dashboard');
+    await navigate('profiles');await capture('collection');
+    await navigate('home');win.setContentSize(1600,1000);await click('observatory-open');
+    await until("document.getElementById('observatory-dialog').open&&document.getElementById('dial-trend').dataset.state==='available'");
+    await pause(400);fs.writeFileSync(path.join(output,'observatory-clock.png'),(await win.webContents.capturePage()).toPNG());captures.push('observatory-clock');
+    await click('observatory-close');win.setContentSize(1264,740);
     await navigate('sync');
     await capture('synchronization');
     await sidebar();
@@ -145,7 +147,7 @@ app.whenReady().then(async () => {
     await capture('settings-rainbow');
 
     await navigate('guide');
-    await run("document.querySelector('[data-chapter=bluetooth]').click()");
+    await run("document.querySelector('[data-chapter=home]').click()");
     await until("document.querySelector('.manual-figure img').complete");
     await run("document.getElementById('manual-reader').scrollTop=0");
     await until("document.querySelector('.manual-figure img').complete&&document.querySelector('.manual-figure img').naturalWidth>0");

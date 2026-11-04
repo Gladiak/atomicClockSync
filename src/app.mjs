@@ -100,7 +100,7 @@ const receptionLab = createReceptionLab({
   }
 });
 
-const guideView = createGuide({ goTo: navigate, persist });
+const guideView = createGuide({ goTo:page=>{if(page==='clock'){navigate('home');observatory.openClock();}else navigate(page);}, persist });
 
 const accuracyView = createWatchAccuracy({
   getNow: now, getData: () => ({profiles, history, activeProfileId, reference, locked: Boolean(session) || busy || syncing}),
@@ -663,7 +663,7 @@ document.querySelectorAll('[data-page]').forEach(button => button.addEventListen
 document.querySelectorAll('[data-goto]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.goto)));
 document.querySelectorAll('[data-reference]').forEach(button => button.addEventListener('click', () => desktop.openReference(button.dataset.reference)));
 document.querySelector('.brand').addEventListener('click', event => { event.preventDefault(); navigate('home'); });
-$('help-button').addEventListener('click', () => { const page = document.querySelector('.page.active').id.replace('page-', ''); if (page !== 'guide') guideView.openChapter(page === 'home' ? 'start' : page); navigate('guide'); });
+$('help-button').addEventListener('click', () => { const page = document.querySelector('.page.active').id.replace('page-', ''); if (page !== 'guide') guideView.openChapter(page); navigate('guide'); });
 $('profile-adjust-transmission').addEventListener('click',()=>{
   if(session||busy||bluetoothBusy)return;
   const profile=profiles.find(item=>item.id===editingProfileId);
