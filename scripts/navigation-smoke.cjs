@@ -7,6 +7,7 @@ const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'atomic-navigation-test-')
 app.setPath('userData', profile);
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT?path.resolve(process.env.ATOMIC_TEST_APP_ROOT):path.resolve(__dirname,'..'),'electron/main.cjs'));
 require('./offline-iss.cjs')();
+ipcMain.removeHandler('observatory:fullscreen');ipcMain.handle('observatory:fullscreen',()=>true);
 ipcMain.removeHandler('clock:sync');
 ipcMain.handle('clock:sync', () => ({ ok: false, error: 'Offline navigation test' }));
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -27,6 +28,12 @@ app.whenReady().then(async () => {
   async function input(event){
     if(event.type==='mouseMove')return win.webContents.debugger.sendCommand('Input.dispatchMouseEvent',{type:'mouseMoved',x:event.x,y:event.y,button:'none'});
     return win.webContents.debugger.sendCommand('Input.dispatchKeyEvent',{type:event.type,key:event.keyCode,code:event.keyCode,windowsVirtualKeyCode:9,nativeVirtualKeyCode:9});
+  }
+  async function click(selector){
+    const point=await run(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`);
+    await input({type:'mouseMove',...point});
+    await win.webContents.debugger.sendCommand('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});
+    await win.webContents.debugger.sendCommand('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1});
   }
   async function capture(file) {
     for(let attempt=0;attempt<3;attempt++)try{fs.writeFileSync(file,(await win.webContents.capturePage()).toPNG());return;}
@@ -50,6 +57,22 @@ app.whenReady().then(async () => {
     win.showInactive();
     await input({type:'mouseMove',x:650,y:100});
     await until("!document.hidden && !document.getElementById('start-button').disabled");
+    // Real pointer/keyboard input reproduces the restored ring after closing a dialog.
+    await input({type:'keyDown',keyCode:'Tab'});await input({type:'keyUp',keyCode:'Tab'});
+    await run("document.getElementById('observatory-open').focus()");
+    assert.equal(await run("getComputedStyle(document.getElementById('observatory-open')).outlineStyle"),'solid','Keyboard focus remains visible');
+    await click('#observatory-open');await until("document.getElementById('observatory-dialog').open");
+    await click('#observatory-close');await until("!document.getElementById('observatory-dialog').open&&document.activeElement.id==='observatory-open'");
+    assert.equal(await run("getComputedStyle(document.activeElement).outlineStyle"),'none','Closing a dialog by pointer restores logical focus without a ring');
+    await input({type:'keyDown',keyCode:'Tab'});await input({type:'keyUp',keyCode:'Tab'});
+    assert.equal(await run("document.activeElement.id"),'help-button');
+    assert.equal(await run("getComputedStyle(document.activeElement).outlineStyle"),'solid','Tab immediately restores the keyboard ring');
+    await run("document.querySelector('[data-page=profiles]').click()");await click('#collection-search');
+    assert.equal(await run("document.activeElement.id"),'collection-search','Pointer input keeps the field focused for editing');
+    assert.equal(await run("getComputedStyle(document.activeElement).outlineStyle"),'none');
+    await win.webContents.debugger.sendCommand('Input.insertText',{text:'Focus check'});
+    assert.equal(await run("document.getElementById('collection-search').value"),'Focus check');
+    await run("document.getElementById('collection-search').value='';document.querySelector('[data-page=home]').click()");
     assert.equal(await run("document.querySelectorAll('[data-nav-group]').length"),3);
     assert.equal(await run("document.querySelector('.sidebar').dataset.expanded"),'false');
     assert.equal(await run("Math.round(document.querySelector('.sidebar').getBoundingClientRect().width)"),72);
@@ -155,10 +178,12 @@ app.whenReady().then(async () => {
     assert.equal(await run("document.querySelector('.sidebar .version').innerText.trim()"),'v'+require('../package.json').version);
     assert.equal(await run("(()=>{const a=document.querySelector('.sidebar .version').getBoundingClientRect(),b=document.querySelector('.sidebar').getBoundingClientRect();return Math.abs((a.left+a.right)/2-(b.left+b.right)/2)<1})()"),true,'Compact version is centred');
     await capture('artifacts/sidebar/synchronization.png');
+    // Reload starts in pointer mode; enter keyboard navigation explicitly.
+    await input({type:'keyDown',keyCode:'Tab'});await input({type:'keyUp',keyCode:'Tab'});
     await run("document.getElementById('nav-explore-toggle').focus()");await until("document.querySelector('.sidebar').dataset.expanded==='true'");
     await run("document.getElementById('page-title').tabIndex=-1;document.getElementById('page-title').focus()");await until("document.querySelector('.sidebar').dataset.expanded==='false'");
     assert.deepEqual(errors, []);
-    console.log('PASS: AtomicClockSync identity and profile, real visible transitions, rapid navigation, immediate focus, aligned sidebar indicator, reduced-motion changes, three thematic groups and pinned Settings/Guide, zero scrolling in six languages, keyboard/inert disclosure, hover expansion without content movement, keyboard expansion, saved open/folded state and continuous muted AudioWorklet transmission.');
+    console.log('PASS: pointer clicks and dialog focus restoration without rings, keyboard focus rings and field editing, AtomicClockSync identity and profile, real visible transitions, rapid navigation, immediate focus, aligned sidebar indicator, reduced-motion changes, three thematic groups and pinned Settings/Guide, zero scrolling in six languages, keyboard/inert disclosure, hover expansion without content movement, keyboard expansion, saved open/folded state and continuous muted AudioWorklet transmission.');
     app.exit(0);
   } catch (error) {
     console.error(error.stack, errors);

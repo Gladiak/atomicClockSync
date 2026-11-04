@@ -1,3 +1,4 @@
+import {isKeyboardFocus} from './focus-modality.mjs';
 import { t, onLanguageChange } from './i18n.mjs';
 
 const KEY = 'atomic.sidebar.v1';
@@ -52,7 +53,7 @@ export function createSidebar({ persist }) {
     apply();
   }
   function keyboardFocus() {
-    return !suppressFocus && sidebar.contains(document.activeElement) && document.activeElement.matches(':focus-visible');
+    return !suppressFocus && sidebar.contains(document.activeElement) && isKeyboardFocus(document.activeElement);
   }
   function updateWidth() { setWide((hover && !suppressHover) || latched || keyboardFocus()); }
   sidebar.addEventListener('pointerenter', () => { clearTimeout(leaveTimer); hover = true; updateWidth(); });

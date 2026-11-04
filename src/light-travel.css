@@ -27,7 +27,7 @@
 .lt-flight-trail { fill:none; stroke:#b8eff4; stroke-width:1.5; opacity:.7; }
 .lt-body { cursor:pointer; outline:none; }
 .lt-body .lt-body-focus { fill:none; stroke:var(--lt-source-color,#ffcf79); stroke-width:.7; opacity:0; }
-.lt-body[aria-pressed=true] .lt-body-focus,.lt-body:focus-visible .lt-body-focus { opacity:.9; }
+.lt-body[aria-pressed=true] .lt-body-focus,:where(:root:not([data-focus-mode=pointer])) .lt-body:focus-visible .lt-body-focus { opacity:.9; }
 .lt-body text { fill:#94a9bc; font:8px var(--mono); pointer-events:none; }
 .lt-body[aria-pressed=true] text { fill:#f5d29a; }
 .lt-earth-orbit { stroke:#a2e9ed; stroke-width:.6; fill:#68dbe70b; stroke-dasharray:2 3; }
@@ -62,7 +62,7 @@
 .lt-target[aria-pressed=true] { border-color:color-mix(in srgb,var(--lt-source-color) 55%,var(--line)); background:color-mix(in srgb,var(--lt-source-color) 6%,var(--panel)); }
 .lt-target[aria-pressed=true]:before { opacity:.9; box-shadow:0 0 11px var(--lt-source-color); }
 .lt-target:hover { background:var(--surface-hover); }
-.lt-target:focus-visible { outline:2px solid var(--accent-text); outline-offset:2px; }
+:where(:root:not([data-focus-mode=pointer])) .lt-target:focus-visible { outline:2px solid var(--accent-text); outline-offset:2px; }
 .lt-target .lt-mini-planet { position:relative; width:12px; height:12px; border-radius:50%; background:radial-gradient(circle at 30% 25%,color-mix(in srgb,var(--lt-source-color) 65%,white),var(--lt-source-color) 40%,#101727 100%); box-shadow:0 0 9px color-mix(in srgb,var(--lt-source-color) 15%,transparent); }
 .lt-target[data-target=sun] .lt-mini-planet { box-shadow:0 0 12px #f6bd6e66; }
 .lt-target[data-target=saturn] .lt-mini-planet:after { content:''; position:absolute; inset:3px -5px; border:1px solid #dfd09f; border-radius:50%; transform:rotate(-24deg); }

@@ -1,3 +1,4 @@
+import {isKeyboardFocus} from './focus-modality.mjs';
 import {t,dateTimeFormat,onLanguageChange} from './i18n.mjs';
 const scenes={clock:'#clock-stage',world:'.world-stage',moon:'.moon-stage','light-travel':'#lt-scene'};
 export function createObservatory({views,goTo,desktop,notify}) {
@@ -8,7 +9,7 @@ export function createObservatory({views,goTo,desktop,notify}) {
     $('dialog').classList.remove('controls-hidden');clearTimeout(hideTimer);
     hideTimer=setTimeout(()=>{
       const active=document.activeElement;
-      const keyboardControl=$('dialog').contains(active)&&active.matches('button:focus-visible,input:focus-visible,select:focus-visible,[role=button]:focus-visible');
+      const keyboardControl=$('dialog').contains(active)&&isKeyboardFocus(active)&&active.matches('button,input,select,[role=button]');
       const hovering=$('controls').matches(':hover')||$('scene').querySelector('.world-basemap-controls:hover,.world-navigation-controls:hover,.moon-texture-source:hover');
       if(!keyboardControl&&!hovering)$('dialog').classList.add('controls-hidden');
     },4500);

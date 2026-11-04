@@ -1,3 +1,4 @@
+import {installFocusModality} from './focus-modality.mjs';
 import {createClockView} from './clock-view.mjs';
 import { createObservatory } from './observatory.mjs';
 import { createSharedInstant } from './shared-instant.mjs';
@@ -26,6 +27,7 @@ import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeP
 
 const $ = id => document.getElementById(id);
 const desktop = window.desktop;
+installFocusModality();
 localizeDocument();
 const engine = new SignalEngine();
 const sidebar = createSidebar({ persist });

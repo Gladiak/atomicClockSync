@@ -9,7 +9,7 @@
 .spec-icon-button{--spec-action:var(--accent-text);display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;flex-shrink:0;border:1px solid color-mix(in srgb,var(--spec-action),transparent 72%);border-radius:12px;background:color-mix(in srgb,var(--spec-action),transparent 92%);color:var(--spec-action);transition:background .15s ease,border-color .15s ease}
 .spec-icon-button svg,.spec-back-button svg,.spec-launcher svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .spec-icon-button:not(:disabled):hover{border-color:var(--spec-action);background:color-mix(in srgb,var(--spec-action),transparent 84%)}
-.spec-icon-button:focus-visible{outline-color:var(--spec-action)}
+:where(:root:not([data-focus-mode=pointer])) .spec-icon-button:focus-visible{outline-color:var(--spec-action)}
 .spec-delete-button{--spec-action:#FF8E96}:root[data-theme=atlantic] .spec-delete-button{--spec-action:#B42332}
 .spec-launcher{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;margin:16px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface-secondary);color:var(--accent-text)}
 .spec-launcher:hover{border-color:var(--accent-text);background:var(--surface-hover)}

@@ -47,7 +47,7 @@
 .world-station-marker.selected .station-target { stroke:#fff0cb; stroke-width:1.6; }
 .world-station-marker.selected .station-center { fill:#fff2c6; }
 .world-station-marker.selected .station-ring { opacity:.8; }
-.world-station-marker:focus-visible .station-ring,.world-station-marker:hover .station-ring { stroke:#fff; stroke-width:2; opacity:1; }
+:where(:root:not([data-focus-mode=pointer])) .world-station-marker:focus-visible .station-ring,.world-station-marker:hover .station-ring { stroke:#fff; stroke-width:2; opacity:1; }
 .world-station-marker.transmitting .station-ring { animation:world-beacon 2.5s ease-out infinite; }
 @keyframes world-beacon { 0% { stroke-width:2; opacity:1; } 100% { stroke-width:.3; opacity:.2; } }
 .world-city-halo { fill:#ffbc4d; opacity:.08; stroke:#ffd99c; stroke-width:.7; }
@@ -89,7 +89,7 @@
 @media(prefers-reduced-motion:reduce) { .world-station-marker.transmitting .station-ring { animation:none; } }
 /* Satellite relief and vector overlays stay in one geographic frame. */
 #world-map{touch-action:none;user-select:none}#world-map.can-pan{cursor:grab}#world-map.is-panning{cursor:grabbing}
-#world-map:focus-visible{outline:2px solid #ffd398;outline-offset:-3px;border-radius:9px}
+:where(:root:not([data-focus-mode=pointer])) #world-map:focus-visible{outline:2px solid #ffd398;outline-offset:-3px;border-radius:9px}
 #world-map[data-basemap=satellite] .world-borders{stroke:#e6e7d2;opacity:.38}#world-map[data-basemap=satellite] .world-graticule{opacity:.1}
 .world-borders,.world-graticule,#world-twilight-lines path,#world-coverage-paths path,#world-light-cores path,#world-light-halos path{vector-effect:non-scaling-stroke}
 .world-basemap-controls,.world-navigation-controls{position:absolute;z-index:3;bottom:34px;display:flex;align-items:center;gap:3px;border:1px solid #60768766;border-radius:9px;background:#081421e8;padding:4px;box-shadow:0 4px 16px #0004}
@@ -99,7 +99,7 @@
 .world-basemap-controls button:not(:disabled):hover,.world-navigation-controls button:not(:disabled):hover{background:#d0e5f02e;color:#fff}
 .world-navigation-controls button{padding:0 5px;font-size:17px}.world-navigation-controls svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 #world-zoom-level{min-width:33px;text-align:center;color:#d7e3ed;font:9px var(--mono)}
-.world-basemap-controls button:focus-visible,.world-navigation-controls button:focus-visible{outline-color:#ffd398}
+:where(:root:not([data-focus-mode=pointer])) .world-basemap-controls button:focus-visible,:where(:root:not([data-focus-mode=pointer])) .world-navigation-controls button:focus-visible{outline-color:#ffd398}
 .observatory-scene .world-basemap-controls,.observatory-scene .world-navigation-controls{bottom:164px}
 .observatory-scene .world-basemap-controls{left:40px}.observatory-scene .world-navigation-controls{right:40px}
 .world-stage-heading{padding:5px 7px;margin:-5px -7px;background:#06101b9c;border-radius:6px}.world-solar-hud{padding:5px 7px;margin:-5px -7px;background:#06101b9c;border-radius:6px}

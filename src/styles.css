@@ -101,10 +101,12 @@ button:disabled {
   cursor:not-allowed;
   opacity:.45;
 }
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {
+:where(:root:not([data-focus-mode=pointer])) button:focus-visible,:where(:root:not([data-focus-mode=pointer])) a:focus-visible,:where(:root:not([data-focus-mode=pointer])) input:focus-visible,:where(:root:not([data-focus-mode=pointer])) select:focus-visible,:where(:root:not([data-focus-mode=pointer])) summary:focus-visible {
   outline:2px solid var(--accent);
   outline-offset:3px;
 }
+/* Suppress native and restored focus rings after mouse/touch input. */
+:root[data-focus-mode=pointer] :focus{outline:none!important}
 button,input,select {
   accent-color:var(--accent-text);
 }
@@ -1259,7 +1261,7 @@ main{margin-left:72px;width:calc(100% - 72px)}
 .nav-group-toggle::after,.nav-group .nav-item::after{content:'';position:absolute;bottom:0;height:1px;background:var(--accent-text);opacity:0;transform:scaleX(.4);transform-origin:left;transition:opacity .15s ease,transform .22s cubic-bezier(.16,1,.3,1);pointer-events:none}
 .nav-group-toggle::after{left:12px;right:12px}
 .nav-group .nav-item::after{left:10px;right:10px}
-.nav-group-toggle:hover::after,.nav-group-toggle:focus-visible::after,.sidebar:not(.is-expanded) .has-current-page>.nav-group-toggle::after,.has-current-page>.nav-group-toggle[aria-expanded=false]::after,.nav-group .nav-item:not(.selected):hover::after,.nav-group .nav-item:not(.selected):focus-visible::after{opacity:.65;transform:scaleX(1)}
+.nav-group-toggle:hover::after,:where(:root:not([data-focus-mode=pointer])) .nav-group-toggle:focus-visible::after,.sidebar:not(.is-expanded) .has-current-page>.nav-group-toggle::after,.has-current-page>.nav-group-toggle[aria-expanded=false]::after,.nav-group .nav-item:not(.selected):hover::after,:where(:root:not([data-focus-mode=pointer])) .nav-group .nav-item:not(.selected):focus-visible::after{opacity:.65;transform:scaleX(1)}
 .nav-group .nav-item,.nav-group .nav-item:hover,.nav-group .nav-item.selected{background:transparent;border-radius:0}
 .sidebar .nav-indicator{height:1px;border-radius:0;box-shadow:none;background:var(--accent-text);opacity:.85}
 .sidebar-handle{background:var(--bg);border:0;border-radius:0;color:var(--muted)}
@@ -1267,7 +1269,7 @@ main{margin-left:72px;width:calc(100% - 72px)}
 /* The selection follows a light vertical rail, leaving every row unfilled. */
 .nav-group-toggle::after{left:1px;right:auto;top:11px;bottom:11px;width:1px;height:auto;transform:scaleY(.4);transform-origin:center}
 .nav-group .nav-item::after{left:1px;right:auto;top:7px;bottom:7px;width:1px;height:auto;transform:scaleY(.4);transform-origin:center}
-.nav-group-toggle:hover::after,.nav-group-toggle:focus-visible::after,.sidebar:not(.is-expanded) .has-current-page>.nav-group-toggle::after,.has-current-page>.nav-group-toggle[aria-expanded=false]::after,.nav-group .nav-item:not(.selected):hover::after,.nav-group .nav-item:not(.selected):focus-visible::after{transform:scaleY(1)}
+.nav-group-toggle:hover::after,:where(:root:not([data-focus-mode=pointer])) .nav-group-toggle:focus-visible::after,.sidebar:not(.is-expanded) .has-current-page>.nav-group-toggle::after,.has-current-page>.nav-group-toggle[aria-expanded=false]::after,.nav-group .nav-item:not(.selected):hover::after,:where(:root:not([data-focus-mode=pointer])) .nav-group .nav-item:not(.selected):focus-visible::after{transform:scaleY(1)}
 .nav-group-toggle:hover::after,.nav-group .nav-item:not(.selected):hover::after{opacity:.45}
 .sidebar .nav-indicator{width:1px;height:auto;border-radius:0;opacity:.85}
 .sidebar-handle:hover{box-shadow:none}
@@ -1286,6 +1288,6 @@ main{margin-left:72px;width:calc(100% - 72px)}
 .sidebar-utility-label{font-size:11px;opacity:0;transform:translateX(-5px);transition:opacity .15s ease,transform .22s ease;min-width:145px}
 .sidebar.is-expanded .sidebar-utility-label{opacity:1;transform:none;transition-delay:.05s}
 .sidebar-utilities .nav-item:after{content:'';position:absolute;left:1px;top:8px;bottom:8px;width:1px;background:var(--accent-text);opacity:0;transform:scaleY(.4);transition:opacity .15s ease,transform .22s ease;pointer-events:none}
-.sidebar-utilities .nav-item:hover:after,.sidebar-utilities .nav-item:focus-visible:after{opacity:.45;transform:scaleY(1)}
+.sidebar-utilities .nav-item:hover:after,:where(:root:not([data-focus-mode=pointer])) .sidebar-utilities .nav-item:focus-visible:after{opacity:.45;transform:scaleY(1)}
 .sidebar-utilities .nav-item.selected:after{opacity:.85;transform:scaleY(1)}
 .sidebar .sidebar-bottom .version{flex-shrink:0;min-height:13px;align-items:center}

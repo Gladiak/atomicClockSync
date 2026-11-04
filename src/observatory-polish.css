@@ -13,7 +13,7 @@
 .icon-button{transition:background-color .18s,border-color .18s,transform .18s}
 .icon-button:hover{background:var(--surface-hover)}
 .watch-card{border-radius:12px;transition:border-color .2s,box-shadow .2s}
-.watch-card:focus-within,.watch-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));box-shadow:0 7px 24px color-mix(in srgb,var(--bg) 30%,transparent)}
+:where(:root:not([data-focus-mode=pointer])) .watch-card:focus-within,.watch-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));box-shadow:0 7px 24px color-mix(in srgb,var(--bg) 30%,transparent)}
 /* Personal reference above; the three sky views form one visual sequence below. */
 .now-grid{grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1.3fr) minmax(0,1fr);gap:14px;--now-panel-line:color-mix(in srgb,var(--accent) 12%,var(--line))}
 .now-grid>.panel{background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--accent) 5%,transparent),transparent 75%),var(--panel);border-color:var(--now-panel-line);border-radius:14px}
