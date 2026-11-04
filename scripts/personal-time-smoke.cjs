@@ -7,6 +7,8 @@ const profile=fs.mkdtempSync(path.join(os.tmpdir(),'atomic-personal-time-'));
 app.setPath('userData',profile);
 require('../electron/main.cjs');
 require('./offline-iss.cjs')();
+const {validateWeather}=require('../electron/weather-data.cjs'),weatherFixture=require('../test/fixtures/weather-rome.json');
+ipcMain.removeHandler('weather:get');ipcMain.handle('weather:get',(_event,city)=>{const raw=structuredClone(weatherFixture);raw.latitude=city.latitude;raw.longitude=city.longitude;raw.timezone=city.timeZone;raw.current.time=Math.floor(Date.now()/1000);return {weather:validateWeather(raw,city),connectivity:'online'};});
 ipcMain.removeHandler('clock:sync');
 ipcMain.handle('clock:sync',()=>({ok:false,error:'Offline test'}));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -117,6 +119,8 @@ app.whenReady().then(async()=>{
   await until("!document.getElementById('now-watch-photo').hidden&&document.getElementById('now-watch-photo').naturalWidth>0");
   assert.equal(await run("document.getElementById('now-watch-photo').getAttribute('src')===JSON.parse(localStorage.getItem('atomic.profiles'))[0].details.photo&&getComputedStyle(document.getElementById('now-watch-placeholder')).display==='none'"),true,'The home portrait is the selected watch’s saved photo');
   await run("document.getElementById('language-select').value='it';document.getElementById('language-select').dispatchEvent(new Event('change'));document.getElementById('theme-select').value='rainbow';document.getElementById('theme-select').dispatchEvent(new Event('change'));document.getElementById('toast').hidden=true");
+  assert.equal(await run("(()=>{const photo=document.getElementById('now-watch-photo'),art=photo.parentElement.getBoundingClientRect(),r=photo.getBoundingClientRect();return Math.min(r.width,r.height)>200&&Math.abs(r.left+r.width/2-(art.left+art.width/2))<1})()"),true,'The large watch portrait is centered in its own stage');
+  await until("document.getElementById('now-weather-card').dataset.weather==='available'");
   await pause(650);await capture('personal-home-it.png');
   await run("document.getElementById('language-select').value='en';document.getElementById('language-select').dispatchEvent(new Event('change'));document.querySelector('[data-page=profiles]').click()");
   assert.equal(await run("document.getElementById('collection-note').value"),'A personal memory 日本語');

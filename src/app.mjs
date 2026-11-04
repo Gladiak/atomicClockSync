@@ -109,7 +109,7 @@ const accuracyView = createWatchAccuracy({
 
 const nowView = createNowView({desktop,getBasemap:()=>worldView.getBasemap(), getNow: now, getObserver: () => worldView.getCity(),
   getData: () => ({ profiles, activeProfileId, history, reference, session }),
-  getAccuracy: () => accuracyView.getArchive() });
+  getAccuracy: () => accuracyView.getArchive(),openClock:()=>observatory.openClock() });
 
 const syncJourney = createSyncJourney({ openTrial });
 const collectionView = createWatchCollection({desktop,getData:()=>({profiles,activeProfileId,history}),getNow:now,

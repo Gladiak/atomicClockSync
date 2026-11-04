@@ -19,7 +19,9 @@
 <link rel="stylesheet" href="./personal-time.css">
 <link rel="stylesheet" href="./watch-specs.css">
 <link rel="stylesheet" href="./observatory-polish.css">
+<link rel="stylesheet" href="../assets/weather/weather-icons.css">
 <link rel="stylesheet" href="./clock-view.css">
+<link rel="stylesheet" href="./dashboard-weather.css">
 </head>
 <body>
 <div class="titlebar"><span>AtomicClockSync</span><span>DESKTOP / <span id="platform">MAC</span></span></div>
@@ -63,15 +65,24 @@
   <section id="page-home" class="page active" aria-label="Your now">
     <div class="now-grid">
       <section class="panel now-hero"><div class="panel-top"><span class="tiny-label">Your reference</span><span class="chip">LIVE</span></div><div id="now-clock" class="now-clock"><span id="now-clock-main">--:--</span><span id="now-clock-seconds">:--</span></div><p id="now-date" class="muted-text"></p><p id="now-reference" class="now-reference"></p><button class="primary-button" data-goto="sync">Synchronize my watch →</button><p id="now-session" class="muted-text"></p></section>
+      <section id="now-weather-card" class="panel now-weather" aria-label="Weather estimate">
+        <div class="panel-top"><span class="tiny-label">Weather estimate</span><button id="now-weather-open" class="text-button" aria-label="Clock and weather">↗</button></div>
+        <div class="now-weather-current"><span id="now-weather-icon" role="img" aria-label="Weather unavailable"></span><div><strong id="now-weather-temperature">—</strong><span id="now-weather-condition"></span><span id="now-weather-city"></span></div></div>
+        <div class="now-weather-solar"><div><span>Sunrise</span><strong id="now-weather-sunrise">—</strong></div><span id="now-weather-daylight"></span><div><span>Sunset</span><strong id="now-weather-sunset">—</strong></div></div>
+        <div class="now-weather-facts"><div><span>Rain chance</span><strong id="now-weather-rain">—</strong></div><div><span>Humidity</span><strong id="now-weather-humidity">—</strong></div><div><span>Wind</span><strong id="now-weather-wind">—</strong></div></div>
+        <div id="now-weather-daily" class="now-weather-daily" aria-label="Five-day forecast"></div>
+        <div class="now-weather-footer"><span id="now-weather-status"></span><button id="now-weather-source" class="text-button">Open-Meteo ↗</button></div>
+      </section>
       <section class="panel now-watch">
         <span class="tiny-label">On your wrist</span>
         <div class="now-watch-main">
-          <div class="now-watch-copy"><h2 id="now-watch-name">My watches</h2><p id="now-watch-model" class="muted-text"></p><div class="now-facts"><div><span>Last confirmed reception</span><strong id="now-last-sync">—</strong></div><div><span>Estimated daily drift</span><strong id="now-drift">—</strong></div></div></div>
+          <div class="now-watch-copy"><h2 id="now-watch-name">My watches</h2><p id="now-watch-model" class="muted-text"></p></div>
           <div class="now-watch-art">
             <span class="now-watch-orbit"></span><img id="now-watch-photo" alt="" hidden>
             <svg id="now-watch-placeholder" aria-hidden="true" viewBox="0 0 120 180" fill="none"><path d="M39 49 43 6h34l4 43M39 131l4 43h34l4-43" stroke="currentColor" stroke-width="1.5"/><rect x="21" y="44" width="78" height="92" rx="25" stroke="currentColor" stroke-width="2"/><rect x="29" y="52" width="62" height="76" rx="19" stroke="currentColor" opacity=".25"/><path d="M60 66v24l15 9M101 76v20M54 16h12M54 164h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="90" r="3" fill="currentColor"/></svg><button id="now-watch-source" class="text-button" hidden>Photo: ShockBase · Casio ↗</button>
           </div>
         </div>
+        <div class="now-facts"><div><span>Last confirmed reception</span><strong id="now-last-sync">—</strong></div><div><span>Estimated daily drift</span><strong id="now-drift">—</strong></div></div>
         <button class="text-button" data-goto="profiles">Open my collection →</button>
       </section>
       <section class="panel now-earth"><div class="panel-top"><span class="tiny-label">Earth, right now</span><button class="text-button" data-goto="world" id="now-city">World View →</button></div><svg id="now-earth" viewBox="0 0 1000 440" role="img" aria-label="Earth with calculated daylight and city lights"></svg><div class="now-earth-caption"><span id="now-earth-status">Calculated daylight · illustrative city lights</span><button id="now-earth-credit" class="text-button" data-reference="earthTexture" title="NASA Blue Marble · August 2004 composite · not live imagery." hidden>NASA Blue Marble · 2004 ↗</button></div></section>

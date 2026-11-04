@@ -1,3 +1,4 @@
+import {createNowWeather} from './now-weather.mjs';
 import { t, decimal, dateTimeFormat, numberFormat, onLanguageChange } from './i18n.mjs';
 import { createEarthScene } from './earth-scene.mjs';
 import { lunarEvents, moonState } from './moon-math.mjs';
@@ -19,9 +20,10 @@ export function watchOverview(profile, history, archive, epoch) {
   return { last, drift, stats };
 }
 
-export function createNowView({desktop,getBasemap,getNow,getObserver,getData,getAccuracy}) {
+export function createNowView({desktop,getBasemap,getNow,getObserver,getData,getAccuracy,openClock}) {
   const $=id=>document.getElementById('now-'+id);
   const moon=createMoonSurface($('moon-disc'));
+  const weather=createNowWeather({desktop,getNow,getObserver,openClock});
   let visible=false,timer,refreshTimer,scene,loading,cacheKey='',mapStep=-1;
   let displayedPhoto='',displayedDetails,photoSource=null;
   $('watch-source').onclick=()=>{if(photoSource)desktop.openWatchPhotoSource(photoSource);};
@@ -61,6 +63,7 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
   function render(force=false){
     if(!visible||document.hidden)return;
     const epoch=getNow(),city=getObserver(),data=getData();
+    weather.render(force);
     const parts=dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(epoch);
     const part=type=>parts.find(value=>value.type===type)?.value||'--';
     $('clock-main').textContent=part('hour')+':'+part('minute');$('clock-seconds').textContent=':'+part('second');
@@ -68,6 +71,7 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
     $('city').textContent=city.name+' ↗';
     $('reference').dataset.state=data.reference?(epoch-data.reference.nowMs<1800000?'verified':'stale'):'system';
     $('reference').textContent=data.reference?t(epoch-data.reference.nowMs<1800000?'NTP verified':'NTP check needed')+' · '+data.reference.host:t('System clock · unverified');
+    $('session').hidden=!data.session;
     $('session').textContent=data.session?t('Transmission in progress · open Synchronize for controls.'):t('Your reference. Your watch. Your universe.');
     const profile=data.profiles.find(p=>p.id===data.activeProfileId),summary=watchOverview(profile,data.history,getAccuracy(),epoch);
     if(profile?.details!==displayedDetails){
@@ -75,7 +79,7 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
       photoSource=details.photoSource?.pageURL||null;$('watch-source').hidden=!photo||!photoSource;
       if(photo!==displayedPhoto){displayedPhoto=photo;watchPhoto.hidden=true;$('watch-placeholder').toggleAttribute('hidden',false);if(photo)watchPhoto.src=photo;else watchPhoto.removeAttribute('src');}
     }
-    $('watch-name').title=profile?.name||'';
+    $('watch-name').title=profile?.name||'';watchPhoto.alt=profile?.name||profile?.model||'';
     $('watch-name').textContent=profile?.name||t('Start your collection');$('watch-model').textContent=profile?.model||t('Save your first watch and make this space yours.');
     $('last-sync').textContent=summary.last?dateTimeFormat({day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(summary.last.at):t('No confirmed reception yet');
     $('drift').textContent=summary.drift===null?t('More readings needed'):t('{0} s/day',numberFormat({maximumFractionDigits:summary.stats.digits,signDisplay:'exceptZero'}).format(summary.drift));
@@ -99,5 +103,5 @@ export function createNowView({desktop,getBasemap,getNow,getObserver,getData,get
   onLanguageChange(()=>render(true));
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&visible){render(true);refreshIss();}});
   window.addEventListener('beforeunload',()=>{clearInterval(timer);clearInterval(refreshTimer);});
-  return {setVisible(value){visible=value;moon.setVisible(value);clearInterval(timer);clearInterval(refreshTimer);if(value){load();render(true);refreshIss();timer=setInterval(render,1000);refreshTimer=setInterval(refreshIss,10000);}}};
+  return {setVisible(value){visible=value;moon.setVisible(value);weather.setVisible(value);clearInterval(timer);clearInterval(refreshTimer);if(value){load();render(true);refreshIss();timer=setInterval(render,1000);refreshTimer=setInterval(refreshIss,10000);}}};
 }

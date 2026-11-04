@@ -3,6 +3,7 @@ const {app,BrowserWindow,ipcMain}=require('electron');
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 app.setPath('userData',fs.mkdtempSync(path.join(os.tmpdir(),'atomic-manual-capture-')));
 require('../electron/main.cjs');
+require('./offline-weather.cjs')();
 // Use the bundled orbital snapshot inside its actual validity window.
 const epoch=Date.parse('2026-10-25T14:33:11Z');
 ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:epoch,host:'Reference · sample',offsetMs:0,uncertaintyMs:6,synchronizedAt:epoch}));

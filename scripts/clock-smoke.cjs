@@ -21,12 +21,12 @@ app.whenReady().then(async()=>{
  async function reopen(){await run("document.getElementById('observatory-close').click();document.getElementById('observatory-open').click();document.querySelector('[data-observatory-page=clock]').click()");}
  try{
   if(win.webContents.isLoading())await new Promise(resolve=>win.webContents.once('did-finish-load',resolve));win.showInactive();
-  await until("!document.getElementById('start-button').disabled");assert.equal(requests,0,'Weather never polls before the clock is visible');
+  await until("!document.getElementById('start-button').disabled");assert.ok(requests>0,'Home weather is requested on the dashboard');
   await run("document.getElementById('observatory-open').click()");await until("document.getElementById('observatory-dialog').dataset.scene==='clock'&&document.getElementById('clock-stage').dataset.weather==='available'");
   assert.equal(await run("document.getElementById('dial-city').textContent"),'Rome');assert.equal(await run("document.getElementById('dial-hourly').children.length"),6);assert.equal(await run("document.getElementById('dial-daily').children.length"),5);
   assert.match(await run("document.getElementById('dial-coordinates').textContent"),/41.89.*12.51/);assert.match(await run("document.getElementById('dial-sunrise').textContent"),/\d\d:\d\d/);
   assert.equal(await run("new Set([...document.querySelectorAll('.dial-value')].map(n=>getComputedStyle(n).fontSize)).size"),1,'Seconds are the same size as hours and minutes');
-  assert.equal(await run("document.querySelectorAll('.dial-flap').length"),0,'No flip panels');await until("document.fonts.check('400 100px \"Atomic Manrope\"')");await fits();await capture('clock-en');
+  assert.equal(await run("document.querySelectorAll('.dial-flap').length"),0,'No flip panels');await until("document.fonts.check('400 100px \"Atomic Manrope\"')");assert.equal(await run("document.querySelector('#dial-weather-icon .wi')!==null"),true);await until("document.fonts.check('32px weathericons')");await fits();await capture('clock-en');
   for(const language of ['it','fr','de','es','ja','en']){await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);await until("document.getElementById('observatory-dialog').open");await fits();if(language==='it')await capture('clock-it');}
   for(const theme of ['lime','cyan','fuchsia','ruby','gold','aqua','amethyst','lava','soft-sage','powder-blue','soft-lavender','warm-sand','rainbow','rainbow-soft','atlantic']){await run(`document.getElementById('theme-select').value='${theme}';document.getElementById('theme-select').dispatchEvent(new Event('change'))`);await fits();}await capture('clock-atlantic');
   win.setContentSize(1600,1000);await pause(250);
@@ -36,7 +36,7 @@ app.whenReady().then(async()=>{
   mode='expired';await reopen();await until("document.getElementById('dial-temperature').textContent==='—'");assert.equal(await run("document.getElementById('dial-hourly').children.length"),0);
   mode='empty';await reopen();await until("document.getElementById('clock-stage').dataset.weather==='unavailable'");assert.match(await run("document.getElementById('dial-sunset').textContent"),/\d\d:\d\d/);
   mode='pending';await reopen();await until("window.document.getElementById('observatory-dialog').dataset.scene==='clock'");
-  const waitDeferred=async count=>{const end=Date.now()+15000;while(deferred.length<count&&Date.now()<end)await pause(50);assert.equal(deferred.length,count);};
+  const waitDeferred=async count=>{const end=Date.now()+15000;while(deferred.length<count&&Date.now()<end)await pause(50);assert.ok(deferred.length>=count);};
   await waitDeferred(1);
   async function chooseCity(name){
    await run("document.getElementById('observatory-close').click();document.querySelector('[data-page=world]').click()");
@@ -45,10 +45,11 @@ app.whenReady().then(async()=>{
    await run(`[...document.querySelectorAll('.world-result')].find(node=>node.querySelector('strong').textContent===${JSON.stringify(name)}).click();document.getElementById('observatory-open').click();document.querySelector('[data-observatory-page=clock]').click()`);
   }
   await chooseCity('Tokyo');await waitDeferred(2);
+  const tokyo=deferred.find(row=>row.city.timeZone==='Asia/Tokyo');assert.ok(tokyo);
   assert.equal(await run("document.getElementById('dial-temperature').textContent"),'—');
-  mode='online';deferred[0].resolve(report(deferred[0].city));await pause(150);
+  mode='online';for(const row of deferred.filter(row=>row.city.timeZone!=='Asia/Tokyo'))row.resolve(report(row.city));await pause(150);
   assert.equal(await run("document.getElementById('dial-temperature').textContent"),'—','An old city response cannot overwrite the new location');
-  deferred[1].resolve(report(deferred[1].city));await until("document.getElementById('clock-stage').dataset.weather==='available'");
+  tokyo.resolve(report(tokyo.city));await until("document.getElementById('clock-stage').dataset.weather==='available'");
   assert.equal(await run("document.getElementById('dial-zone').textContent"),'Asia/Tokyo');
   const expected=new Intl.DateTimeFormat('en',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(epoch).replace(':','');
   assert.equal(await run("[...document.querySelectorAll('.dial-value')].map(node=>node.textContent).join('').slice(0,4)"),expected);
@@ -67,7 +68,7 @@ app.whenReady().then(async()=>{
   assert.equal(await run("document.getElementById('start-label').textContent"),'Stop','Clock and weather leave the radio signal running');
   await run("document.getElementById('observatory-close').click();document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");
   const stopped=requests;await pause(1600);assert.equal(requests,stopped);assert.equal(await run("document.querySelector('#clock-parking #clock-stage')!==null"),true);
-  assert.deepEqual(errors,[]);console.log('PASS: clock scene, equal-size HH:MM:SS, Font Awesome weather symbols, current and future forecasts, local astronomy, 6 languages, 15 themes, cache/offline/expired states and late-response isolation, Tokyo time zone, polar night, preview isolation, radio audio and visible-only lifecycle.');
+  assert.deepEqual(errors,[]);console.log('PASS: clock scene, equal-size HH:MM:SS, local Weatherfonts symbols, current and future forecasts, local astronomy, 6 languages, 15 themes, cache/offline/expired states and late-response isolation, Tokyo time zone, polar night, preview isolation, radio audio and visible-only lifecycle.');
  }catch(error){console.error(error.stack||error,errors);try{await capture('failure');}catch{}process.exitCode=1;}
  finally{app.exit(process.exitCode||0);}
 });

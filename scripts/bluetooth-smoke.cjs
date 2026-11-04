@@ -6,6 +6,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 app.setPath('userData', fs.mkdtempSync(path.join(os.tmpdir(), 'atomic-bluetooth-test-')));
 require('../electron/main.cjs');
+require('./offline-weather.cjs')();
 let finishScan, finishSync, scanError = null, cancelCount = 0;
 let device = { id: '11111111-1111-1111-1111-111111111111', name: 'CASIO GA-B2100', model: 'GA-B2100', module: '5689', instructions: 'ga', verified: true };
 let expectedOffset;

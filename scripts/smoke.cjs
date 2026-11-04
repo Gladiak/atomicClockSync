@@ -7,6 +7,7 @@ const assert = require('node:assert/strict');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'atomic-desktop-test-'));
 app.setPath('userData', temporary);
 require('../electron/main.cjs');
+require('./offline-weather.cjs')();
 ipcMain.removeHandler('iss:refresh');
 ipcMain.handle('iss:refresh',()=>({orbit:null,fix:null,connectivity:'unreachable',lastSuccess:0,error:'Offline desktop test'}));
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));

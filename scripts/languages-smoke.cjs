@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const fs = require('node:fs'), os = require('node:os'), path = require('node:path'), assert = require('node:assert/strict');
 app.setPath('userData', fs.mkdtempSync(path.join(os.tmpdir(), 'atomic-languages-')));
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT ? path.resolve(process.env.ATOMIC_TEST_APP_ROOT) : path.resolve(__dirname,'..'),'electron/main.cjs'));
+require('./offline-weather.cjs')();
 ipcMain.removeHandler('clock:sync');
 ipcMain.handle('clock:sync', () => ({ ok:true, nowMs:Date.parse('2026-10-25T14:33:11Z'), host:'test', offsetMs:0, uncertaintyMs:1, synchronizedAt:Date.now() }));
 ipcMain.removeHandler('iss:refresh');

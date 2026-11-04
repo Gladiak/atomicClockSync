@@ -15,36 +15,36 @@
 .watch-card{border-radius:12px;transition:border-color .2s,box-shadow .2s}
 .watch-card:focus-within,.watch-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));box-shadow:0 7px 24px color-mix(in srgb,var(--bg) 30%,transparent)}
 /* Personal reference above; the three sky views form one visual sequence below. */
-.now-grid{grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,.86fr) minmax(0,1.14fr);gap:14px;--now-panel-line:color-mix(in srgb,var(--accent) 12%,var(--line))}
+.now-grid{grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1.3fr) minmax(0,1fr);gap:14px;--now-panel-line:color-mix(in srgb,var(--accent) 12%,var(--line))}
 .now-grid>.panel{background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--accent) 5%,transparent),transparent 75%),var(--panel);border-color:var(--now-panel-line);border-radius:14px}
-.now-hero{grid-column:1/6;grid-row:1;padding:20px 24px;justify-content:space-between;position:relative;overflow:hidden}
+.now-hero{grid-column:1/5;grid-row:1;padding:20px;justify-content:space-between;position:relative;overflow:hidden}
 .now-hero::before{content:'';position:absolute;inset:auto -100px -160px auto;width:300px;height:300px;border:1px solid color-mix(in srgb,var(--accent) 8%,transparent);border-radius:50%;pointer-events:none}
 .now-hero .panel-top{position:relative}
 .now-grid .tiny-label{font-family:inherit;font-size:10px;font-weight:600;line-height:1.4;letter-spacing:.1px}
 .now-grid .chip{font-size:6px;border-color:color-mix(in srgb,var(--accent) 20%,transparent);border-radius:20px;padding:4px 7px;letter-spacing:.6px}
-.now-clock{display:flex;align-items:baseline;gap:2px;white-space:nowrap;font-size:clamp(54px,6.1vw,78px);font-weight:350;letter-spacing:-3.5px;line-height:1.05;margin:9px 0 5px;text-shadow:none}
+.now-clock{display:flex;align-items:baseline;gap:2px;white-space:nowrap;font-size:clamp(52px,5.4vw,78px);font-weight:350;letter-spacing:-3.5px;line-height:1.05;margin:9px 0 5px;text-shadow:none}
 #now-clock-seconds{font-size:.4em;font-weight:450;letter-spacing:-1px;opacity:.7}
 #now-date{font-size:10px;line-height:1.4;margin:0;color:var(--muted)}
 .now-reference{font-size:9px;margin:7px 0 0;line-height:1.4}
 .now-hero .primary-button{position:relative;margin-top:12px;min-height:35px;padding:8px 12px;font-size:11px;width:100%}
 #now-session{font-size:9px;line-height:1.45;margin:7px 0 0;color:var(--faint)}
-.now-watch{grid-column:6/13;grid-row:1;padding:18px 22px;position:relative;overflow:hidden;gap:0}
-.now-watch-main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 155px;gap:14px;min-height:0;align-items:center}
+.now-watch{grid-column:9/13;grid-row:1;padding:12px 16px;position:relative;overflow:hidden;gap:0}
+.now-watch-main{flex:1;display:flex;flex-direction:column;gap:0;min-height:0;align-items:stretch}
 .now-watch-copy{min-width:0}
-.now-watch h2{font-size:24px;line-height:1.15;font-weight:450;letter-spacing:-.7px;margin:8px 0 0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-#now-watch-model{font-size:10px;line-height:1.4;margin:5px 0 0;overflow-wrap:anywhere}
-.now-facts{gap:9px;margin:14px 0 10px}
-.now-facts>div{gap:3px;border-left:0;padding-left:0}
-.now-facts span{font-size:9px;color:var(--faint)}
-.now-facts strong{font-size:11px;font-weight:450;line-height:1.35}
-.now-watch>.text-button{font-size:10px;flex-shrink:0;padding:4px 0 0}
-.now-watch-art{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;align-self:stretch;min-height:0}
+.now-watch h2{font-size:17px;line-height:1.15;font-weight:450;letter-spacing:-.7px;margin:3px 0 0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#now-watch-model{font-size:9px;line-height:1.3;margin:2px 0 0;overflow-wrap:anywhere}
+.now-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:4px 0 2px;flex-shrink:0}
+.now-facts>div{gap:2px;border-left:0;padding-left:0}
+.now-facts span{font-size:7px;color:var(--faint)}
+.now-facts strong{font-size:8px;font-weight:450;line-height:1.35}
+.now-watch>.text-button{font-size:9px;flex-shrink:0;padding:3px 0 0;margin-top:0}
+.now-watch-art{flex:1;position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;align-self:stretch;min-height:0}
 .now-watch-art::before{content:'';position:absolute;inset:0 -12px;background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 12%,transparent),transparent 68%);z-index:-1}
-.now-watch-orbit{position:absolute;left:50%;top:50%;width:145px;height:145px;border:1px solid color-mix(in srgb,var(--accent-text) 12%,transparent);border-radius:50%;transform:translate(-50%,-50%);z-index:-1}
+.now-watch-orbit{position:absolute;left:50%;top:50%;width:180px;height:180px;border:1px solid color-mix(in srgb,var(--accent-text) 12%,transparent);border-radius:50%;transform:translate(-50%,-50%);z-index:-1}
 .now-watch-orbit::after{content:'';position:absolute;inset:10px;border:1px dashed color-mix(in srgb,var(--accent-text) 8%,transparent);border-radius:50%}
-#now-watch-photo{width:155px;height:170px;min-height:0;flex-shrink:1;object-fit:contain;filter:drop-shadow(0 9px 9px color-mix(in srgb,var(--bg) 35%,transparent))}
-#now-watch-source{font-size:7px;flex-shrink:0;margin-top:3px;color:var(--faint);white-space:nowrap}
-#now-watch-placeholder{min-height:0;flex-shrink:1;height:145px;width:100px;color:var(--now-data-accent);opacity:.55}
+#now-watch-photo{position:absolute;inset:0;width:100%;height:100%;min-height:0;object-fit:contain;transform:scale(1.12);filter:drop-shadow(0 9px 9px color-mix(in srgb,var(--bg) 35%,transparent))}
+#now-watch-source{position:absolute;bottom:0;right:0;font-size:6px;color:var(--faint);white-space:nowrap}
+#now-watch-placeholder{min-height:0;flex-shrink:1;height:85%;width:100px;color:var(--now-data-accent);opacity:.55}
 .now-earth{grid-column:1/7;grid-row:2;padding:17px 20px;gap:8px}
 .now-earth svg{max-height:none;flex:1}
 .now-earth .panel-top .text-button{font-size:10px}
@@ -52,19 +52,24 @@
 .now-earth-caption .text-button{font-size:7px}
 .now-moon{grid-column:7/10;grid-row:2}
 .now-iss{grid-column:10/13;grid-row:2}
-.now-moon,.now-iss{padding:17px 16px;gap:8px;transition:border-color .2s,box-shadow .2s}
+.now-moon,.now-iss{padding:12px 16px;gap:5px;transition:border-color .2s,box-shadow .2s}
 .now-grid>button.panel:hover{background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--accent) 8%,transparent),transparent 75%),var(--surface-hover);box-shadow:0 8px 28px color-mix(in srgb,var(--bg) 25%,transparent)}
+#now-moon-disc{width:84px;height:84px}
+.now-moon-scene{padding:0;gap:4px}
+.now-moon-caption{gap:2px}
+#now-moon-phase{font-size:11px}
+#now-moon-illumination{font-size:7px}
 .now-moon .now-discovery-link,.now-iss .now-discovery-link{font-size:10px;border-top:0;padding-top:5px}
-.now-full-moon{border-color:color-mix(in srgb,var(--line) 65%,transparent);padding-top:9px;gap:4px}
+.now-full-moon{border-color:color-mix(in srgb,var(--line) 65%,transparent);padding-top:6px;gap:4px}
 .now-full-moon>span{font-family:inherit;font-size:9px;line-height:1.4;letter-spacing:0;color:var(--faint)}
-.now-full-moon strong{font-size:19px;letter-spacing:-.5px}
+.now-full-moon strong{font-size:17px;letter-spacing:-.5px}
 .now-iss-facts{border-color:color-mix(in srgb,var(--line) 65%,transparent);padding-top:8px}
 .now-iss-facts strong{font-size:15px;letter-spacing:-.3px}
 .now-iss>#now-iss-source{color:var(--faint);font-size:8px}
 .now-iss-status{font-size:7px;letter-spacing:.1px}
 .now-iss-scene{max-height:102px}
 .now-iss>#now-iss-position{font-size:13px;font-weight:450}
-@media(max-width:850px){.now-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;height:auto}.now-hero{grid-column:1/3;grid-row:auto}.now-watch{grid-column:1/3;grid-row:auto;min-height:240px!important}.now-earth{grid-column:1/3;grid-row:auto;min-height:260px!important}.now-moon,.now-iss{grid-column:auto;grid-row:auto;min-height:290px!important}}
+@media(max-width:850px){.now-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;height:auto}.now-hero{grid-column:1/3;grid-row:auto}.now-watch{grid-column:1/3;grid-row:auto;min-height:360px!important}.now-earth{grid-column:1/3;grid-row:auto;min-height:260px!important}.now-moon,.now-iss{grid-column:auto;grid-row:auto;min-height:290px!important}}
 @media(prefers-reduced-motion:reduce){.primary-button,.secondary-button,.text-button,.icon-button,.watch-card,.now-discovery{transition:none!important}.primary-button:active,.secondary-button:active,.icon-button:active{transform:none!important}}
 
 /* Immersive HUD: small edge readouts, no permanent legend or toolbar ribbons. */

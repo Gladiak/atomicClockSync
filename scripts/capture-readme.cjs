@@ -10,6 +10,7 @@ const previews = path.join(root, 'artifacts/readme');
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'atomic-readme-capture-'));
 app.setPath('userData', profile);
 require('../electron/main.cjs');
+require('./offline-weather.cjs')();
 
 // Keep the documented orbital snapshot within its actual validity window.
 const epoch = Date.parse('2026-10-25T14:33:11Z');

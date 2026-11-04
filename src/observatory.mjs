@@ -52,5 +52,5 @@ export function createObservatory({views,goTo,desktop,notify}) {
   desktop.onObservatoryExit?.(()=>{if($('dialog').open)cleanup();});
   onLanguageChange(paint);
   window.addEventListener('beforeunload',()=>{clearInterval(timer);clearTimeout(hideTimer);});
-  return {setPage(value){if($('dialog').open&&!switching&&value!==page)close(false);page=value;if($('dialog').open&&!switching&&activeScene==='clock'){pausedView=views[page]||null;pausedView?.setVisible(false);}$('open').hidden=value!=='home'&&!Object.hasOwn(scenes,value);}};
+  return {openClock(){if(!$('dialog').open)$('open').click();if($('dialog').open&&activeScene!=='clock')$('controls').querySelector('[data-observatory-page=clock]').click();},setPage(value){if($('dialog').open&&!switching&&value!==page)close(false);page=value;if($('dialog').open&&!switching&&activeScene==='clock'){pausedView=views[page]||null;pausedView?.setVisible(false);}$('open').hidden=value!=='home'&&!Object.hasOwn(scenes,value);}};
 }

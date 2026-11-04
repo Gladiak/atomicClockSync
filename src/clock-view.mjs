@@ -1,6 +1,6 @@
 import {t,decimal,dateTimeFormat,numberFormat,onLanguageChange} from './i18n.mjs';
 import {sunEvents,localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
-import {weatherCondition,weatherIcon,visibleForecast} from './clock-weather.mjs';
+import {weatherCondition,weatherIcon,weatherSnapshot} from './clock-weather.mjs';
 
 export function createClockView({desktop,getNow,getObserver,getReference}){
   const $=id=>document.getElementById('dial-'+id),root=document.getElementById('clock-stage');
@@ -37,8 +37,7 @@ export function createClockView({desktop,getNow,getObserver,getReference}){
   }
   function paintWeather(epoch,city,force){
     const key=locationKey+':'+Math.floor(epoch/60000);if(!force&&key===weatherKey)return;weatherKey=key;
-    const age=packet?epoch-packet.current.time:Infinity,current=packet&&age>=-1800000&&age<90*60000?packet.current:null;
-    const forecast=packet&&age>=-1800000&&age<6*3600000?visibleForecast(packet,epoch,localDateKey(epoch,city.timeZone)):{hourly:[],daily:[]};
+    const {age,current,forecast}=weatherSnapshot(packet,epoch,localDateKey(epoch,city.timeZone));
     $('temperature').textContent=temperature(current?.temperature);
     $('condition').textContent=t(current?weatherCondition(current.code)[0]:!requested?'Fetching forecast…':'Weather unavailable');
     $('weather-icon').innerHTML=weatherIcon(current?.code,current?.isDay??solarAltitude(city,solarPosition(epoch))>=0);

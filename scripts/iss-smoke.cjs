@@ -3,6 +3,7 @@ const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),asse
 const {validateOrbit}=require('../electron/iss-data.cjs');
 app.setPath('userData',fs.mkdtempSync(path.join(os.tmpdir(),'atomic-iss-test-')));
 require(path.join(process.env.ATOMIC_TEST_APP_ROOT?path.resolve(process.env.ATOMIC_TEST_APP_ROOT):path.resolve(__dirname,'..'),'electron/main.cjs'));
+require('./offline-weather.cjs')();
 const fixture=require('../test/fixtures/iss-omm.json'),epoch=Date.parse('2026-10-25T14:33:11Z');
 let mode='empty';const testStarted=Date.now();
 ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:epoch,host:'test-time-reference',offsetMs:0,uncertaintyMs:1,synchronizedAt:epoch}));
