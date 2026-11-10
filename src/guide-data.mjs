@@ -150,7 +150,7 @@ export const MANUAL_CHAPTERS = [
     "note": "Controls fade after inactivity and return with pointer movement or keyboard input. Closing the observatory does not stop an active transmission. Preview dates do not change the real clock.",
     "body": [
       "Open Observatory from Your now, or choose the Clock tab beside Earth, Moon and Light Travel. Hours, minutes and seconds have equal size. The city, coordinates, time zone and reference identify the displayed time.",
-      "The curve spans the next 24 elapsed hours, with local time labels even across a daylight-saving change. The hourly and five-day outlooks remain visible below it. Pointer inspection and Left, Right, Home and End reveal individual temperature estimates.",
+      "The ambient weather station keeps the clock central and every reading visible without scrolling or a time slider. Temperature, humidity, dew point, sea-level pressure and its three-hour model change, wind, gusts, daily precipitation, cloud cover and visibility accompany a passive 24-hour curve, six hourly slots and seven forecast days.",
       "Weather refreshes only while Your now or Clock is visible and shares one local cache. Current conditions older than 90 minutes are hidden; cached forecasts expire after six hours. Sunrise, sunset, polar conditions and the atmosphere are calculated locally."
     ],
     "example": "Compare the curve with the hourly cards, then switch to Earth or Moon without leaving the observatory. Escape returns to the previous tools.",

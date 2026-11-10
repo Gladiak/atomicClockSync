@@ -14,6 +14,4 @@
 .weather-range{display:flex;gap:2px;flex-shrink:0}.weather-range button{font-family:inherit;font-size:7px;line-height:1.3;padding:3px 5px;border-radius:var(--radius-sm);background:transparent;color:var(--faint);white-space:nowrap}
 .weather-range button:hover{color:var(--accent-text);background:color-mix(in srgb,var(--accent) 7%,transparent)}.weather-range button[aria-pressed=true]{color:var(--accent-text);background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .now-weather-outlook .now-weather-day{gap:2px;padding:4px 2px}
-.dial-outlook{grid-template-rows:auto auto auto auto auto}.dial-trend{display:grid;gap:5px;min-width:0}.dial-trend .temperature-trend{height:66px}
 @media(min-height:900px){.now-weather-outlook{gap:7px}.now-weather-outlook-heading{font-size:10px}.weather-range button{font-size:9px}.now-weather-outlook .temperature-trend{height:92px}.trend-caption,.trend-axis{font-size:9px}.now-weather-outlook .now-weather-day{gap:4px;padding:7px 2px}}
-@media(min-height:1000px){.dial-trend .temperature-trend{height:92px}.dial-trend .trend-caption,.dial-trend .trend-axis{font-size:10px}}

@@ -2,60 +2,84 @@ import {solarAtmosphere} from './solar-atmosphere.mjs';
 import {createWeatherTrend} from './weather-trend.mjs';
 import {t,decimal,dateTimeFormat,numberFormat,onLanguageChange} from './i18n.mjs';
 import {sunEvents,localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
-import {weatherCondition,weatherIcon,weatherSnapshot} from './clock-weather.mjs';
+import {weatherCondition,weatherIcon,weatherSnapshot,pressureChange,windDirection} from './clock-weather.mjs';
 
 export function createClockView({desktop,getNow,getObserver,getReference}){
   const $=id=>document.getElementById('dial-'+id),root=document.getElementById('clock-stage');
-  const trend=createWeatherTrend($('trend'),'dial-weather-curve');
+  const trend=createWeatherTrend($('trend'),'dial-weather-curve',{interactive:false});
   const digits=[...$('digits').querySelectorAll('.dial-digit')];
-  let visible=false,timer,poll,busy=false,generation=0,locationKey='',packet=null,connectivity='unknown',requested=false,solarKey='',weatherKey='',previous='';
+  let visible=false,timer,poll,busy=false,generation=0,locationKey='',packet=null,fetchedAt=null,connectivity='unknown',requested=false,solarKey='',weatherKey='',previous='';
   const temperature=value=>Number.isFinite(value)?numberFormat({maximumFractionDigits:0}).format(value)+'°':'—';
   const time=(epoch,city,extra={})=>dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',hourCycle:'h23',...extra}).format(epoch);
+  function measurement(id,value,unit,digits=0){
+    const node=$(id);node.textContent=Number.isFinite(value)?decimal(value,digits):'—';
+    if(Number.isFinite(value)&&unit){const suffix=document.createElement('small');suffix.textContent=' '+unit;node.append(suffix);}
+  }
   function paintDigits(value){
     value.split('').forEach((character,index)=>{if(previous[index]!==character)digits[index].querySelector('.dial-value').textContent=character;});previous=value;
   }
   function selectLocation(city){
     const key=JSON.stringify([city.latitude,city.longitude,city.timeZone]);if(key===locationKey)return;
-    locationKey=key;generation++;packet=null;requested=false;connectivity='unknown';weatherKey='';solarKey='';busy=false;
+    locationKey=key;generation++;packet=null;fetchedAt=null;requested=false;connectivity='unknown';weatherKey='';solarKey='';busy=false;
   }
   async function refresh(){
     if(!visible||document.hidden||busy)return;
     const city=getObserver();selectLocation(city);busy=true;const token=generation;
     try{const response=await desktop.getWeather({latitude:city.latitude,longitude:city.longitude,timeZone:city.timeZone});
       if(token!==generation||!visible)return;
-      packet=response?.weather||null;connectivity=response?.connectivity||'offline';
+      packet=response?.weather||null;fetchedAt=response?.fetchedAt||null;connectivity=response?.connectivity||'offline';
     }catch{if(token===generation)connectivity='offline';}
     finally{if(token===generation){busy=false;requested=true;weatherKey='';if(visible)render(true);}}
   }
-  function forecastRow(row,city,daily,today){
+  function forecastRow(row,city,daily,today,range){
     const item=document.createElement('div');item.className=daily?'dial-forecast-day':'dial-forecast-hour';
     const label=document.createElement('span');label.className='dial-forecast-label';
     label.textContent=daily?(row.date===today?t('Today'):dateTimeFormat({timeZone:'UTC',weekday:'short'}).format(Date.parse(row.date+'T12:00:00Z'))):time(row.time,city);
     label.title=daily?row.date:dateTimeFormat({timeZone:city.timeZone,weekday:'short',hour:'2-digit',minute:'2-digit',timeZoneName:'short'}).format(row.time);
     const icon=document.createElement('span');icon.className='dial-weather-icon';icon.innerHTML=weatherIcon(row.code,daily?true:row.isDay??solarAltitude(city,solarPosition(row.time))>=0);icon.title=t(weatherCondition(row.code)[0]);icon.setAttribute('role','img');icon.setAttribute('aria-label',icon.title);
     const value=document.createElement('strong');value.textContent=temperature(daily?row.high:row.temperature);
-    item.append(label,icon,value);
+    item.append(label,icon);
     const detail=document.createElement('span');detail.className='dial-forecast-detail';detail.textContent=daily?temperature(row.low):Number.isFinite(row.rain)?decimal(row.rain,0)+'%':'—';
-    detail.title=t(daily?'Low temperature':'Rain chance');item.append(detail);return item;
+    detail.title=t(daily?'Low temperature':'Rain chance');
+    if(daily){
+      const temperatures=document.createElement('div');temperatures.className='dial-day-temperatures';temperatures.append(value,detail);
+      const bar=document.createElement('div');bar.className='dial-day-range';bar.setAttribute('aria-hidden','true');
+      if(Number.isFinite(row.low)&&Number.isFinite(row.high)&&range){const fill=document.createElement('span'),span=Math.max(1,range.high-range.low);
+        fill.style.left=(row.low-range.low)/span*100+'%';fill.style.width=Math.max(3,(row.high-row.low)/span*100)+'%';bar.append(fill);}
+      const rain=document.createElement('span');rain.className='dial-day-rain';rain.textContent=Number.isFinite(row.rain)?decimal(row.rain,0)+'%':'—';
+      rain.setAttribute('aria-label',t('Rain chance {0}',rain.textContent));item.append(temperatures,bar,rain);
+    }else item.append(value,detail);
+    return item;
   }
   function paintWeather(epoch,city,force){
     const key=locationKey+':'+Math.floor(epoch/60000);if(!force&&key===weatherKey)return;weatherKey=key;
-    const {age,current,forecast}=weatherSnapshot(packet,epoch,localDateKey(epoch,city.timeZone));
+    const {age,current,forecast}=weatherSnapshot(packet,epoch,localDateKey(epoch,city.timeZone),7);
     trend.render(packet,epoch,city);
     root.dataset.atmosphere=solarAtmosphere(epoch,city);
     $('temperature').textContent=temperature(current?.temperature);
     $('condition').textContent=t(current?weatherCondition(current.code)[0]:!requested?'Fetching forecast…':'Weather unavailable');
     $('weather-icon').innerHTML=weatherIcon(current?.code,current?.isDay??solarAltitude(city,solarPosition(epoch))>=0);
+    $('weather-icon').setAttribute('aria-label',$('condition').textContent);
     $('feels').textContent=current&&Number.isFinite(current.feelsLike)?temperature(current.feelsLike):'—';
-    $('humidity').textContent=Number.isFinite(current?.humidity)?decimal(current.humidity,0)+'%':'—';
-    $('wind').textContent=Number.isFinite(current?.wind)?decimal(current.wind,0)+' km/h':'—';
+    measurement('humidity',current?.humidity,'%');measurement('wind',current?.wind,'km/h');
+    measurement('pressure',current?.pressure,'hPa');measurement('cloud',current?.cloud,'%');
+    $('dew').textContent=temperature(current?.dewPoint);
+    $('gusts').textContent=Number.isFinite(current?.gusts)?decimal(current.gusts,0)+' km/h':'—';
+    $('wind-direction').textContent=t(windDirection(current?.windDirection)||'—');
+    $('visibility').textContent=Number.isFinite(current?.visibility)?decimal(current.visibility/1000,current.visibility<10000?1:0)+' km':'—';
+    const change=current?pressureChange(packet):null,arrow=change===null?'':change>=1?'↗ ':change<=-1?'↘ ':'→ ';
+    $('pressure-change').textContent=change===null?'—':arrow+(change>0?'+':'')+decimal(change,1)+' hPa';
     const today=localDateKey(epoch,city.timeZone),day=forecast.daily.find(row=>row.date===today);
-    $('rain').textContent=Number.isFinite(day?.rain)?decimal(day.rain,0)+'%':'—';
+    measurement('rain',day?.rain,'%');
+    $('rain').setAttribute('aria-label',t('Daily maximum precipitation probability'));
+    $('precipitation').textContent=Number.isFinite(day?.precipitation)?decimal(day.precipitation,1)+' mm':'—';
+    $('extremes').textContent=day?t('Low {0} · High {1}',temperature(day.low),temperature(day.high)):'—';
     $('hourly').replaceChildren(...forecast.hourly.map(row=>forecastRow(row,city,false,today)));
-    $('daily').replaceChildren(...forecast.daily.map(row=>forecastRow(row,city,true,today)));
+    const temperatures=forecast.daily.flatMap(row=>[row.low,row.high]).filter(Number.isFinite),range=temperatures.length?{low:Math.min(...temperatures),high:Math.max(...temperatures)}:null;
+    $('daily').replaceChildren(...forecast.daily.map(row=>forecastRow(row,city,true,today,range)));
     $('hourly-empty').hidden=forecast.hourly.length>0;$('daily-empty').hidden=forecast.daily.length>0;
     $('weather-status').textContent=!requested?t('Fetching forecast…'):!packet?t('Weather unavailable'):age>=6*3600000||age< -1800000?t('Forecast is out of date'):
-      (connectivity==='offline'?t('Offline · cached forecast')+' · ':'')+t('Forecast updated · {0}',time(packet.current.time,city));
+      (connectivity==='offline'?t('Offline · cached forecast')+' · ':'')+(Number.isFinite(fetchedAt)?t('Model valid · {0} · downloaded {1}',time(packet.current.time,city),time(fetchedAt,city)):t('Model valid · {0}',time(packet.current.time,city)));
     root.dataset.weather=current?'available':packet?'stale':requested?'unavailable':'loading';
   }
   function render(force=false){
