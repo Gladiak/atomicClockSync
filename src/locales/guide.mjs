@@ -42,12 +42,12 @@ export const guideMessages = {
     "es": "El tiempo muestra previsiones y la ISS usa estimaciones orbitales o informes recientes. Se indican datos ausentes o caducados. Las vistas previas del cielo no alteran el panel en directo ni la hora transmitida.",
     "ja": "天気は予報で、ISSの位置は軌道計算または最近の位置報告に基づきます。欠測・期限切れデータは明示されます。天体のプレビューで現在のダッシュボードや送信時刻が変わることはありません。"
   },
-  "A full-screen local clock with weather, a temperature curve and offline sunrise and sunset calculations.": {
-    "it": "Un orologio locale a tutto schermo con meteo, curva della temperatura e calcolo offline di alba e tramonto.",
-    "fr": "Une horloge locale plein écran avec météo, courbe de température et calcul hors ligne du lever et du coucher du Soleil.",
-    "de": "Eine bildschirmfüllende Ortszeituhr mit Wetter, Temperaturkurve und offline berechnetem Sonnenauf- und -untergang.",
-    "es": "Un reloj local a pantalla completa con tiempo, curva de temperatura y cálculo sin conexión del amanecer y atardecer.",
-    "ja": "現地時刻を全画面で表示し、天気、気温曲線、オフライン計算の日の出・日の入りを確認できます。"
+  "A full-screen weather station with a central clock, ambient sky, lunar phase and a live solar day/night arc.": {
+    "it": "Una stazione meteo a tutto schermo con ora centrale, cielo ambientale, fase lunare e arco solare aggiornato tra giorno e notte.",
+    "fr": "Une station météo plein écran avec horloge centrale, ciel ambiant, phase lunaire et arc solaire actualisé entre jour et nuit.",
+    "de": "Eine bildschirmfüllende Wetterstation mit zentraler Uhr, atmosphärischem Himmel, Mondphase und aktuellem Tag-Nacht-Sonnenbogen.",
+    "es": "Una estación meteorológica a pantalla completa con reloj central, cielo ambiental, fase lunar y arco solar actualizado de día y de noche.",
+    "ja": "中央の時計、空の背景、月相、昼と夜の進行を示す太陽アークを備えた全画面の気象ステーションです。"
   },
   "Open Observatory from Your now, or choose the Clock tab beside Earth, Moon and Light Travel. Hours, minutes and seconds have equal size. The city, coordinates, time zone and reference identify the displayed time.": {
     "it": "Apri Osservatorio da Il tuo adesso, oppure scegli Orologio accanto a Terra, Luna e Viaggio della luce. Ore, minuti e secondi hanno la stessa dimensione. Città, coordinate, fuso e fonte identificano l’ora mostrata.",

@@ -1,14 +1,18 @@
 import {solarAtmosphere} from './solar-atmosphere.mjs';
+import {ambientSky,solarDay,solarArc} from './clock-sky.mjs';
+import {moonState} from './moon-math.mjs';
+import {createMoonSurface} from './moon-surface.mjs';
 import {createWeatherTrend} from './weather-trend.mjs';
 import {t,decimal,dateTimeFormat,numberFormat,onLanguageChange} from './i18n.mjs';
-import {sunEvents,localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
+import {localDateKey,solarAltitude,solarPosition} from './world-math.mjs';
 import {weatherCondition,weatherIcon,weatherSnapshot,pressureChange,windDirection} from './clock-weather.mjs';
 
 export function createClockView({desktop,getNow,getObserver,getReference}){
   const $=id=>document.getElementById('dial-'+id),root=document.getElementById('clock-stage');
   const trend=createWeatherTrend($('trend'),'dial-weather-curve',{interactive:false});
+  const moon=createMoonSurface($('moon-disc'),{minimumSize:128});
   const digits=[...$('digits').querySelectorAll('.dial-digit')];
-  let visible=false,timer,poll,busy=false,generation=0,locationKey='',packet=null,fetchedAt=null,connectivity='unknown',requested=false,solarKey='',weatherKey='',previous='';
+  let visible=false,timer,poll,busy=false,generation=0,locationKey='',packet=null,fetchedAt=null,connectivity='unknown',requested=false,solarKey='',celestialKey='',day=null,weatherKey='',previous='';
   const temperature=value=>Number.isFinite(value)?numberFormat({maximumFractionDigits:0}).format(value)+'°':'—';
   const time=(epoch,city,extra={})=>dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',hourCycle:'h23',...extra}).format(epoch);
   function measurement(id,value,unit,digits=0){
@@ -20,7 +24,7 @@ export function createClockView({desktop,getNow,getObserver,getReference}){
   }
   function selectLocation(city){
     const key=JSON.stringify([city.latitude,city.longitude,city.timeZone]);if(key===locationKey)return;
-    locationKey=key;generation++;packet=null;fetchedAt=null;requested=false;connectivity='unknown';weatherKey='';solarKey='';busy=false;
+    locationKey=key;generation++;packet=null;fetchedAt=null;requested=false;connectivity='unknown';weatherKey='';solarKey='';celestialKey='';day=null;busy=false;
   }
   async function refresh(){
     if(!visible||document.hidden||busy)return;
@@ -56,6 +60,10 @@ export function createClockView({desktop,getNow,getObserver,getReference}){
     const {age,current,forecast}=weatherSnapshot(packet,epoch,localDateKey(epoch,city.timeZone),7);
     trend.render(packet,epoch,city);
     root.dataset.atmosphere=solarAtmosphere(epoch,city);
+    const sky=ambientSky(epoch,city,current?.cloud);
+    root.style.setProperty('--dial-light-y',sky.lightY+'%');
+    root.style.setProperty('--dial-cloud-opacity',sky.cloudOpacity);
+    root.dataset.clouds=sky.cloudOpacity>0?'known':'none';
     $('temperature').textContent=temperature(current?.temperature);
     $('condition').textContent=t(current?weatherCondition(current.code)[0]:!requested?'Fetching forecast…':'Weather unavailable');
     $('weather-icon').innerHTML=weatherIcon(current?.code,current?.isDay??solarAltitude(city,solarPosition(epoch))>=0);
@@ -82,31 +90,50 @@ export function createClockView({desktop,getNow,getObserver,getReference}){
       (connectivity==='offline'?t('Offline · cached forecast')+' · ':'')+(Number.isFinite(fetchedAt)?t('Model valid · {0} · downloaded {1}',time(packet.current.time,city),time(fetchedAt,city)):t('Model valid · {0}',time(packet.current.time,city)));
     root.dataset.weather=current?'available':packet?'stale':requested?'unavailable':'loading';
   }
+  function paintCelestial(epoch,city,force){
+    const dayKey=locationKey+':'+localDateKey(epoch,city.timeZone);
+    if(solarKey!==dayKey){solarKey=dayKey;day=solarDay(epoch,city);}
+    const key=locationKey+':'+Math.floor(epoch/60000);if(!force&&key===celestialKey)return;celestialKey=key;
+    $('sunrise').textContent=day.rise===null?t('No sunrise'):time(day.rise,city);
+    $('sunset').textContent=day.set===null?t('No sunset'):time(day.set,city);
+    const duration=minutes=>t('{0} h {1} min',Math.floor(minutes/60),minutes%60);
+    $('daylight').textContent=day.polar?t(day.polar):t('Daylight {0}',duration(Math.round(day.daylightMs/60000)));
+    const arc=solarArc(epoch,day),marker=$('solar-marker');
+    marker.setAttribute('visibility',arc.marker?'visible':'hidden');
+    if(arc.marker){marker.setAttribute('cx',arc.marker.x.toFixed(2));marker.setAttribute('cy',arc.marker.y.toFixed(2));}
+    $('solar-arc').dataset.phase=arc.phase||'unknown';
+    $('solar-progress').style.strokeDasharray=(arc.phase==='day'&&arc.progress!==null?arc.progress:0)+' 1';
+    const countdown=arc.next?t(arc.next.kind==='rise'?'Sunrise in {0}':'Sunset in {0}',duration(arc.minutesToEvent)):t(day.polar||'Unavailable');
+    $('solar-countdown').textContent=countdown;
+    $('solar-arc').setAttribute('aria-label',t('Day and night progress')+' · '+countdown);
+    root.style.setProperty('--dial-light-x',(arc.phase==='day'&&arc.progress!==null?12+76*arc.progress:50)+'%');
+    root.dataset.sky=solarAltitude(city,solarPosition(epoch))>=0?'day':'night';
+    const state=moonState(epoch,city),phase=t(state.name),illumination=numberFormat({style:'percent',maximumFractionDigits:0}).format(state.fraction);
+    $('moon-phase').textContent=phase;$('moon-illumination').textContent=t('Illumination')+' '+illumination;
+    $('moon-disc').setAttribute('aria-label',t('Moon phase')+' · '+phase+' · '+illumination);
+    $('moon-disc').dataset.phase=state.phase.toFixed(4);moon.draw(state.phase);
+  }
   function render(force=false){
     if(!visible||document.hidden)return;
     const epoch=getNow(),city=getObserver(),oldLocation=locationKey;selectLocation(city);if(oldLocation!==locationKey)refresh();
     const parts=dateTimeFormat({timeZone:city.timeZone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(epoch);
     const part=kind=>parts.find(row=>row.type===kind)?.value||'00';paintDigits(part('hour')+part('minute')+part('second'));
-    $('digits').setAttribute('aria-label',time(epoch,city,{second:'2-digit'}));$('date').textContent=dateTimeFormat({timeZone:city.timeZone,weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(epoch);
+    $('digits').setAttribute('aria-label',time(epoch,city,{second:'2-digit'}));
+    $('weekday').textContent=dateTimeFormat({timeZone:city.timeZone,weekday:'long'}).format(epoch);
+    $('date').textContent=dateTimeFormat({timeZone:city.timeZone,day:'numeric',month:'long',year:'numeric'}).format(epoch);
     $('city').textContent=city.name;$('country').textContent=t(city.country);$('zone').textContent=city.timeZone;
     const coordinate=(value,plus,minus)=>decimal(Math.abs(value),2)+'° '+(value>=0?plus:minus);
     $('coordinates').textContent=coordinate(city.latitude,'N','S')+' · '+coordinate(city.longitude,'E','W');
     const reference=getReference();$('reference').textContent=reference.text;$('reference').dataset.state=reference.state;
-    const dayKey=locationKey+':'+localDateKey(epoch,city.timeZone);
-    if(solarKey!==dayKey||force){
-      solarKey=dayKey;const sun=sunEvents(epoch,city);
-      $('sunrise').textContent=sun.rise===null?t('No sunrise'):time(sun.rise,city);$('sunset').textContent=sun.set===null?t('No sunset'):time(sun.set,city);
-      $('daylight').textContent=sun.polar?t(sun.polar):t('{0} h {1} min',Math.floor(Math.round(sun.daylightMs/60000)/60),Math.round(sun.daylightMs/60000)%60);
-      root.dataset.sky=solarAltitude(city,solarPosition(epoch))>=0?'day':'night';
-    }
+    paintCelestial(epoch,city,force);
     paintWeather(epoch,city,force);
   }
   $('weather-source').onclick=()=>desktop.openReference('weather');
   onLanguageChange(()=>{if(visible){weatherKey='';render(true);}});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&visible){render(true);refresh();}});
-  window.addEventListener('beforeunload',()=>{clearInterval(timer);clearInterval(poll);});
+  document.addEventListener('visibilitychange',()=>{root.dataset.active=String(visible&&!document.hidden);moon.setVisible(visible&&!document.hidden);if(!document.hidden&&visible){render(true);refresh();}});
+  window.addEventListener('beforeunload',()=>{clearInterval(timer);clearInterval(poll);root.dataset.active='false';moon.setVisible(false);});
   return {getEpoch:getNow,setVisible(value){
-    if(value===visible)return;visible=value;generation++;busy=false;clearInterval(timer);clearInterval(poll);previous='';
+    if(value===visible)return;visible=value;root.dataset.active=String(value&&!document.hidden);moon.setVisible(value&&!document.hidden);generation++;busy=false;clearInterval(timer);clearInterval(poll);previous='';
     if(value){render(true);refresh();timer=setInterval(render,1000);poll=setInterval(refresh,60000);}
   }};
 }

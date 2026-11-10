@@ -1,0 +1,46 @@
+/* These layers belong exclusively to the parked/full-screen Clock scene. */
+.clock-stage{--dial-light-x:50%;--dial-light-y:20%;--dial-cloud-opacity:0;--dial-sky-light:var(--accent-text);--dial-sky-warm:var(--accent-secondary);--dial-light-strength:18%;--dial-horizon-strength:6%}
+.clock-stage[data-atmosphere=twilight]{--dial-sky-warm:color-mix(in srgb,var(--accent-text) 50%,#efb078);--dial-light-strength:14%;--dial-horizon-strength:20%}
+.clock-stage[data-atmosphere=night]{--dial-light-strength:5%;--dial-horizon-strength:3%}
+.dial-ambient-sky{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;contain:paint}
+.dial-sky-light,.dial-sky-horizon,.dial-sky-clouds{position:absolute;inset:0;pointer-events:none}
+.dial-sky-light{background:radial-gradient(ellipse 42% 34% at var(--dial-light-x) var(--dial-light-y),color-mix(in srgb,var(--dial-sky-light) var(--dial-light-strength),transparent),transparent 85%)}
+.dial-sky-horizon{background:radial-gradient(ellipse 85% 32% at 50% 51%,color-mix(in srgb,var(--dial-sky-warm) var(--dial-horizon-strength),transparent),transparent 85%)}
+.dial-sky-clouds{opacity:var(--dial-cloud-opacity);--dial-cloud-ink:color-mix(in srgb,var(--text) 28%,var(--accent-secondary))}
+.dial-sky-clouds::before,.dial-sky-clouds::after{content:'';position:absolute;inset:0;animation-play-state:paused;animation-timing-function:ease-in-out;animation-iteration-count:infinite;animation-direction:alternate;pointer-events:none}
+.dial-sky-clouds::before{background:radial-gradient(ellipse 37% 7% at 7% 24%,color-mix(in srgb,var(--dial-cloud-ink) 34%,transparent),transparent 90%),radial-gradient(ellipse 30% 5% at 80% 20%,color-mix(in srgb,var(--dial-cloud-ink) 26%,transparent),transparent 90%),radial-gradient(ellipse 45% 8% at 60% 43%,color-mix(in srgb,var(--dial-cloud-ink) 18%,transparent),transparent 90%);animation-name:dial-cloud-drift;animation-duration:95s}
+.dial-sky-clouds::after{background:radial-gradient(ellipse 30% 5% at 26% 36%,color-mix(in srgb,var(--dial-cloud-ink) 26%,transparent),transparent 90%),radial-gradient(ellipse 35% 8% at 93% 37%,color-mix(in srgb,var(--dial-cloud-ink) 22%,transparent),transparent 90%);animation-name:dial-cloud-drift-back;animation-duration:140s}
+.clock-stage[data-atmosphere=night] .dial-sky-clouds{opacity:calc(var(--dial-cloud-opacity)*.4)}
+.clock-stage[data-active=true][data-clouds=known] .dial-sky-clouds::before,.clock-stage[data-active=true][data-clouds=known] .dial-sky-clouds::after{animation-play-state:running}
+@keyframes dial-cloud-drift{from{transform:translateX(-3%)}to{transform:translateX(4%)}}
+@keyframes dial-cloud-drift-back{from{transform:translateX(2%)}to{transform:translateX(-4%)}}
+.clock-stage .dial-digits{font-size:min(12.3vw,calc((100cqh - 80px)/1.05),230px)}
+/* Center the complete calendar/lunar group, not just the date. */
+.dial-calendar{display:flex;justify-content:center;align-items:center;gap:clamp(20px,2.2vw,36px);width:max-content;max-width:100%;flex-shrink:0}
+.dial-calendar-date{display:grid;gap:4px;min-width:0}
+.dial-calendar-weekday{font-size:10px;line-height:1.3;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.dial-calendar .dial-date{font-size:clamp(17px,1.2vw,23px);text-align:left;white-space:nowrap}
+.dial-calendar-divider{width:1px;height:36px;flex-shrink:0;background:var(--line)}
+.dial-moon{display:flex;align-items:center;gap:10px;min-width:0;max-width:100%}
+.dial-moon canvas{display:block;width:36px;height:36px;flex-shrink:0;filter:drop-shadow(0 0 9px color-mix(in srgb,var(--accent-text) 12%,transparent))}
+.dial-moon>div{display:grid;gap:3px;min-width:0}
+#dial-moon-phase{font-size:13px;line-height:1.3;color:var(--text)}
+#dial-moon-illumination{font-size:11px;line-height:1.3;color:var(--muted);font-variant-numeric:tabular-nums}
+.clock-stage .dial-solar-duration{gap:16px}
+.clock-stage .dial-solar-arc{width:clamp(110px,15vw,240px);height:40px;opacity:1;flex-shrink:0}
+.dial-solar-arc path,.dial-solar-arc line{fill:none;stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+.dial-solar-arc .dial-solar-day{stroke:color-mix(in srgb,var(--accent-text) 45%,var(--line))}
+.dial-solar-arc .dial-solar-night{stroke-dasharray:2 3}
+.dial-solar-arc .dial-solar-horizon{stroke:color-mix(in srgb,var(--line) 60%,transparent)}
+.dial-solar-arc .dial-solar-progress{stroke:var(--accent-text);stroke-width:1.6;stroke-dasharray:0 1}
+.dial-solar-end{fill:var(--bg);stroke:var(--accent-text);stroke-width:1}
+.dial-solar-marker{fill:var(--accent-text);stroke:var(--bg);stroke-width:1.5;filter:drop-shadow(0 0 3px color-mix(in srgb,var(--accent-text) 50%,transparent))}
+.dial-solar-arc[data-phase=night] .dial-solar-marker{fill:var(--muted);filter:none}
+.dial-solar-summary{display:grid;gap:4px;min-width:0}
+.clock-stage .dial-solar-summary strong{font-family:inherit;font-size:11px;color:var(--text);font-weight:400;white-space:normal;line-height:1.35}
+.clock-stage .dial-solar-summary span{line-height:1.35}
+@media(min-height:1000px){.dial-calendar-weekday{font-size:11px}.dial-calendar-divider{height:40px}.dial-moon canvas{width:48px;height:48px}#dial-moon-phase{font-size:15px}#dial-moon-illumination{font-size:12px}.clock-stage .dial-solar-arc{height:48px}.clock-stage .dial-solar-summary strong{font-size:13px}}
+@media(max-width:1150px){.dial-calendar{gap:22px}.clock-stage .dial-solar-duration{gap:10px}.clock-stage .dial-solar-summary strong{font-size:10px}}
+@media(max-height:700px){.clock-stage .dial-digits{font-size:min(12.3vw,calc((100cqh - 68px)/1.05),230px)}.dial-calendar-date{gap:3px}.dial-calendar-weekday{font-size:9px}.dial-calendar .dial-date{font-size:15px}.dial-calendar-divider{height:30px}.dial-moon canvas{width:28px;height:28px}.dial-moon{gap:8px}#dial-moon-phase{font-size:11px}#dial-moon-illumination{font-size:10px}.clock-stage .dial-solar-arc{height:28px}.clock-stage .dial-solar-summary{gap:2px}.clock-stage .dial-solar-summary span,.clock-stage .dial-solar-summary strong{font-size:10px}}
+@media(max-width:900px){.dial-calendar{gap:18px}.dial-moon canvas{width:32px;height:32px}.dial-moon{gap:8px}#dial-moon-phase{font-size:12px}#dial-moon-illumination{font-size:10px}.clock-stage .dial-solar-arc{width:105px;height:32px}.clock-stage .dial-solar-duration{gap:8px}.clock-stage .dial-solar-summary strong,.clock-stage .dial-solar-summary span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.dial-sky-clouds::before,.dial-sky-clouds::after{animation:none!important;transform:none}}

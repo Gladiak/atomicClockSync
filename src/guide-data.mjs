@@ -146,7 +146,7 @@ export const MANUAL_CHAPTERS = [
     "title": "Clock and weather",
     "group": "explore",
     "route": "clock",
-    "purpose": "A full-screen local clock with weather, a temperature curve and offline sunrise and sunset calculations.",
+    "purpose": "A full-screen weather station with a central clock, ambient sky, lunar phase and a live solar day/night arc.",
     "note": "Controls fade after inactivity and return with pointer movement or keyboard input. Closing the observatory does not stop an active transmission. Preview dates do not change the real clock.",
     "body": [
       "Open Observatory from Your now, or choose the Clock tab beside Earth, Moon and Light Travel. Hours, minutes and seconds have equal size. The city, coordinates, time zone and reference identify the displayed time.",

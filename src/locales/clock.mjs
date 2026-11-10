@@ -1,4 +1,9 @@
 const rows=[
+["Moon phase","Fase lunare","Phase lunaire","Mondphase","Fase lunar","月相"],
+["Day and night progress","Avanzamento di giorno e notte","Progression du jour et de la nuit","Tages- und Nachtverlauf","Progreso del día y la noche","昼と夜の進み具合"],
+["Daylight {0}","Luce diurna {0}","Lumière du jour {0}","Tageslicht {0}","Luz diurna {0}","昼の長さ {0}"],
+["Sunrise in {0}","Alba tra {0}","Lever du Soleil dans {0}","Sonnenaufgang in {0}","Amanecer en {0}","日の出まで {0}"],
+["Sunset in {0}","Tramonto tra {0}","Coucher du Soleil dans {0}","Sonnenuntergang in {0}","Atardecer en {0}","日の入りまで {0}"],
 ["Dew point","Punto di rugiada","Point de rosée","Taupunkt","Punto de rocío","露点"],
 ["Sea-level pressure","Pressione al mare","Pression au niveau marin","Luftdruck auf Meereshöhe","Presión al nivel del mar","海面気圧"],
 ["3 h · model","3 h · modello","3 h · modèle","3 Std. · Modell","3 h · modelo","3時間 · モデル"],
