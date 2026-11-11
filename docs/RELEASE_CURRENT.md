@@ -1,36 +1,34 @@
-# AtomicClockSync 2.0.0 — Your time, your watches, your observatory
+# AtomicClockSync 2.1.0 — Ambient weather and lunar calendar
 
-Released on **4 November 2026**.
+Released on **11 November 2026**.
 
-Version 2.0 brings a personal dashboard, a photographic watch collection and a cleaner observatory around the existing radio and Bluetooth synchronization tools. Existing profiles, settings, reception history, accuracy journals and personal moments remain in the app’s separate local data directory.
+Version 2.1 turns the full-screen Clock Observatory into an ambient weather station with a live lunar calendar and a sky that follows the selected city. Existing profiles, settings, reception history, accuracy journals and personal moments remain in the app’s separate local data directory.
 
 ## What’s new
 
-- **Your now:** live city-local reference clock, sunrise/sunset and day length, the selected watch’s centered portrait, current weather, photographic Earth and Moon, and current ISS position/speed/altitude from a valid orbital estimate or recent report.
-- **Clock Observatory:** equal-size hours, minutes and seconds in the bundled Manrope font, city coordinates and time zone, weather, a 24-hour temperature curve, hourly outlook and five-day forecast. Earth, Moon and Light Travel share a restrained full-screen HUD with controls that fade when idle.
-- **Weather and atmosphere:** subtle day, twilight and night gradients follow the city’s actual solar altitude and preserve the selected theme. The dashboard switches between **24 h / 5 days**. Curves support pointer/touch and keyboard inspection, local time labels, real elapsed-hour spacing across DST and explicit gaps for missing data. Weather uses the existing bounded native cache; expired estimates are hidden.
-- **Personal collection:** search and watch tiles stay on the collection page; New watch and editing use a modal. Save settings preserves the active selection. The watch/check icon selects the active watch and stays accented after restart.
-- **Optional ShockBase imports:** centered/resized local watch photos, source credits and normalized technical sheets. Exact model/variant/module checks protect imports and saving; regional suffixes are recognized. Measurements, feature states and official Casio manual links share one schema. The sheet replaces the editor content, with Back/Escape, a double-arrow update and red trash action.
-- **Photographic sky:** local NASA Blue Marble Earth with Satellite/Map layers, illustrative city lights and zoom/pan; a photographic NASA/LRO lunar surface with calculated illumination. The home cards use the same visuals as their observatories. Shared sky previews never change the live clock or transmitted time.
-- **Consistent finish:** fifteen palettes, quieter theme accents, sharper corners across panels/dialogs/controls, and focus indicators reserved for keyboard navigation. Pointer clicks and pointer-driven modal returns leave no focus ring. The macOS development launcher uses the AtomicClockSync identity and icon.
-- **Updated documentation:** nineteen offline Guide chapters, 107 translated prose passages and 96 regenerated screenshots across six languages. New dashboard/Clock chapters have contextual links to the actual tools. README and English user guide include the current collection, weather, privacy and observatory flows. Images use isolated, illustrative sample data.
+- **Ambient weather station:** temperature and perceived temperature, humidity and dew point, sea-level pressure with its three-hour model change, wind direction and gusts, daily rain probability and forecast precipitation total, cloud cover and visibility. A passive 24-hour temperature curve, six upcoming hourly slots and seven forecast days keep readings visible around the central clock without scrolling or time sliders.
+- **Centered lunar calendar:** weekday and date sit beside a photographic NASA/LRO Moon with its live phase, illumination and waxing/waning label. The calendar stays centered below the clock across languages and window sizes; sky preview dates never change it.
+- **Living sky:** the full-screen background follows local solar altitude, with subtle cloud drift based on available model cloud cover and restrained stars at night. Reduced-motion preferences stop the animation; hidden scenes pause it. Missing cloud estimates never fabricate clouds.
+- **Solar arc and countdown:** sunrise, sunset and day length accompany a local solar arc with a position marker and countdown to the next sunrise or sunset. Polar day and night have explicit states. These calculations remain available offline.
+- **Reliable forecasts:** the expanded weather readings use the existing validated native service and shared bounded cache. Missing and expired values remain unavailable, delayed responses cannot overwrite a newly selected city, and model validity/download times remain visible. The dashboard retains its interactive temperature curve.
+- **Updated documentation:** refreshed Clock Observatory screenshots in all six offline Guide languages, README screenshots and the English user guide describe the new station and calendar using isolated, illustrative sample data.
 
 ## Downloads
 
 | File | Platform |
 | --- | --- |
-| `AtomicClockSync-2.0.0-arm64-mac.zip` | macOS Apple Silicon |
-| `AtomicClockSync-2.0.0-windows-x64-portable.exe` | Windows 11 x64 portable |
-| `AtomicClockSync-2.0.0-linux-x86_64.AppImage` | Linux x64 portable |
-| `AtomicClockSync-2.0.0-linux-amd64.deb` | Debian / Ubuntu / Mint x64 |
-| `AtomicClockSync-2.0.0-linux-x86_64.rpm` | Fedora / openSUSE x64 |
+| `AtomicClockSync-2.1.0-arm64-mac.zip` | macOS Apple Silicon |
+| `AtomicClockSync-2.1.0-windows-x64-portable.exe` | Windows 11 x64 portable |
+| `AtomicClockSync-2.1.0-linux-x86_64.AppImage` | Linux x64 portable |
+| `AtomicClockSync-2.1.0-linux-amd64.deb` | Debian / Ubuntu / Mint x64 |
+| `AtomicClockSync-2.1.0-linux-x86_64.rpm` | Fedora / openSUSE x64 |
 
 Each package includes Electron and the native Bluetooth worker/runtime; no separate Node.js or Python installation is required. **SHA256SUMS.txt** covers all five packages. The macOS build is locally ad-hoc signed and not notarized; Windows/Linux packages have no platform signing certificate.
 
 ## Validation and compatibility
 
-- **143 JavaScript tests and 28 Python Bluetooth tests.** Native Electron checks cover the updated Guide, six languages, fifteen themes, dashboard and Clock weather, offline/stale states, delayed city responses, DST/polar calculations and uninterrupted muted radio transmission.
-- Windows and Linux packages were built and verified by the [release workflow](https://github.com/Gladiak/atomicClockSync/actions/runs/41868710203) with tests enabled. A [GitHub Actions outage](https://www.githubstatus.com/incidents/xr3myzj7ms51) left its macOS job queued, so the Apple Silicon package was built and verified locally from the same `v2.0.0` source commit (`da45a20`). All three platforms passed packaged source/asset, version and bundled Bluetooth runtime self-tests; all five package checksums were validated before upload.
-- This release does not extend the verified Bluetooth model registry or claim new physical watch validation. Previously reported successful GA-B2100C / 5689, GWG-B1000 / 5713 and GST-B1000 / 5748 updates on macOS remain the available hardware evidence. Physical Windows/Linux Bluetooth and audio validation remains pending. ISS positions are estimates/reports, not onboard telemetry; weather values are model forecasts, not sensor observations.
+- **152 JavaScript tests and 28 Python Bluetooth tests.** Native Electron checks cover the ambient station, centered calendar, live Moon, solar arc/countdown, six languages, fifteen themes, seven window sizes, reduced motion, hidden-scene pause, twilight/night/polar/offline/missing states, delayed city responses, preview isolation and uninterrupted muted radio transmission.
+- The [native release workflow](https://github.com/Gladiak/atomicClockSync/actions/workflows/build-desktop.yml) builds macOS Apple Silicon, Windows x64 and Linux x64 with tests enabled. Before staging downloads it verifies every packaged source/asset, the application version, the bundled Bluetooth runtime self-test and the five-package SHA-256 manifest.
+- Bluetooth model coverage and physical validation are unchanged: previously reported GA-B2100C / 5689, GWG-B1000 / 5713 and GST-B1000 / 5748 updates on macOS remain the available hardware evidence. Physical Windows/Linux Bluetooth and audio validation remains pending. Weather values are model forecasts; ISS positions are estimates/reports.
 
 [User guide](https://github.com/Gladiak/atomicClockSync/blob/main/docs/USAGE.en.md) · [Bluetooth guide](https://github.com/Gladiak/atomicClockSync/blob/main/docs/BLUETOOTH.md) · [Full changelog](https://github.com/Gladiak/atomicClockSync/blob/main/docs/RELEASE_NOTES.md)

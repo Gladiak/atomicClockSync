@@ -2,7 +2,7 @@
 
 Sync compatible Casio watches through **Bluetooth** or simulated **Multiband 6 time signals** through your speakers. Built with **JavaScript and Electron** for macOS, Windows and Linux.
 
-![AtomicClockSync 2.0 — personal dashboard, city weather and watch](docs/images/dashboard.png)
+![AtomicClockSync 2.1 — personal dashboard, city weather and watch](docs/images/dashboard.png)
 
 Screenshots use the Rainbow theme, Pulse Sync branding and illustrative sample data. Tool screenshots show expanded navigation beside the unobscured content; observatory screenshots show the immersive layout. Weather values and the original watch illustration are demonstration data, not observations or a catalogue photograph.
 
@@ -115,7 +115,7 @@ and Linux with **BlueZ 5.55 or later**, D-Bus access and a working BLE adapter.
 Physical Bluetooth validation on Windows/Linux remains pending. See
 [compatibility and build details](docs/BLUETOOTH.md), the
 [model catalogue](docs/BLUETOOTH_MODELS.md) and the
-[2.0.0 changelog](docs/RELEASE_NOTES.md).
+[2.1.0 changelog](docs/RELEASE_NOTES.md).
 
 ## Watch Accuracy
 
@@ -218,15 +218,15 @@ A normal audio output cannot directly generate the longwave radio carrier expect
 
 ## Downloads and platform status
 
-Current version: **2.0.0**, released on 4 November 2026. Download the five individual packages and the matching **SHA256SUMS.txt** from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v2.0.0). Existing local profiles, settings and history remain in the separate app data directory. The 2.0.0 packages are:
+Current version: **2.1.0**, released on 11 November 2026. Download the five individual packages and the matching **SHA256SUMS.txt** from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v2.1.0). Existing local profiles, settings and history remain in the separate app data directory. The 2.1.0 packages are:
 
 | Package | Contents | Status |
 | --- | --- | --- |
-| `AtomicClockSync-2.0.0-arm64-mac.zip` | macOS app for Apple Silicon | Build on macOS; local ad-hoc signature, not notarized |
-| `AtomicClockSync-2.0.0-windows-x64-portable.exe` | Windows 11 x64 portable executable | Build natively on Windows with bundled BLE worker; physical validation pending |
-| `AtomicClockSync-2.0.0-linux-x86_64.AppImage` | Portable Linux x64 application | Build on Ubuntu 22.04; physical Bluetooth validation pending |
-| `AtomicClockSync-2.0.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Same Linux application with bundled BLE worker |
-| `AtomicClockSync-2.0.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Same Linux application with bundled BLE worker |
+| `AtomicClockSync-2.1.0-arm64-mac.zip` | macOS app for Apple Silicon | Build on macOS; local ad-hoc signature, not notarized |
+| `AtomicClockSync-2.1.0-windows-x64-portable.exe` | Windows 11 x64 portable executable | Build natively on Windows with bundled BLE worker; physical validation pending |
+| `AtomicClockSync-2.1.0-linux-x86_64.AppImage` | Portable Linux x64 application | Build on Ubuntu 22.04; physical Bluetooth validation pending |
+| `AtomicClockSync-2.1.0-linux-amd64.deb` | Installable package for Debian/Ubuntu/Mint x64 | Same Linux application with bundled BLE worker |
+| `AtomicClockSync-2.1.0-linux-x86_64.rpm` | Installable package for Fedora/openSUSE x64 | Same Linux application with bundled BLE worker |
 | `SHA256SUMS.txt` | SHA-256 hashes | Integrity verification |
 
 Prebuilt apps include Electron and the Bluetooth/Python runtime; **Node.js and Python are not required to use them**. On macOS, extract the app and open it or copy it to Applications. On Windows, extract and run the portable executable. Portable means installation-free; profiles and history still live in the user data directory.
@@ -234,14 +234,14 @@ Prebuilt apps include Electron and the Bluetooth/Python runtime; **Node.js and P
 On Linux x64, choose the AppImage for portable use, the DEB on Debian-based distributions, or the RPM on Fedora/openSUSE. The names `x86_64` and `amd64` both mean 64-bit Intel/AMD PCs. These builds do not target ARM64. From your download directory:
 
 ```sh
-chmod +x 'AtomicClockSync-2.0.0-linux-x86_64.AppImage'
-./'AtomicClockSync-2.0.0-linux-x86_64.AppImage'
+chmod +x 'AtomicClockSync-2.1.0-linux-x86_64.AppImage'
+./'AtomicClockSync-2.1.0-linux-x86_64.AppImage'
 # Alternatively, on Debian/Ubuntu/Mint:
-sudo apt install './AtomicClockSync-2.0.0-linux-amd64.deb'
+sudo apt install './AtomicClockSync-2.1.0-linux-amd64.deb'
 # Alternatively, on Fedora:
-sudo dnf install './AtomicClockSync-2.0.0-linux-x86_64.rpm'
+sudo dnf install './AtomicClockSync-2.1.0-linux-x86_64.rpm'
 # Or on openSUSE:
-sudo zypper install './AtomicClockSync-2.0.0-linux-x86_64.rpm'
+sudo zypper install './AtomicClockSync-2.1.0-linux-x86_64.rpm'
 ```
 
 Linux validation uses Ubuntu 22.04 x64 in Docker with a virtual display, muted audio and `--no-sandbox` for the container-only test. Normal launch commands retain Chromium's sandbox. Audio output and physical watch reception still need a real Linux desktop/hardware test. Release binaries are excluded from Git and are intended for GitHub Releases. Each platform package is distributed individually.

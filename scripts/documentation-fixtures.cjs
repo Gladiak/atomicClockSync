@@ -3,7 +3,7 @@
 const {ipcMain}=require('electron');
 const {validateOrbit}=require('../electron/iss-data.cjs');
 const {validateWeather}=require('../electron/weather-data.cjs');
-const weatherSample=require('../test/fixtures/weather-rome.json');
+const weatherSample=require('../test/fixtures/weather-station.cjs');
 const epoch=weatherSample.current.time*1000-10*86400000;
 function install(){
  const orbit=validateOrbit(require('../test/fixtures/iss-omm.json'));

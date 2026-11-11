@@ -1,4 +1,4 @@
-# AtomicClockSync 2.0.0 — User Guide
+# AtomicClockSync 2.1.0 — User Guide
 
 [Project overview](../README.md)
 
@@ -8,20 +8,20 @@ AtomicClockSync is a **JavaScript and Electron desktop app** that synchronizes c
 
 ## Ready-to-use applications
 
-Current version: **2.0.0**, released on 4 November 2026. Download the individual packages and matching checksums from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v2.0.0). Updating the app preserves its separate local data directory.
+Current version: **2.1.0**, released on 11 November 2026. Download the individual packages and matching checksums from [GitHub Releases](https://github.com/Gladiak/atomicClockSync/releases/tag/v2.1.0). Updating the app preserves its separate local data directory.
 
-- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-2.0.0-arm64-mac.zip`.
-- Windows x64 portable: `release/AtomicClockSync-2.0.0-windows-x64-portable.exe`.
-- Linux x64 portable: `release/AtomicClockSync-2.0.0-linux-x86_64.AppImage`.
-- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-2.0.0-linux-amd64.deb`.
-- Fedora/openSUSE x64: `release/AtomicClockSync-2.0.0-linux-x86_64.rpm`.
+- macOS Apple Silicon: `release/mac-arm64/AtomicClockSync.app` or `release/AtomicClockSync-2.1.0-arm64-mac.zip`.
+- Windows x64 portable: `release/AtomicClockSync-2.1.0-windows-x64-portable.exe`.
+- Linux x64 portable: `release/AtomicClockSync-2.1.0-linux-x86_64.AppImage`.
+- Debian/Ubuntu/Mint x64: `release/AtomicClockSync-2.1.0-linux-amd64.deb`.
+- Fedora/openSUSE x64: `release/AtomicClockSync-2.1.0-linux-x86_64.rpm`.
 - Integrity hashes: `release/SHA256SUMS.txt`.
 
 The packaged apps include Electron and the Bluetooth/Python runtime and do not require Node.js or Python. On macOS, extract the app and open it or copy it to Applications. The Mac build has a local ad-hoc signature and is not notarized. Distribution with a Developer ID signature and notarization requires the appropriate signing credentials.
 
 The Windows 11 x64 target requires a native Windows BLE worker built with the application on Windows. Physical Bluetooth and audio validation on a Windows desktop remain pending. It has no Windows digital signature. The portable executable requires no installation; profiles and history are stored in the local user profile rather than inside the executable.
 
-On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-2.0.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-2.0.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-2.0.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
+On Linux, make the AppImage executable with `chmod +x` and launch it, or install the DEB with `sudo apt install './AtomicClockSync-2.1.0-linux-amd64.deb'`. For RPM, use `sudo dnf install './AtomicClockSync-2.1.0-linux-x86_64.rpm'` on Fedora or `sudo zypper install './AtomicClockSync-2.1.0-linux-x86_64.rpm'` on openSUSE. The Linux packages target Intel/AMD x64; ARM64 is not included. All platforms are distributed as individual downloads. Linux package contents and a real packaged UI have been checked on Ubuntu 22.04 x64 inside Docker with a virtual display and muted audio; physical audio and watch reception require a separate desktop test. RPM metadata and payload are verified; native RPM installation and desktop integration remain untested. The container test uses `--no-sandbox`; normal launch retains Chromium sandboxing.
 
 ## Stations
 
@@ -411,7 +411,7 @@ npm run checksums -- --github # Match GitHub's download filenames in SHA256SUMS.
 
 The desktop test uses a temporary profile. It checks all fifteen themes, selected text contrast ratios of at least 4.5:1, persistence, invalid saved-theme fallback, live theme changes and separation from audio settings. It also verifies isolation, fixed window size, all views and FAQs without overflow, the five station selections, channel/profile locking, profile CRUD and undo, settings restore, immutable history, GET/ERR updates, legacy migration, output tests, volume changes, offline fallback, window closing and sleep interruption.
 
-Screenshots are written to `artifacts/`. The app and Bluetooth worker were checked on macOS; the Linux worker was also built and self-tested in Docker. The 2.0.0 package set is published on GitHub Releases with the refreshed dashboard, collection, observatory and documentation. Native platform builds use the manual GitHub workflow, which checks packaged source/assets and the bundled Bluetooth runtime on each OS. Linux desktop audio hardware and native RPM installation have not been tested.
+Screenshots are written to `artifacts/`. The app and Bluetooth worker were checked on macOS; the Linux worker was also built and self-tested in Docker. The 2.1.0 package set is published on GitHub Releases with the ambient weather station, live lunar calendar, solar arc and refreshed documentation. Native platform builds use the manual GitHub workflow, which checks packaged source/assets and the bundled Bluetooth runtime on each OS. Linux desktop audio hardware and native RPM installation have not been tested.
 
 ## Technical references
 
