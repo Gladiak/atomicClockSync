@@ -113,6 +113,27 @@ class WorkerTests(unittest.IsolatedAsyncioTestCase):
             result = await asyncio.wait_for(worker.scan(), timeout=0.5)
         self.assertEqual(result["count"], 1)
 
+    async def test_collection_identity_is_stable_private_and_installation_specific(self):
+        class Scanner:
+            def __init__(self, detection_callback):
+                self.callback = detection_callback
+            async def __aenter__(self):
+                self.callback(SimpleNamespace(address="AA:BB:CC:DD:EE:FF", name="CASIO GA-B2100"),
+                    SimpleNamespace(local_name="CASIO GA-B2100"))
+            async def __aexit__(self, *_args):
+                pass
+        worker = Worker(Scanner, None)
+        events = []
+        for secret in ("a" * 64, "a" * 64, "b" * 64, ""):
+            with patch("helper.emit") as output:
+                await worker.scan(secret)
+                events.append(output.call_args.args[0]["device"])
+        self.assertEqual(events[0]["collectionKey"], events[1]["collectionKey"])
+        self.assertNotEqual(events[0]["id"], events[1]["id"])
+        self.assertNotEqual(events[0]["collectionKey"], events[2]["collectionKey"])
+        self.assertNotIn("collectionKey", events[3])
+        self.assertNotIn("AA:BB:CC:DD:EE:FF", str(events))
+
     async def test_sync_queries_offset_then_only_sends_time_and_disconnects(self):
         client = FakeClient()
         def factory(*_args, **kwargs):

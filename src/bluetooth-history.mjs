@@ -25,6 +25,7 @@ export function normalizeBluetoothHistory(value) {
   return (Array.isArray(value)?value:[]).filter(item => item?.type==='bluetooth' && typeof item.id==='string'
     && item.id && !seen.has(item.id) && seen.add(item.id) && Number.isFinite(item.at) && Object.hasOwn(BLUETOOTH_OUTCOMES,item.outcome))
     .map(item => ({ id:text(item.id,100), type:'bluetooth', at:item.at,
+      ...(typeof item.profileId==='string'&&item.profileId?{profileId:text(item.profileId,100)}:{}),
       endedAt:Number.isFinite(item.endedAt)?item.endedAt:null,
       seconds:Number.isFinite(item.seconds)?Math.max(0,Math.round(item.seconds)):0,
       outcome:item.outcome==='pending'?'uncertain':item.outcome,

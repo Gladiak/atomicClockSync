@@ -31,7 +31,7 @@ const INSTRUCTIONS = {
   manual: 'GA-B2100: hold C for 3 seconds. GWG-B1000: hold B for 5 seconds. For other models, follow the watch manual. Disconnect CASIO WATCHES.',
 };
 
-export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReference, notify, getNow = Date.now, recordAttempt = () => {} }) {
+export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReference, notify, getNow = Date.now, recordAttempt = () => {}, onSent = () => {} }) {
   const $ = id => document.getElementById(id);
   const dialog = $('bluetooth-dialog');
   const logDialog = $('bluetooth-log-dialog');
@@ -131,7 +131,7 @@ export function createBluetoothSync({ desktop, getLocked, setBusy, acceptReferen
         if (result.code === 'offset') needsOffset = true;
         else { devices.clear(); selected = ''; needsOffset = false; }
       }
-      else { status = 'sent'; acceptReference(result.reference); }
+      else { status = 'sent'; acceptReference(result.reference); if(result.sent===true&&result.watch)onSent(result.watch,getNow(),attempt.id); }
     } catch {
       recordAttempt(finishBluetoothAttempt(attempt,{ok:false,code:'uncertain'},getNow(),(performance.now()-started)/1000));
       if (token === generation) { status = 'bluetooth'; error = true; }

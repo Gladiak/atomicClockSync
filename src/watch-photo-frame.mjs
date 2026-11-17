@@ -1,3 +1,15 @@
+// Fit portrait previews to visible pixels without modifying the stored photo.
+export function watchPhotoAlphaBounds({data,width,height}) {
+  if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||data.length!==width*height*4)throw Error('photo');
+  let left=width,top=height,right=-1,bottom=-1;
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(data[(y*width+x)*4+3]>=16){
+    left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);
+  }
+  if(right<left)return {left:0,top:0,width,height};
+  const padding=Math.max(1,Math.round(Math.max(right-left+1,bottom-top+1)*.025));
+  const x=Math.max(0,left-padding),y=Math.max(0,top-padding);
+  return {left:x,top:y,width:Math.min(width,right+padding+1)-x,height:Math.min(height,bottom+padding+1)-y};
+}
 // Border-connected background removal for catalogue shots. Interior white dial
 // details stay opaque; a busy photographic background is kept intact.
 export function watchPhotoBounds({data,width,height}) {

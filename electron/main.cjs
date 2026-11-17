@@ -7,6 +7,7 @@ const { createWatchPhotoService } = require('./watch-photos.cjs');
 const { createIssDataService } = require('./iss-data.cjs');
 const { createWeatherService } = require('./weather-data.cjs');
 const { createBluetoothService, helperCommand } = require('./bluetooth.cjs');
+const { loadBluetoothIdentityKey } = require('./bluetooth-identity.cjs');
 
 app.setName('Atomic Clock Sync');
 // Keep the existing profile path (or a caller's temporary test profile) when
@@ -24,6 +25,7 @@ const watchPhotos = createWatchPhotoService();
 const sourceRuntime = process.env.ATOMIC_SOURCE_ROOT === path.resolve(__dirname, '..');
 const bluetooth = createBluetoothService({
   version: app.getVersion(),
+  getIdentityKey: () => loadBluetoothIdentityKey(path.join(userDataPath, 'bluetooth-identity.key')),
   command: () => helperCommand({ packaged: app.isPackaged && !sourceRuntime, resourcesPath: process.resourcesPath, root: path.join(__dirname, '..') }),
   synchronize,
   onEvent: value => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('bluetooth:event', value); },

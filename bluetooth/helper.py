@@ -8,6 +8,9 @@ import json
 import sys
 import time
 import uuid
+import hashlib
+import hmac
+import re
 
 try:
     from asyncio import timeout
@@ -32,7 +35,7 @@ class Worker:
         self.clock = None
         self.request_id = None
 
-    async def scan(self):
+    async def scan(self, identity_key=""):
         trace("scan-start")
         self.devices.clear()
         detected = asyncio.Event()
@@ -45,9 +48,13 @@ class Worker:
             if any(value[0].address == device.address for value in self.devices.values()):
                 return
             token = str(uuid.uuid4())
+            identity = {}
+            if isinstance(identity_key, str) and re.fullmatch(r"[a-f0-9]{64}", identity_key):
+                identity["collectionKey"] = hmac.new(bytes.fromhex(identity_key),
+                    device.address.upper().encode("utf-8"), hashlib.sha256).hexdigest()
             self.devices[token] = (device, name[:80])
             trace("scan-found", model=metadata(name)["model"])
-            emit({"event": "device", "id": self.request_id, "device": {"id": token, "name": name[:80], **metadata(name)}})
+            emit({"event": "device", "id": self.request_id, "device": {"id": token, "name": name[:80], **metadata(name), **identity}})
             detected.set()
 
         async with self.scanner_factory(detection_callback=found):
@@ -106,7 +113,7 @@ class Worker:
         try:
             async with timeout(95):
                 if command["op"] == "scan":
-                    result = await self.scan()
+                    result = await self.scan(command.get("identityKey", ""))
                 else:
                     result = await self.sync(command.get("deviceId"), command.get("offsetMinutes"))
         except asyncio.CancelledError:

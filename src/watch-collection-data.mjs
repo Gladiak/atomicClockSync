@@ -1,11 +1,17 @@
-import {normalizeWatchSpecs} from './watch-spec-data.mjs';
+import {normalizeWatchSpecs,normalizeWatchModel} from './watch-spec-data.mjs';
 import {watchPhotoBounds,watchPhotoPlacement} from './watch-photo-frame.mjs';
 const clean=(value,size)=>typeof value==='string'?value.trim().slice(0,size):'';
 export function normalizeWatchDetails(value) {
   const acquiredAt=clean(value?.acquiredAt,10),parsed=Date.parse(acquiredAt+'T00:00:00Z');
   const photo=typeof value?.photo==='string'&&value.photo.length<=320000&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value.photo)?value.photo:'';
   const source=normalizePhotoSource(value?.photoSource),specs=normalizeWatchSpecs(value?.specs);
-  return {photo,...(photo&&source?{photoSource:source}:{}),...(specs?{specs}:{}),note:clean(value?.note,1000),acquiredAt:/^\d{4}-\d\d-\d\d$/.test(acquiredAt)&&Number.isFinite(parsed)&&new Date(parsed).toISOString().slice(0,10)===acquiredAt?acquiredAt:''};
+  const variant=value?.variant,family=normalizeWatchModel(variant?.family);
+  return {photo,...(photo&&source?{photoSource:source}:{}),...(specs?{specs}:{}),...(family&&['pending','automatic','confirmed'].includes(variant?.status)?{variant:{family,status:variant.status}}:{}),note:clean(value?.note,1000),acquiredAt:/^\d{4}-\d\d-\d\d$/.test(acquiredAt)&&Number.isFinite(parsed)&&new Date(parsed).toISOString().slice(0,10)===acquiredAt?acquiredAt:''};
+}
+export function normalizeBluetoothLink(value){
+  const model=normalizeWatchModel(value?.model);
+  if(!model||typeof value?.key!=='string'||!(/^[a-f0-9]{64}$/).test(value.key))return null;
+  return {key:value.key,model,module:/^\d{4}$/.test(value.module)?value.module:'',lastSentAt:Number.isFinite(value.lastSentAt)?value.lastSentAt:0};
 }
 export function normalizePhotoSource(value){
   if(value?.provider!=='shockbase'||typeof value.model!=='string'||value.model.length>80)return null;

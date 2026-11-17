@@ -21,7 +21,7 @@ function helperCommand({ packaged, resourcesPath, root, platform = process.platf
   throw fail('unavailable');
 }
 
-function createBluetoothService({ command, synchronize, onEvent = () => {}, spawnProcess = spawn, monotonic = () => performance.now(), version = '' }) {
+function createBluetoothService({ command, synchronize, onEvent = () => {}, spawnProcess = spawn, monotonic = () => performance.now(), version = '', getIdentityKey = () => '' }) {
   let worker = null, operation = null, closing = null, sequence = 0;
   let devices = new Map();
   const diagnostics = createDiagnosticLog({ version });
@@ -133,7 +133,8 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
             device.verified = item.verified === true;
             device.instructions = ['ga', 'gwg', 'gst'].includes(item.instructions) ? item.instructions : 'manual';
           }
-          devices.set(item.id, device); onEvent({ type: 'device', device });
+          devices.set(item.id, { ...device, ...(typeof item.collectionKey === 'string' && /^[a-f0-9]{64}$/.test(item.collectionKey) ? { collectionKey: item.collectionKey } : {}) });
+          onEvent({ type: 'device', device });
           record('scan-found', { model: device.model });
         } else if (value.event === 'stage' && op.kind === 'sync' && ['connecting', 'reading', 'sending'].includes(value.stage)) {
           if (value.stage === 'sending') op.writing = true;
@@ -192,17 +193,22 @@ function createBluetoothService({ command, synchronize, onEvent = () => {}, spaw
     diagnostics: () => diagnostics.text(),
     scan: () => run('scan', async op => {
       devices.clear();
-      await request(op);
-      return { devices: [...devices.values()] };
+      // Identity storage must never prevent a time update if the disk is full.
+      let identityKey = '';
+      try { identityKey = getIdentityKey(); } catch { /* Synchronize without automatic collection linking. */ }
+      await request(op, { identityKey });
+      return { devices: [...devices.values()].map(({ collectionKey, ...device }) => device) };
     }),
     sync: (deviceId, offsetMinutes) => run('sync', async op => {
       if (typeof deviceId !== 'string' || !devices.has(deviceId)) throw fail('device');
+      const device = devices.get(deviceId);
       if (offsetMinutes !== undefined && (!Number.isInteger(offsetMinutes) || offsetMinutes < -720 || offsetMinutes > 840 || offsetMinutes % 15)) throw fail('offset');
       const result = await request(op, { deviceId, ...(offsetMinutes !== undefined ? { offsetMinutes } : {}) });
       const ref = op.reference;
       if (!ref || !op.writing || result?.sent !== true || !Number.isInteger(result.offsetMinutes) || result.offsetMinutes < -720 || result.offsetMinutes > 840) throw fail('protocol');
       await stopWorker();
       return { sent: true, name: String(result.name).slice(0, 80), offsetMinutes: result.offsetMinutes,
+        ...(device.collectionKey ? { watch: { key: device.collectionKey, name: device.name, model: device.model || '', module: device.module || '' } } : {}),
         reference: { ...ref, nowMs: ref.epochMs + ref.offsetMs + monotonic() - ref.monotonicMs } };
     }),
     cancel: async () => {

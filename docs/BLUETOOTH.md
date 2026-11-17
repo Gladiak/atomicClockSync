@@ -29,6 +29,14 @@ Advertising identifies a family, not a verified module number or device identity
 5. Check the watch. “Time sent” means the Bluetooth write completed; it does not
    measure accuracy or certify the watch's reception/OK indication.
 
+## Automatic collection entry
+
+After the first successful time send, the app saves a local collection card and imports the first matching ShockBase variant with its technical sheet and photo. This does not identify the physical colour: **Automatic variant · review colour** remains visible until you choose the variant. In **My watches → Choose variant**, select an image to download and save the model, photo and technical sheet together. Failed or uncertain sends do not create cards. Catalogue failures leave the base card saved, and the next successful send can retry an incomplete initial import. Manual selection and later sends preserve personal notes, acquisition date, active radio selection and saved audio settings.
+
+Repeated sends reuse a private collection fingerprint derived in the Bluetooth worker with an installation-specific secret. Scan tokens remain temporary; raw hardware addresses are not exposed to the renderer or catalogue. Back up `bluetooth-identity.key` with the rest of the app data. Identity changes reported by the operating system can create a new link. Existing manually created cards are not merged by family name, because two watches can share the same model.
+
+The catalogue receives only the model query and picture requests. Choosing a variant explicitly replaces both catalogue assets; cancelling or a partial download leaves the saved variant intact. Single confirmed photo or technical-sheet imports also save immediately when the saved watch model is unchanged. New manual drafts and changed model fields still need **Save settings**.
+
 If the current watch offset cannot be decoded, the dialog asks for its **current
 UTC offset including active summer time**. For example, Rome in winter is +01:00,
 in summer +02:00. Select the value already configured on the watch, reconnect it

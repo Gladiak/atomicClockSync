@@ -21,6 +21,8 @@ import { createGuide } from './guide.mjs';
 import { createSidebar } from './sidebar.mjs';
 import { createSectionTransitions } from './section-transitions.mjs';
 import { createBluetoothSync } from './bluetooth-sync.mjs';
+import { createBluetoothCollection } from './bluetooth-collection.mjs';
+import { normalizeWatchDetails } from './watch-collection-data.mjs';
 import { BLUETOOTH_HISTORY_KEY, BLUETOOTH_OUTCOMES, normalizeBluetoothHistory, mergeSynchronizationHistory } from './bluetooth-history.mjs';
 import { t, decimal, locale, dateTimeFormat, numberFormat, getLanguage, setLanguage, onLanguageChange, localizeDocument, localizeStoredMessage } from './i18n.mjs';
 import { DEFAULTS, CHANNEL_LABELS, WAVE_LABELS, normalizePreferences, normalizeProfiles, normalizeHistory, watchMetadata, createSnapshot, createTrial, successfulConfiguration } from './trials.mjs';
@@ -116,6 +118,19 @@ const nowView = createNowView({desktop,getBasemap:()=>worldView.getBasemap(), ge
 const syncJourney = createSyncJourney({ openTrial });
 const collectionView = createWatchCollection({desktop,getData:()=>({profiles,activeProfileId,history}),getNow:now,
   getAccuracy:()=>accuracyView.getArchive(),getLocked:()=>Boolean(session)||busy||bluetoothBusy,
+  saveImported:(id,details,model)=>{
+    const profile=profiles.find(item=>item.id===id);
+    if(!profile||profile.model!==model)return null;
+    return putCollectionProfile({...profile,details:normalizeWatchDetails({...profile.details,...details})});
+  },
+  saveVariant:(id,imported)=>{
+    const profile=profiles.find(item=>item.id===id);
+    if(!profile)return false;
+    const updated={...profile,model:imported.model,name:profile.name===profile.model?imported.model:profile.name,
+      details:normalizeWatchDetails({...profile.details,...imported.details,note:profile.details.note,acquiredAt:profile.details.acquiredAt,
+        variant:{family:profile.bluetooth?.model||profile.details.variant?.family||imported.model,status:'confirmed'}})};
+    return putCollectionProfile(updated);
+  },notify,
   editWatch:id=>showProfile(id),
   selectWatch:id=>{const profile=profiles.find(p=>p.id===id);if(profile)applyConfiguration(profile.settings,id);},
   openAccuracy:id=>{accuracyView.openWatch(id);navigate('watch-accuracy');},
@@ -130,7 +145,16 @@ const clockView=createClockView({desktop,getNow:now,getObserver:()=>worldView.ge
 const observatory = createObservatory({ views: {home:nowView,clock:clockView,world:worldView,moon:moonView,'light-travel':lightTravelView},goTo:navigate,desktop,notify });
 
 function now(mono = performance.now()) { return anchor.epoch + mono - anchor.mono; }
+const bluetoothCollection=createBluetoothCollection({desktop,getProfiles:()=>profiles,getSettings:()=>preferences,putProfile:putCollectionProfile,notify});
 const bluetoothView = createBluetoothSync({ desktop,
+  onSent:(watch,at,attemptId)=>{
+    void bluetoothCollection.sent(watch,at);
+    const profile=profiles.find(item=>item.bluetooth?.key===watch.key);
+    if(profile){
+      bluetoothHistory=bluetoothHistory.map(item=>item.id===attemptId?{...item,profileId:profile.id}:item);
+      persist(BLUETOOTH_HISTORY_KEY,bluetoothHistory);renderHistory();
+    }
+  },
   getNow: now,
   recordAttempt: attempt => {
     const index = bluetoothHistory.findIndex(item => item.id === attempt.id);
@@ -152,6 +176,15 @@ function saveProfiles() {
   const saved = persist('atomic.profiles', profiles);
   const selected = persist('atomic.activeProfile', activeProfileId);
   return saved && selected;
+}
+function putCollectionProfile(profile){
+  const existing=profiles.find(item=>item.id===profile.id);
+  const next=existing?profiles.map(item=>item.id===profile.id?profile:item):[...profiles,profile];
+  if(!persist('atomic.profiles',next))return false;
+  profiles=next;
+  collectionView.syncProfile(profile,existing);
+  renderProfileOptions();renderProfileSummary();
+  return true;
 }
 function notify(message, error = false) {
   clearTimeout(toastTimer);
@@ -335,11 +368,12 @@ function renderHistory() {
   receptionLab.refresh();
   const watches=new Map(profiles.map(profile=>[profile.id,profile.name]));
   for(const trial of history)if(trial.snapshot?.profileId&&!watches.has(trial.snapshot.profileId))watches.set(trial.snapshot.profileId,trial.snapshot.watch.name||t('Archived watch'));
+  for(const trial of bluetoothHistory)if(trial.profileId&&!watches.has(trial.profileId))watches.set(trial.profileId,trial.watch.name||t('Archived watch'));
   const filter=$('history-watch');filter.replaceChildren(new Option(t('All watches'),''));
   for(const [id,name]of watches)filter.append(new Option(name,id));
   if(historyWatchId&&!watches.has(historyWatchId))historyWatchId='';
   filter.value=historyWatchId;
-  const all = mergeSynchronizationHistory(history, bluetoothHistory).filter(item=>!historyWatchId||item.snapshot?.profileId===historyWatchId);
+  const all = mergeSynchronizationHistory(history, bluetoothHistory).filter(item=>!historyWatchId||(item.snapshot?.profileId||item.profileId)===historyWatchId);
   $('history-list').replaceChildren();
   $('clear-history').hidden = !all.length || Boolean(historyWatchId);
   historyPage = Math.max(0, Math.min(historyPage, Math.ceil(all.length / 8) - 1));
@@ -733,7 +767,9 @@ $('profile-form').addEventListener('submit', event => {
     position: $('profile-position').value, systemVolume: $('profile-system-volume').value });
   if (!metadata.name) { $('profile-name').focus(); return; }
   const existing = profiles.find(p => p.id === editingProfileId);
-  const profile = { id: existing?.id || crypto.randomUUID(), ...metadata, details: collectionView.getDetails(), settings: profileSettingsToSave(), lastSuccess: existing?.lastSuccess || null };
+  const details=collectionView.getDetails();
+  if(existing&&metadata.model!==existing.model)delete details.variant;
+  const profile = { ...existing, id: existing?.id || crypto.randomUUID(), ...metadata, details, settings: profileSettingsToSave(), lastSuccess: existing?.lastSuccess || null };
   const previousProfiles=profiles,previousActive=activeProfileId;
   profiles = existing ? profiles.map(p => p.id === existing.id ? profile : p) : [...profiles,profile];
   const saved = saveProfiles();

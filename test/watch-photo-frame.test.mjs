@@ -1,8 +1,17 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {watchPhotoBounds,watchPhotoPlacement} from '../src/watch-photo-frame.mjs';
+import {watchPhotoBounds,watchPhotoPlacement,watchPhotoAlphaBounds} from '../src/watch-photo-frame.mjs';
 import {normalizeWatchDetails} from '../src/watch-collection-data.mjs';
 function pixels(width,height,background=[255,255,255,255]){const data=new Uint8ClampedArray(width*height*4);for(let i=0;i<data.length;i+=4)data.set(background,i);return {width,height,data};}
 function rectangle(image,x,y,w,h,color){for(let row=y;row<y+h;row++)for(let col=x;col<x+w;col++)image.data.set(color,(row*image.width+col)*4);}
+
+test('portrait viewports trim transparent margins without cropping any watch part or changing pixels',()=>{
+ const image=pixels(160,160,[0,0,0,0]);rectangle(image,55,10,50,140,[0,0,0,255]);rectangle(image,40,50,80,50,[255,255,255,255]);
+ const original=image.data.slice(),bounds=watchPhotoAlphaBounds(image);
+ assert.ok(bounds.width<100);assert.ok(bounds.height>bounds.width);assert.ok(bounds.left<=40&&bounds.left+bounds.width>=120);assert.ok(bounds.top<=10&&bounds.top+bounds.height>=150);
+ assert.deepEqual(image.data,original);
+ assert.deepEqual(watchPhotoAlphaBounds(pixels(80,120)),{left:0,top:0,width:80,height:120});
+ assert.deepEqual(watchPhotoAlphaBounds(pixels(80,120,[0,0,0,0])),{left:0,top:0,width:80,height:120});
+});
 
 test('white catalogue borders are removed without erasing white dial details',()=>{
  const image=pixels(160,120);rectangle(image,90,10,40,90,[35,45,55,255]);rectangle(image,100,40,20,20,[255,255,255,255]);

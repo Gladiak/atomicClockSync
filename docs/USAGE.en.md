@@ -102,6 +102,10 @@ In **Synchronize → Channel**, choose **Both**, **Left** or **Right**. The excl
 
 ## Watch profiles
 
+The first successful Bluetooth time send automatically adds a locally linked watch and imports the first matching catalogue variant. **Automatic variant · review colour** marks this provisional choice. Choose **My watches → Choose variant** to download and save the selected variant’s model, photo and technical sheet together. Personal notes and audio settings are preserved. Offline, the base card remains saved; incomplete initial imports can retry on a later successful send. Failed or uncertain sends do not add watches. Repeated successful sends reuse the local link; manually created cards are not merged by family name.
+
+Confirmed single photo and technical-sheet imports for an existing unchanged model save automatically. New manual drafts and changed model fields still require **Save settings**. Cancelling the editor discards personal drafts, but keeps previously completed catalogue imports.
+
 Open **My watches** and create a profile with a name, model, home city, placement note and optional system-volume note.
 
 **Save settings** also stores the station, output device, channel, app volume, waveform, session duration and manual output advance. Home city, system volume and placement are manual notes: the app does not read or change those settings on the watch or operating system.
@@ -481,7 +485,7 @@ Validation: `npm run test:clock` covers six languages, fifteen palettes, seven s
 
 ## Dashboard atmosphere and temperature trend
 
-Your now uses the city chosen in World View for its live clock, sunrise, sunset and day length. Select the watch/check icon in the top-right corner of a collection tile to set the watch shown on the dashboard. Its saved photo appears centered above reception and supported drift estimates. The map follows the Satellite/Map choice in World View; Moon and ISS cards open their own tools.
+Your now uses the city chosen in World View for its live clock, sunrise, sunset and day length. Select the watch/check icon on a collection photo to set the watch shown on the dashboard. Its saved photo appears centered above reception and supported drift estimates. The map follows the Satellite/Map choice in World View; Moon and ISS cards open their own tools.
 
 Soft gradients follow the Sun’s actual altitude: day, twilight and night are calculated locally without changing the selected theme. Sky preview dates never move this live atmosphere or the reference clock. Rectangular panels, dialogs and controls share smaller corner radii. Pointer clicks and closing a dialog do not leave a focus ring; Tab keeps keyboard focus visible.
 

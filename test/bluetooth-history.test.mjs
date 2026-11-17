@@ -33,3 +33,8 @@ test('unified history is chronological and does not mutate the radio data used b
   assert.equal(merged[0].type,'bluetooth');assert.equal(merged[1].id,'radio');
   assert.deepEqual(radio,before);
 });
+test('collection links survive restart without copying Bluetooth identifiers or photos into history',()=>{
+ const entry={...createBluetoothAttempt(device,1000),profileId:'collection-watch',bluetooth:{key:'private'},details:{photo:'private'}};
+ const restored=normalizeBluetoothHistory([entry])[0];
+ assert.equal(restored.profileId,'collection-watch');assert.equal(restored.bluetooth,undefined);assert.equal(restored.details,undefined);
+});

@@ -1,4 +1,4 @@
-import { normalizeWatchDetails } from './watch-collection-data.mjs';
+import { normalizeWatchDetails, normalizeBluetoothLink } from './watch-collection-data.mjs';
 import { STATIONS } from './stations.mjs';
 
 export const CHANNEL_LABELS = Object.freeze({ both: 'Both', left: 'Left', right: 'Right' });
@@ -30,6 +30,7 @@ export function normalizeProfiles(value) {
   const ids = new Set();
   return (Array.isArray(value) ? value : []).filter(p => p && typeof p.id === 'string' && p.id && !ids.has(p.id) && ids.add(p.id))
     .map(p => ({ id: p.id, ...watchMetadata(p), name: text(p.name, 60) || 'Watch', details: normalizeWatchDetails(p.details), settings: normalizePreferences(p.settings),
+      ...(normalizeBluetoothLink(p.bluetooth)?{bluetooth:normalizeBluetoothLink(p.bluetooth)}:{}),
       lastSuccess: p.lastSuccess?.settings ? { ...p.lastSuccess, settings: normalizePreferences(p.lastSuccess.settings) } : null }));
 }
 

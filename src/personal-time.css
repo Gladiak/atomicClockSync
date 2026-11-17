@@ -64,20 +64,47 @@
 #page-profiles{overflow:auto;padding-right:4px}
 .collection-gallery{margin:0 0 20px}
 .collection-gallery>.section-heading{margin:0 0 12px}
-.collection-watches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.watch-card{padding:14px;min-width:0;display:flex;flex-direction:column}
-.watch-card-select{display:flex;align-items:center;gap:12px;text-align:left;background:transparent;color:var(--text);font-family:inherit;padding:0;width:100%;border-radius:var(--radius-md)}
-.watch-card-select[aria-pressed=true]{color:var(--accent-text)}
+.collection-watches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:1080px}
+.watch-card.panel{position:relative;display:grid;grid-template-columns:43% minmax(0,1fr);align-self:stretch;padding:0;min-width:0;overflow:visible;transition:border-color .2s,box-shadow .2s}
+.watch-card[data-active=true]{border-color:color-mix(in srgb,var(--accent-text) 35%,var(--line))}
+.watch-card:hover{box-shadow:0 10px 30px #0000000d}
+.watch-card-media{display:grid;place-items:center;min-width:0;padding:48px 5px 16px 9px;background:radial-gradient(ellipse at 50% 58%,color-mix(in srgb,var(--accent) 6%,transparent),transparent 70%)}
+.watch-card-select{display:grid;place-items:center;width:100%;height:100%;min-height:0;padding:0;background:transparent;color:var(--text);border:0;border-radius:var(--radius-md)}
 .watch-photo,.watch-placeholder{width:70px;height:80px;object-fit:contain;background:color-mix(in srgb,var(--accent) 4%,var(--bg));border:1px solid var(--line);border-radius:var(--radius-md);flex-shrink:0}
 .watch-placeholder{display:grid;place-items:center;font-size:42px;font-weight:300;color:var(--accent-text)}
-.watch-card-caption{display:grid;gap:8px;min-width:0}
-.watch-card-caption strong{font-size:15px;font-weight:500;overflow-wrap:anywhere}
-.watch-card-caption span{font-size:10px;overflow-wrap:anywhere}
-.watch-card-facts{display:grid;gap:7px;margin:14px 0}
-.watch-card-facts span{font-size:10px}
-.watch-card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
-.watch-card-actions .text-button{font-size:9px}
-.watch-personal-note{font-size:10px;line-height:1.6;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;max-height:64px;overflow:auto;margin:0 0 12px}
+.watch-card-media .watch-photo{width:100%;height:100%;min-height:240px;max-height:360px;background:none;border:0;border-radius:0;filter:drop-shadow(0 8px 8px #0002);transition:transform .3s}
+.watch-card-media .watch-placeholder{width:78px;height:116px;border-radius:28px;background:transparent;font-size:42px;color:var(--muted);opacity:.55}
+.watch-card-body{display:flex;flex-direction:column;min-width:0;padding:50px 12px 16px 8px}
+.watch-card-toolbar{position:absolute;top:11px;left:52px;right:11px;display:flex;align-items:center;gap:3px;min-height:28px}
+.watch-card-family{flex:1;min-width:0;color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase;overflow-wrap:anywhere;line-height:1.5}
+.watch-card-tool,.watch-card-active{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;flex-shrink:0;padding:6px;border:0;border-radius:50%;background:transparent;color:var(--muted)}
+.watch-card svg,.watch-card-actions svg{width:17px;height:17px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.watch-card-more svg{stroke-width:3.5}
+.watch-card-tool:not(:disabled):hover,.watch-card-active:not(:disabled):hover{color:var(--accent-text);background:var(--surface-hover)}
+.watch-card-active{position:absolute;top:12px;left:12px;width:30px;height:30px;background:var(--panel);border:1px solid var(--line)}
+.watch-card-active[aria-pressed=true]{color:var(--on-accent);border-color:var(--accent);background:var(--accent)}
+.watch-card-active[aria-pressed=true]:not(:disabled):hover{color:var(--on-accent);background:var(--button-hover)}
+.watch-card-caption{display:grid;gap:7px;min-width:0;width:100%;padding:0;border:0;background:none;text-align:left;color:var(--text);font-family:inherit}
+.watch-card-caption strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:17px;font-weight:500;line-height:1.25;letter-spacing:-.35px;overflow-wrap:anywhere}
+.watch-card-model{font-size:11px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
+.watch-card-body .watch-personal-note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:11px;line-height:1.6;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;overflow:hidden;margin:13px 0 0}
+.watch-variant-hint{align-self:flex-start;max-width:100%;font-size:8px;line-height:1.5;color:var(--accent-text);margin:12px 0 0;padding:4px 7px;border:1px solid color-mix(in srgb,var(--accent-text) 20%,transparent);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.watch-card-facts{display:grid;gap:0;padding-top:14px;margin:auto 0 0}
+.watch-card-facts>div{display:grid;gap:3px;padding:6px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
+.watch-card-facts>div:last-child{border-bottom:0}
+.watch-card-facts dt{font-size:9px;color:var(--muted);line-height:1.4}
+.watch-card-facts dd{font-size:11px;line-height:1.4;margin:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.watch-card-actions{position:fixed;inset:auto;margin:0;width:260px;max-width:calc(100vw - 24px);max-height:calc(100vh - 24px);overflow:auto;padding:6px;border:1px solid var(--line);border-radius:var(--radius-md);color:var(--text);background:var(--panel);box-shadow:0 12px 45px #0004}
+.watch-card-actions:popover-open{display:grid;gap:2px}
+.watch-card-actions button{display:flex;align-items:center;gap:11px;min-width:0;width:100%;padding:11px 10px;text-align:left;font-family:inherit;font-size:11px;line-height:1.4;color:var(--text);background:transparent;border:0;border-radius:var(--radius-sm)}
+.watch-card-actions button:not(:disabled):hover,.watch-card-actions button:focus-visible{background:var(--surface-hover);color:var(--accent-text)}
+.watch-card-actions .watch-photo-credit{margin-top:4px;border-top:1px solid var(--line);border-radius:0;font-size:9px;color:var(--muted)}
+.watch-variant-tools{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:16px}
+.watch-variant-tools p{margin:0;flex:1;min-width:130px}
+@media(hover:hover) and (pointer:fine){.watch-card-select:hover .watch-photo{transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce){.watch-card,.watch-card-media .watch-photo{transition:none}.watch-card-select:hover .watch-photo{transform:none}}
+@media(max-width:1000px){.collection-watches{grid-template-columns:repeat(2,minmax(0,1fr));max-width:720px}}
+@media(max-width:680px){.collection-watches{grid-template-columns:minmax(0,360px)}}
 .watch-personal-details{border-block:1px solid var(--line);padding:13px 0;margin-top:16px}
 .watch-personal-details summary{font-size:11px;cursor:pointer;color:var(--accent-text)}
 .watch-photo-editor{display:flex;align-items:center;gap:14px;margin-top:16px}
@@ -85,7 +112,7 @@
 .watch-photo-editor>div:last-child{min-width:0}
 .watch-photo-editor .position-label{margin-top:0}
 #collection-acquired{font-family:inherit;background:var(--surface-input);color:var(--text);border:1px solid var(--border-control);border-radius:var(--radius-sm);padding:8px}
-@media(max-width:850px){.collection-watches{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 .page-tools{display:flex;align-items:center;gap:14px;flex-shrink:0}
 .page-tools .text-button{font-size:10px;max-width:145px;line-height:1.4}
 .page-tools .instant-linked::before{content:'●';margin-right:7px;color:var(--reference-accent,var(--accent-text))}
@@ -184,12 +211,6 @@
 .profile-editor-dialog #profile-save{font-size:11px;margin-left:auto}
 .profile-editor-dialog .profile-actions .text-button{margin-left:auto}
 @media(max-width:760px){.profile-editor-dialog .profiles-grid{grid-template-columns:1fr}.collection-toolbar>.primary-button{padding:11px}}
-/* Editing a card and choosing the watch in use are separate actions. */
-.watch-card{position:relative}.watch-card-select{padding-right:34px}
-.watch-card-active{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:6px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel);color:var(--muted)}
-.watch-card-active svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.watch-card-active:not(:disabled):hover{color:var(--accent-text);border-color:var(--accent-text);background:var(--surface-hover)}
-.watch-card-active[aria-pressed=true]{color:var(--accent-text);border-color:color-mix(in srgb,var(--accent-text),transparent 50%);background:color-mix(in srgb,var(--accent),var(--panel) 88%)}
 /* Photographic previews share the dedicated map and lunar rendering. */
 .now-earth{padding:14px;color:var(--text);gap:5px}.now-earth .text-button{color:var(--accent-text)}
 .now-earth-caption{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 10px;color:var(--muted);font-size:9px;line-height:1.4}.now-earth-caption .text-button{font-size:8px}

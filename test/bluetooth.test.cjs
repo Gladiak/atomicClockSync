@@ -8,7 +8,7 @@ function setup({ ntp = async () => ({ epochMs: 1793102400000, offsetMs: 123, mon
   const commands = [], events = [], children = [];
   let clock = null;
   const service = createBluetoothService({
-    command: () => ({ executable: 'fake-worker', args: [] }), synchronize: ntp, monotonic: () => 200,
+    command: () => ({ executable: 'fake-worker', args: [] }), synchronize: ntp, monotonic: () => 200, getIdentityKey: () => 'c'.repeat(64),
     onEvent: value => events.push(value),
     spawnProcess: () => {
       const child = new EventEmitter(); children.push(child);
@@ -115,6 +115,20 @@ test('GST-B1000 instructions and module survive the worker-to-renderer boundary'
   assert.equal(result.devices[0].module, '5748');
   assert.equal(h.events[0].device.verified, false);
   await h.service.cancel();
+});
+
+test('local collection identity is returned only after a successful send and stays out of scanning and diagnostics',async()=>{
+  const key='a'.repeat(64);
+  const h=setup({metadata:{model:'GA-B2100',module:'5689',collectionKey:key}});
+  const scan=await h.service.scan();
+  assert.equal(h.commands.find(command=>command.op==='scan').identityKey,'c'.repeat(64));
+  assert.equal(JSON.stringify(scan).includes(key),false);
+  assert.equal(JSON.stringify(h.events).includes(key),false);
+  const result=await h.service.sync(id);
+  assert.deepEqual(result.watch,{key,model:'GA-B2100',module:'5689',name:'CASIO GA-B2100'});
+  assert.equal(h.service.diagnostics().includes(key),false);
+  const failed=setup({metadata:{collectionKey:key},syncCode:'uncertain'});await failed.service.scan();
+  assert.equal((await failed.service.sync(id)).watch,undefined);
 });
 
 test('missing watch offset preserves the selection for an explicit retry without requesting NTP', async () => {
