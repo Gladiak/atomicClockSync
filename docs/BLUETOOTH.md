@@ -180,11 +180,13 @@ Keep the whole directory, including `_internal` and license notices. The package
 hook rejects missing/outdated workers. For a cross-build, first copy a worker
 built for the target OS/architecture into the corresponding directory; building
 a Windows worker on macOS is not supported. Docker's Linux build creates its own
-Linux worker. The manual GitHub Actions workflow builds native packages on all
-three operating systems and verifies packaged sources and the bundled runtime.
-Its optional `stage_release_tag` input uploads the five packages and checksums
-only to an existing draft whose tag matches the exact workflow commit. It never
-publishes the draft.
+Linux worker. The GitHub Actions workflow builds native packages on all three
+operating systems and verifies packaged sources and the bundled runtime. Pushing
+a version tag (`v*`) builds with tests enabled, creates a draft, verifies and
+uploads all five packages and checksums, then publishes it as the latest release.
+The tag must match `package.json` and the exact workflow commit. Manual runs keep
+the optional `stage_release_tag` input for staging an existing draft without
+publishing it; refreshing a published release requires explicit replacement.
 
 ## Verification and sources
 

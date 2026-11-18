@@ -1,5 +1,8 @@
 name: Desktop packages with Bluetooth
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       stage_release_tag:
@@ -71,7 +74,7 @@ jobs:
             release/*.deb
             release/*.rpm
   stage-release:
-    if: inputs.stage_release_tag != ''
+    if: github.event_name == 'push' || inputs.stage_release_tag != ''
     needs: build
     runs-on: ubuntu-22.04
     permissions:
@@ -86,8 +89,21 @@ jobs:
           merge-multiple: true
           path: release
       - run: python3 scripts/release-checksums.py --github
+      - name: Create release draft for a version tag
+        if: github.event_name == 'push'
+        run: gh release create "$RELEASE_TAG" --verify-tag --draft --title "$RELEASE_TITLE" --notes-file docs/RELEASE_CURRENT.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TITLE: AtomicClockSync ${{ github.ref_name }}
       - run: python3 scripts/stage-release.py
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.stage_release_tag }}
+          RELEASE_TAG: ${{ inputs.stage_release_tag || github.ref_name }}
           REPLACE_PUBLISHED_RELEASE: ${{ inputs.replace_published_release && '1' || '' }}
+      - name: Publish verified version-tag release
+        if: github.event_name == 'push'
+        run: gh release edit "$RELEASE_TAG" --draft=false --latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
