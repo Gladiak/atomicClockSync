@@ -6,6 +6,9 @@ let epoch=fixture.current.time*1000,mode='online',requests=0;const deferred=[];
 ipcMain.removeHandler('clock:sync');ipcMain.handle('clock:sync',()=>({ok:true,nowMs:epoch,host:'clock-scene-test',uncertaintyMs:1,synchronizedAt:epoch}));
 ipcMain.removeHandler('observatory:fullscreen');ipcMain.handle('observatory:fullscreen',()=>true);
 function report(city){const raw=structuredClone(fixture);raw.latitude=city.latitude;raw.longitude=city.longitude;raw.timezone=city.timeZone;raw.utc_offset_seconds=city.timeZone==='Asia/Tokyo'?32400:3600;
+ if(mode==='legacy')for(const field of ['relative_humidity_2m','wind_speed_10m','wind_gusts_10m','cloud_cover']){delete raw.hourly[field];delete raw.hourly_units[field];}
+ if(mode==='zero')for(const field of ['relative_humidity_2m','wind_speed_10m','wind_gusts_10m','cloud_cover','precipitation_probability'])raw.hourly[field].fill(0);
+ if(mode==='cold'){raw.daily.temperature_2m_min.fill(-32);raw.daily.temperature_2m_max.fill(-19);raw.daily.precipitation_probability_max.fill(100);}
  if(mode==='solar-demo')raw.current.time=epoch/1000;
  const weather=validateWeather(raw,city);if(mode==='expired')weather.current.time=epoch-7*3600000;
  if(mode==='partial'){for(const key of ['pressure','dewPoint','visibility','cloud','gusts','windDirection'])weather.current[key]=null;weather.daily[0].precipitation=null;}
@@ -19,7 +22,7 @@ app.whenReady().then(async()=>{
  const run=source=>win.webContents.executeJavaScript(source,true);
  async function until(source){const end=Date.now()+15000;while(Date.now()<end){if(await run(source))return;await pause(75);}throw Error('Timeout '+source);}
  async function capture(name){await run("document.getElementById('toast').hidden=true");await pause(500);fs.mkdirSync('artifacts/clock',{recursive:true});for(let i=0;i<3;i++)try{fs.writeFileSync('artifacts/clock/'+name+'.png',(await win.webContents.capturePage()).toPNG());return;}catch(error){if(i===2)throw error;await pause(300);}}
- async function fits(){const problem=await run("(()=>{const root=document.getElementById('clock-stage'),b=root.getBoundingClientRect();const outside=[...root.querySelectorAll('*')].filter(n=>!n.closest('svg')).filter(n=>{const r=n.getBoundingClientRect();return r.width&&r.height&&(r.left<b.left-1||r.top<b.top-1||r.right>b.right+1||r.bottom>b.bottom+1)}).map(n=>n.id||n.className);const scrolling=[root,...root.querySelectorAll('.dial-station>section,.dial-outlook,.dial-hours,.dial-week,.dial-forecast-day,.dial-upcoming,.dial-time,.dial-calendar,.dial-calendar-date,.dial-moon')].filter(n=>n.scrollHeight>n.clientHeight+1||n.scrollWidth>n.clientWidth+1).map(n=>'overflow: '+(n.id||n.className));return [...outside,...scrolling]})()");assert.deepEqual(problem,[],'Clock scene fits: '+problem.join(','));await centeredCalendar();}
+ async function fits(){const problem=await run("(()=>{const root=document.getElementById('clock-stage'),b=root.getBoundingClientRect();const outside=[...root.querySelectorAll('*')].filter(n=>!n.closest('svg')).filter(n=>{const r=n.getBoundingClientRect();return r.width&&r.height&&(r.left<b.left-1||r.top<b.top-1||r.right>b.right+1||r.bottom>b.bottom+1)}).map(n=>n.id||n.className);const scrolling=[root,...root.querySelectorAll('.dial-station>section,.dial-outlook,.dial-hours,.dial-week,.dial-forecast-day,.dial-upcoming,.dial-time,.dial-calendar,.dial-calendar-date,.dial-moon')].filter(n=>n.scrollHeight>n.clientHeight+1||n.scrollWidth>n.clientWidth+1).map(n=>'overflow: '+(n.id||n.className));const viewport=b.left>=-1&&b.top>=-1&&b.right<=innerWidth+1&&b.bottom<=innerHeight+1;const footer=document.querySelector('.dial-footer').getBoundingClientRect();return [...outside,...scrolling,...(viewport?[]:['stage exceeds viewport']),...(footer.bottom<=innerHeight+1?[]:['footer exceeds viewport'])]})()");assert.deepEqual(problem,[],'Clock scene fits: '+problem.join(','));await centeredCalendar();}
  async function centeredCalendar(){
   const geometry=await run("(()=>{const rect=selector=>document.querySelector(selector).getBoundingClientRect(),center=r=>r.left+r.width/2,root=rect('#clock-stage'),clock=rect('#dial-digits'),band=rect('.dial-calendar'),date=rect('.dial-calendar-date'),moon=rect('.dial-moon'),divider=rect('.dial-calendar-divider'),reference=rect('#dial-reference');return {clock:center(clock)-center(root),band:center(band)-center(root),reference:center(reference)-center(root),content:(date.left+moon.right)/2-center(root),separated:date.right<divider.left&&divider.right<moon.left,stacked:band.top>=clock.bottom-1&&reference.top>=band.bottom-1}})()");
   for(const key of ['clock','band','reference','content'])assert.ok(Math.abs(geometry[key])<1,'Centered '+key+': '+JSON.stringify(geometry));
@@ -31,7 +34,19 @@ app.whenReady().then(async()=>{
   await until("!document.getElementById('start-button').disabled");assert.ok(requests>0,'Home weather is requested on the dashboard');
   await run("document.getElementById('observatory-open').click()");await until("document.getElementById('observatory-dialog').dataset.scene==='clock'&&document.getElementById('clock-stage').dataset.weather==='available'");
   assert.equal(await run("document.getElementById('dial-trend').dataset.state"),'available');assert.equal(await run("document.getElementById('clock-stage').dataset.atmosphere"),'day');
+  assert.equal(await run("document.querySelectorAll('.dial-microchart[data-state=available]').length"),5);
+  assert.equal(await run("document.querySelectorAll('.dial-microchart svg[tabindex],.dial-microchart input').length"),0,'Tile graphs are passive');
+  assert.equal(await run("document.querySelector('#dial-wind-chart .dial-micro-gusts').getAttribute('d').startsWith('M')"),true);
+  assert.equal(await run("document.querySelector('#dial-rain-chart .dial-micro-line').getAttribute('d').startsWith('M')"),true);
+  assert.equal(await run("document.querySelector('#dial-rain-chart .dial-micro-area').getAttribute('d').endsWith('Z')"),true);
+  assert.equal(await run("document.querySelectorAll('#dial-rain-chart rect').length"),0,'Rain shares the other tiles’ line and subtle fill');
+  assert.equal(await run("document.querySelector('#dial-pressure-chart svg').getAttribute('aria-label').includes('forecast')"),true);
   assert.equal(await run("document.getElementById('dial-city').textContent"),'Rome');assert.equal(await run("document.getElementById('dial-hourly').children.length"),6);assert.equal(await run("document.getElementById('dial-daily').children.length"),7);
+  assert.deepEqual(await run("[...document.querySelector('.dial-day-temperatures').querySelectorAll('dt')].map(node=>node.textContent)"),['Min','Max']);
+  assert.deepEqual(await run("[...document.querySelector('.dial-day-temperatures').querySelectorAll('strong')].map(node=>node.textContent)"),['11°','19°']);
+  assert.equal(await run("document.querySelector('.dial-day-rain-label').textContent"),'Rain');
+  assert.equal(await run("document.querySelector('.dial-day-rain strong').textContent"),'8%');
+  assert.equal(await run("document.querySelectorAll('.dial-day-range').length"),0,'Unlabelled temperature bars are replaced with explicit Min/Max values');
   assert.match(await run("document.getElementById('dial-pressure').textContent"),/1015.*hPa/);assert.equal(await run("document.getElementById('dial-wind-direction').textContent"),'SW');
   assert.equal(await run("document.getElementById('dial-visibility').textContent"),'15 km');assert.equal(await run("document.getElementById('dial-gusts').textContent"),'24 km/h');
   assert.match(await run("document.getElementById('dial-pressure-change').textContent"),/↘.*-1.1 hPa/);
@@ -59,8 +74,11 @@ app.whenReady().then(async()=>{
   for(const language of ['it','fr','de','es','ja','en']){await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);await until("document.getElementById('observatory-dialog').open");await fits();if(language==='it')await capture('clock-it');}
   for(const [width,height]of [[1024,600],[1280,720],[1366,768],[1920,1080],[800,1000]]){
    win.setContentSize(width,height);await pause(150);
-   for(const language of ['it','de','ja','en']){await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);await fits();}
+   for(const language of ['it','de','ja','en']){await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);await fits();if(language==='it'&&width===1024)await capture('clock-compact-it');}
   }
+  mode='cold';await reopen();await until("document.querySelector('.dial-day-low').textContent==='-32°'");
+  for(const language of ['it','de','ja','en']){await run(`document.getElementById('language-select').value='${language}';document.getElementById('language-select').dispatchEvent(new Event('change'))`);await fits();}
+  mode='online';await reopen();await until("document.querySelector('.dial-day-low').textContent==='11°'");
   win.setContentSize(1100,740);await pause(150);
   await run("document.getElementById('observatory-dialog').classList.add('controls-hidden')");
   assert.equal(await run("[...document.querySelectorAll('.dial-station,.dial-outlook,.dial-solar')].every(n=>getComputedStyle(n).opacity==='1'&&n.getBoundingClientRect().height>0)"),true,'Weather stays visible after controls fade');
@@ -74,10 +92,17 @@ app.whenReady().then(async()=>{
   epoch=originalEpoch;mode='online';await run("document.getElementById('sync-button').click()");await until("!document.getElementById('sync-button').disabled");await reopen();await until("document.getElementById('clock-stage').dataset.atmosphere==='day'");
   await run("document.getElementById('language-select').value='en';document.getElementById('language-select').dispatchEvent(new Event('change'))");
   mode='offline';await reopen();await until("document.getElementById('dial-weather-status').textContent.includes('Offline')");
+  assert.equal(await run("document.querySelectorAll('.dial-microchart[data-state=available]').length"),5,'Fresh cached forecasts keep tile graphs');
+  mode='legacy';await reopen();await until("document.getElementById('dial-humidity-chart').dataset.state==='unavailable'");
+  assert.equal(await run("document.getElementById('dial-pressure-chart').dataset.state"),'available');assert.equal(await run("document.getElementById('dial-rain-chart').dataset.state"),'available');
+  assert.equal(await run("document.getElementById('dial-wind-chart').dataset.state"),'unavailable');assert.equal(await run("document.getElementById('dial-cloud-chart').dataset.state"),'unavailable');await fits();
+  mode='zero';await reopen();await until("document.querySelector('#dial-rain-chart .dial-micro-line').getAttribute('d').split(/[ML]/).filter(Boolean).every(point=>point.endsWith(',29.00'))");
+  assert.equal(await run("document.querySelectorAll('.dial-microchart[data-state=available]').length"),5,'Valid zero forecasts retain real baselines');
   mode='partial';await reopen();await until("document.getElementById('dial-pressure').textContent==='—'");
   for(const id of ['dew','gusts','cloud','visibility','wind-direction','pressure-change','precipitation'])assert.equal(await run(`document.getElementById('dial-${id}').textContent`),'—','Missing '+id+' stays unavailable');await fits();
   assert.equal(await run("document.getElementById('clock-stage').style.getPropertyValue('--dial-cloud-opacity')"),'0','Unknown cloud cover never fabricates clouds');
   mode='expired';await reopen();await until("document.getElementById('dial-temperature').textContent==='—'");assert.equal(await run("document.getElementById('dial-hourly').children.length"),0);assert.equal(await run("document.getElementById('dial-trend').dataset.state"),'unavailable');
+  assert.equal(await run("document.querySelectorAll('.dial-microchart[data-state=available]').length"),0,'Expired forecasts clear all five graphs');
   mode='empty';await reopen();await until("document.getElementById('clock-stage').dataset.weather==='unavailable'");assert.match(await run("document.getElementById('dial-sunset').textContent"),/\d\d:\d\d/);
   assert.match(await run("document.getElementById('dial-solar-countdown').textContent"),/^Sunset in/);assert.match(await run("document.getElementById('dial-moon-illumination').textContent"),/\d+%/);
   mode='pending';await reopen();await until("window.document.getElementById('observatory-dialog').dataset.scene==='clock'");
@@ -93,6 +118,7 @@ app.whenReady().then(async()=>{
   const tokyo=deferred.find(row=>row.city.timeZone==='Asia/Tokyo');assert.ok(tokyo);
   assert.equal(await run("document.getElementById('clock-stage').dataset.atmosphere"),'night');assert.equal(await run("document.getElementById('dial-trend').dataset.state"),'unavailable');
   assert.equal(await run("document.getElementById('dial-temperature').textContent"),'—');
+  assert.equal(await run("document.querySelectorAll('.dial-microchart[data-state=available]').length"),0,'Changing city clears old curves immediately');
   mode='online';for(const row of deferred.filter(row=>row.city.timeZone!=='Asia/Tokyo'))row.resolve(report(row.city));await pause(150);
   assert.equal(await run("document.getElementById('dial-temperature').textContent"),'—','An old city response cannot overwrite the new location');
   tokyo.resolve(report(tokyo.city));await until("document.getElementById('clock-stage').dataset.weather==='available'");
@@ -120,8 +146,8 @@ app.whenReady().then(async()=>{
   await run("document.getElementById('observatory-close').click();document.querySelector('[data-page=sync]').click();document.getElementById('start-button').click()");await until("!document.getElementById('start-button').disabled");
   const stopped=requests;await pause(1600);assert.equal(requests,stopped);assert.equal(await run("document.querySelector('#clock-parking #clock-stage')!==null"),true);
   assert.equal(await run("document.getElementById('clock-stage').dataset.active"),'false');assert.equal(await run("getComputedStyle(document.querySelector('.dial-sky-clouds'),'::before').animationPlayState"),'paused');
-  assert.equal(await run("document.querySelectorAll('#page-home .dial-ambient-sky,#page-home .dial-moon,#page-home .dial-solar-arc').length"),0,'Celestial scenery is exclusive to the full-screen observatory');
-  assert.deepEqual(errors,[]);console.log('PASS: full-screen ambient sky, photographic live Moon, day/night solar arc and countdown; no scrolling or sliders, 6 languages, 15 themes and 7 screen sizes; twilight/night/polar/offline/missing states, reduced motion and hidden-scene pause; preview isolation and uninterrupted radio audio.');
+  assert.equal(await run("document.querySelectorAll('#page-home .dial-ambient-sky,#page-home .dial-moon,#page-home .dial-solar-arc,#page-home .dial-microchart').length"),0,'Celestial scenery and tile graphs are exclusive to the full-screen observatory');
+  assert.deepEqual(errors,[]);console.log('PASS: five tile forecast graphs, main temperature trend, ambient sky, live Moon and solar arc; hourly intervals, zero/legacy/offline/expired states; no scrolling or sliders, 6 languages, 15 themes and 7 screen sizes; twilight/night/polar/offline/missing states, reduced motion and hidden-scene pause; preview isolation and uninterrupted radio audio.');
  }catch(error){console.error(error.stack||error,errors);try{await capture('failure');}catch{}process.exitCode=1;}
  finally{app.exit(process.exitCode||0);}
 });

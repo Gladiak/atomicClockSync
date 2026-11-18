@@ -20,7 +20,7 @@
 .dial-reference{font:10px/1.4 var(--mono);color:var(--muted)}
 .dial-reference[data-state=verified]::before{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--reference-accent,var(--accent-text));margin-right:6px;vertical-align:1px}
 .dial-station{display:grid;grid-template-columns:1.65fr 1fr 1.15fr 1.1fr 1.1fr 1fr;min-width:0;border:1px solid var(--line);border-radius:var(--radius-lg);background:color-mix(in srgb,var(--panel) 82%,transparent)}
-.dial-station>section{min-width:0;padding:15px clamp(10px,1.2vw,22px)}
+.dial-station>section{min-width:0;padding:12px clamp(10px,1.2vw,22px)}
 .dial-station>section+section{border-left:1px solid var(--line)}
 .dial-conditions{display:flex;flex-direction:column;justify-content:center;gap:8px;border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
 .dial-current{display:flex;align-items:center;gap:12px;min-width:0}.dial-current>div{display:grid;gap:3px;min-width:0}
@@ -31,13 +31,25 @@
 .dial-current>.dial-weather-icon .wi{width:clamp(36px,3.7vw,62px);height:clamp(36px,3.7vw,62px);font-size:clamp(32px,3.3vw,56px)}
 .dial-condition-detail{display:flex;gap:5px;align-items:baseline;flex-wrap:wrap;font-size:11px;line-height:1.4;color:var(--muted)}
 .dial-condition-detail strong{font-weight:450;color:var(--text)}#dial-extremes{margin-left:auto}
-.dial-instrument{display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+.dial-instrument{display:flex;flex-direction:column;justify-content:space-between;gap:5px}
 .dial-instrument h3{font-size:11px;line-height:1.35;font-weight:400;color:var(--muted);margin:0;min-height:15px}
 .dial-reading{font-family:'Atomic Manrope',sans-serif;font-weight:450;font-size:clamp(23px,2.1vw,38px);line-height:1.1;letter-spacing:-.8px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .dial-reading small{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:0;color:var(--muted)}
 .dial-instrument-detail{display:flex;gap:4px 8px;justify-content:space-between;align-items:baseline;flex-wrap:wrap;font-size:10px;line-height:1.4;color:var(--muted)}
 .dial-instrument-detail>span:last-child{color:var(--text);font-variant-numeric:tabular-nums}
 .dial-wind-reading{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}#dial-wind-direction{font:11px var(--mono);color:var(--muted)}
+.dial-microchart{display:flex;flex-direction:column;min-width:0;min-height:0;height:clamp(28px,4.4vh,44px);flex-shrink:0;gap:1px}
+.dial-microchart svg{display:block;width:100%;flex:1;min-height:0;overflow:hidden}
+.dial-microchart svg[hidden]{display:none}
+.dial-microchart path,.dial-micro-baseline{vector-effect:non-scaling-stroke}
+.dial-micro-baseline,.clock-stage .trend-baseline{stroke:var(--line);stroke-width:.7;vector-effect:non-scaling-stroke}
+.dial-micro-line,.dial-micro-gusts,.clock-stage .trend-line{stroke:var(--accent-text);stroke-width:1.35;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.dial-micro-gusts{stroke-dasharray:3 2;stroke-width:1;opacity:.55}
+.dial-micro-area,.clock-stage .trend-area{fill:var(--accent-text);opacity:.1;stroke:none}
+.dial-micro-period{font-size:8px;line-height:1.2;text-align:right;color:var(--muted)}
+.dial-micro-empty{flex:1;min-height:0;display:grid;place-items:center;font-size:12px;color:var(--muted)}
+.dial-micro-empty[hidden]{display:none}
+.dial-gusts-label::before{content:'';display:inline-block;width:10px;border-top:1px dashed var(--accent-text);opacity:.55;margin-right:4px;vertical-align:3px}
 .dial-outlook{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(20px,3vw,48px);min-height:0;min-width:0}
 .dial-hours{display:grid;grid-template-rows:minmax(60px,.8fr) minmax(114px,1.2fr);min-height:0;min-width:0;gap:10px}
 .dial-trend{display:flex;flex-direction:column;min-height:0;min-width:0;gap:5px}
@@ -52,16 +64,24 @@
 .dial-outlook-heading>span{font-size:10px;line-height:1.3;color:var(--muted);text-align:right}
 .dial-hourly,.dial-daily{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;min-width:0;min-height:0;flex:1}
 .dial-daily{grid-template-columns:repeat(7,minmax(0,1fr))}
-.dial-forecast-hour,.dial-forecast-day{display:flex;flex-direction:column;justify-content:space-around;align-items:center;gap:4px;min-width:0;padding:3px 0}
-.dial-forecast-day{background:color-mix(in srgb,var(--panel) 85%,transparent);border-radius:var(--radius-md);padding:10px 5px}
+.dial-forecast-hour,.dial-forecast-day{display:flex;flex-direction:column;justify-content:space-around;align-items:center;gap:4px;min-width:0;padding:3px 5px;background:color-mix(in srgb,var(--panel) 85%,transparent);border-radius:var(--radius-md)}
+.dial-forecast-hour{gap:3px}
+.dial-forecast-day{padding:10px 5px}
 .dial-forecast-label{font:11px/1.3 var(--mono);color:var(--muted)}
 .dial-forecast-hour strong,.dial-forecast-day strong{font-size:16px;font-weight:450;line-height:1.2;font-variant-numeric:tabular-nums}
 .dial-forecast-detail{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 .dial-forecast-hour .dial-forecast-detail,.dial-day-rain{font-size:11px;color:var(--accent-text)}
+.dial-forecast-hour .dial-forecast-detail{width:100%;text-align:center;line-height:1.2;border-top:1px solid var(--line);padding-top:2px}
 .dial-forecast-hour .wi{width:24px;height:24px;font-size:22px}
-.dial-day-temperatures{display:flex;align-items:baseline;justify-content:center;gap:6px}
-.dial-day-range{width:100%;height:3px;background:var(--line);position:relative;flex-shrink:0;overflow:hidden;border-radius:2px}
-.dial-day-range>span{position:absolute;height:100%;background:var(--accent-text);border-radius:2px}
+.dial-day-temperatures{display:grid;gap:3px;width:100%;margin:0}
+.dial-day-temperatures>div{display:flex;justify-content:space-between;align-items:baseline;gap:3px;min-width:0}
+.dial-day-temperatures dt{font-size:9px;line-height:1.2;color:var(--muted)}
+.dial-day-temperatures dd{margin:0}
+.dial-day-low{color:var(--muted)}
+.dial-day-rain{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;border-top:1px solid var(--line);padding-top:5px}
+.dial-day-rain-label{font-size:9px;line-height:1.3;color:var(--muted)}
+.dial-forecast-day .dial-day-rain strong{font-size:12px;color:var(--accent-text)}
+@media(min-height:1000px){.dial-day-temperatures dt,.dial-day-rain-label{font-size:10px}.dial-forecast-day .dial-day-rain strong{font-size:15px}}
 .dial-empty{font-size:12px;color:var(--muted);margin:0;flex:1;display:flex;align-items:center}
 .dial-solar{display:grid;grid-template-columns:1fr minmax(140px,2fr) 1fr;gap:24px;align-items:center;border-top:1px solid var(--line);padding-top:10px}
 .dial-solar>div{display:flex;align-items:center;gap:12px;min-width:0}.dial-solar>div:last-child{justify-content:flex-end}
@@ -76,6 +96,17 @@
 .observatory-dialog[data-scene=clock] .observatory-routes button[aria-pressed=true]{color:var(--accent-text);border-color:var(--accent-text)}
 .observatory-dialog[data-scene=clock] .observatory-actions button{color:var(--text);background:var(--surface-input);border-color:var(--border-control)}
 @media(min-height:1000px){.clock-stage{padding-top:100px;padding-bottom:24px;gap:20px;grid-template-rows:auto minmax(0,1.2fr) auto minmax(260px,1fr) auto auto}.dial-hours{grid-template-rows:minmax(84px,.8fr) minmax(154px,1.2fr)}.dial-station>section{padding-block:22px}.dial-instrument h3{font-size:13px}.dial-reading small,.dial-instrument-detail,.dial-condition-detail{font-size:12px}.dial-outlook h3{font-size:14px}.dial-outlook-heading>span,.clock-stage .trend-caption,.clock-stage .trend-axis{font-size:12px}.dial-forecast-label{font-size:13px}.dial-forecast-hour strong,.dial-forecast-day strong{font-size:22px}.dial-forecast-detail,.dial-forecast-hour .dial-forecast-detail,.dial-day-rain{font-size:13px}.dial-weather-icon .wi{width:42px;height:42px;font-size:36px}.dial-footer{font-size:11px}.dial-solar span{font-size:13px}.dial-solar strong{font-size:15px}.dial-solar-duration svg{width:140px;height:30px}}
-@media(max-width:1150px){.clock-stage{gap:10px}.dial-station{grid-template-columns:1.55fr .9fr 1.1fr 1fr 1.1fr .9fr}.dial-station>section{padding:12px 10px}.dial-instrument h3{font-size:10px}.dial-instrument-detail{font-size:10px;display:grid;gap:1px}.dial-condition-detail{font-size:10px}.dial-current{gap:8px}.dial-reading{font-size:25px}.dial-reading small{font-size:9px}.dial-daily{gap:5px}.dial-day-temperatures{gap:4px}.dial-forecast-day strong{font-size:15px}.dial-outlook{gap:22px}}
-@media(max-height:700px){.clock-stage{padding-top:78px;padding-bottom:12px;gap:8px;grid-template-rows:auto minmax(0,1.2fr) auto minmax(172px,1fr) auto auto}.dial-location h2{font-size:23px}.dial-station>section{padding-block:10px}.dial-instrument{gap:5px}.dial-current strong{font-size:35px}.dial-date{font-size:13px}.dial-reference{font-size:9px}.dial-time{gap:4px}.dial-hours{grid-template-rows:minmax(54px,.8fr) minmax(110px,1.2fr);gap:6px}.dial-upcoming,.dial-week{gap:5px}.dial-forecast-day{padding-block:6px}.dial-weather-icon .wi{width:24px;height:24px;font-size:22px}.dial-solar{padding-top:7px}.dial-solar-duration svg{height:20px}.dial-footer{font-size:9px}}
-@media(max-width:900px){.clock-stage{padding-inline:18px;gap:8px;grid-template-rows:auto minmax(0,1.1fr) auto minmax(190px,1fr) auto auto}.dial-location>div:first-child{gap:6px}.dial-kicker{font-size:9px}.dial-location h2{font-size:23px}.dial-geography{font-size:10px}.dial-station{grid-template-columns:1.4fr 1fr 1.1fr}.dial-station>section{padding:8px 10px}.dial-station>section:nth-child(4){border-left:0}.dial-station>section:nth-child(n+4){border-top:1px solid var(--line)}.dial-current strong{font-size:30px}.dial-reading{font-size:23px}.dial-instrument-detail{display:flex;flex-wrap:wrap}.dial-condition-detail{gap:4px}.dial-outlook{gap:16px;grid-template-columns:1fr 1.2fr}.dial-forecast-label{font-size:10px}.dial-forecast-hour strong,.dial-forecast-day strong{font-size:14px}.dial-forecast-detail,.dial-day-rain{font-size:10px}.dial-hourly,.dial-daily{gap:4px}.dial-forecast-day{padding-inline:3px}.dial-solar{gap:10px}.dial-solar>div{gap:6px}.dial-solar span{font-size:10px}.dial-solar strong{font-size:11px}.dial-solar-duration svg{width:70px}.dial-footer{font-size:9px}}
+@media(max-width:1150px){.clock-stage{gap:10px}.dial-station{grid-template-columns:1.55fr .9fr 1.1fr 1fr 1.1fr .9fr}.dial-station>section{padding:10px 10px}.dial-instrument h3{font-size:10px}.dial-instrument-detail{font-size:10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 4px}.dial-condition-detail{font-size:10px}.dial-current{gap:8px}.dial-reading{font-size:25px}.dial-reading small{font-size:9px}.dial-daily{gap:5px}.dial-day-temperatures{gap:4px}.dial-forecast-day strong{font-size:15px}.dial-outlook{gap:22px}}
+@media(max-height:700px){.clock-stage{padding-top:78px;padding-bottom:12px;gap:8px;grid-template-rows:auto minmax(0,1.2fr) auto minmax(172px,1fr) auto auto}.dial-location h2{font-size:23px}.dial-station>section{padding-block:6px}.dial-instrument{gap:3px}.dial-current strong{font-size:35px}.dial-date{font-size:13px}.dial-reference{font-size:9px}.dial-time{gap:4px}.dial-hours{grid-template-rows:minmax(54px,.8fr) minmax(110px,1.2fr);gap:6px}.dial-upcoming,.dial-week{gap:5px}.dial-forecast-day{padding-block:6px}.dial-weather-icon .wi{width:24px;height:24px;font-size:22px}.dial-solar{padding-top:7px}.dial-solar-duration svg{height:20px}.dial-footer{font-size:9px}}
+@media(max-width:900px){.clock-stage{padding-inline:18px;gap:8px;grid-template-rows:auto minmax(0,1.1fr) auto minmax(190px,1fr) auto auto}.dial-location>div:first-child{gap:6px}.dial-kicker{font-size:9px}.dial-location h2{font-size:23px}.dial-geography{font-size:10px}.dial-station{grid-template-columns:1.4fr 1fr 1.1fr}.dial-station>section{padding:8px 10px}.dial-station>section:nth-child(4){border-left:0}.dial-station>section:nth-child(n+4){border-top:1px solid var(--line)}.dial-current strong{font-size:30px}.dial-reading{font-size:23px}.dial-instrument-detail{display:grid;grid-template-columns:minmax(0,1fr) auto}.dial-condition-detail{gap:4px}.dial-outlook{gap:16px;grid-template-columns:1fr 1.2fr}.dial-forecast-label{font-size:10px}.dial-forecast-hour strong,.dial-forecast-day strong{font-size:14px}.dial-forecast-detail,.dial-day-rain{font-size:10px}.dial-hourly,.dial-daily{gap:4px}.dial-forecast-day{padding-inline:3px}.dial-solar{gap:10px}.dial-solar>div{gap:6px}.dial-solar span{font-size:10px}.dial-solar strong{font-size:11px}.dial-solar-duration svg{width:70px}.dial-footer{font-size:9px}}
+@media(max-width:900px) and (min-height:1000px){.clock-stage{grid-template-rows:auto minmax(0,1.1fr) auto minmax(260px,1fr) auto auto}}
+@media(max-height:700px){
+  .clock-stage{gap:5px}
+  .dial-station>section{padding-block:5px}
+  .dial-instrument{gap:2px}
+  .dial-microchart{height:24px}
+  .dial-hours{grid-template-rows:minmax(62px,.8fr) minmax(104px,1.2fr)}
+  .dial-forecast-hour{gap:2px;padding-block:2px}
+  .dial-forecast-hour .wi{width:20px;height:20px;font-size:18px}
+  .dial-solar{padding-top:6px}
+}

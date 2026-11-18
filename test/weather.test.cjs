@@ -7,6 +7,7 @@ test('weather requests contain only validated coordinates, fixed forecast fields
  for(const change of [{latitude:NaN},{longitude:181},{latitude:'41'},{timeZone:'../../etc/passwd'}])assert.throws(()=>weatherLocation({...city,...change}));
  assert.equal(weatherLocation({...city,timeZone:'UTC'}).timeZone,'UTC');
  assert.equal(url.searchParams.get('forecast_hours'),'168','Bound the hourly horizon when requesting past hours');
+ for(const field of ['relative_humidity_2m','wind_speed_10m','wind_gusts_10m','cloud_cover'])assert.ok(url.searchParams.get('hourly').split(',').includes(field));
 });
 test('station readings validate units, retain unknowns and accept a complete seven-day forecast',()=>{
  const sample=require('./fixtures/weather-station.cjs'),result=validateWeather(sample,city);
@@ -14,9 +15,11 @@ test('station readings validate units, retain unknowns and accept a complete sev
  assert.equal(result.current.pressure,1014.5);assert.equal(result.current.gusts,23.8);assert.equal(result.current.windDirection,225);
  assert.equal(result.current.dewPoint,8.3);assert.equal(result.current.cloud,81);assert.equal(result.current.visibility,14500);
  assert.equal(result.daily[2].precipitation,8.4);assert.equal(result.daily[0].precipitation,0);
+ assert.equal(result.hourly[0].humidity,sample.hourly.relative_humidity_2m[0]);assert.equal(result.hourly[5].wind,sample.hourly.wind_speed_10m[5]);
+ assert.equal(result.hourly[5].gusts,sample.hourly.wind_gusts_10m[5]);assert.equal(result.hourly[5].cloud,sample.hourly.cloud_cover[5]);
  const partial=structuredClone(sample);partial.current.pressure_msl=null;partial.current.visibility=-1;partial.daily.precipitation_sum[0]=null;partial.hourly.pressure_msl[3]=null;
  const missing=validateWeather(partial,city);assert.equal(missing.current.pressure,null);assert.equal(missing.current.visibility,null);assert.equal(missing.daily[0].precipitation,null);assert.equal(missing.hourly[3].pressure,null);
- for(const mutate of [x=>x.current_units.pressure_msl='Pa',x=>x.daily_units.precipitation_sum='inch',x=>x.hourly.pressure_msl.pop()]){const broken=structuredClone(sample);mutate(broken);assert.throws(()=>validateWeather(broken,city));}
+ for(const mutate of [x=>x.current_units.pressure_msl='Pa',x=>x.daily_units.precipitation_sum='inch',x=>x.hourly.pressure_msl.pop(),x=>x.hourly_units.relative_humidity_2m='fraction',x=>x.hourly_units.wind_gusts_10m='mph',x=>x.hourly.cloud_cover.pop()]){const broken=structuredClone(sample);mutate(broken);assert.throws(()=>validateWeather(broken,city));}
  const legacy=validateWeather(raw,city);assert.equal(legacy.current.pressure,null);assert.equal(legacy.current.gusts,null);assert.equal(legacy.daily[0].precipitation,null);
 });
 test('model reports preserve UTC instants, local daily dates, declared units and unknown measurements',()=>{
@@ -50,5 +53,26 @@ test('an older weather cache remains usable offline while station data are upgra
  const service=createWeatherService({storagePath,now:()=>epoch,fetcher:async()=>{calls++;if(offline)throw Error('Offline');return structuredClone(require('./fixtures/weather-station.cjs'));}});
  const saved=await service.get(city);assert.equal(calls,1,'Try to upgrade even a recently fetched legacy cache');assert.equal(saved.connectivity,'offline');assert.equal(saved.weather.current.temperature,raw.current.temperature_2m);assert.equal(saved.weather.current.pressure,null);
  offline=false;epoch+=31000;const fresh=await service.get(city);assert.equal(calls,2);assert.equal(fresh.weather.daily.length,7);assert.equal(fresh.weather.current.pressure,1014.5);
- await service.flush();assert.equal(JSON.parse(await fs.readFile(storagePath,'utf8')).version,2);
+ await service.flush();assert.equal(JSON.parse(await fs.readFile(storagePath,'utf8')).version,3);
+});
+test('version two caches preserve current readings offline and upgrade the new hourly variables',async t=>{
+ let epoch=raw.current.time*1000,offline=true;const dir=await fs.mkdtemp(path.join(os.tmpdir(),'atomic-weather-v2-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));const storagePath=path.join(dir,'cache.json');
+ const legacy=structuredClone(require('./fixtures/weather-station.cjs'));
+ for(const field of ['relative_humidity_2m','wind_speed_10m','wind_gusts_10m','cloud_cover']){delete legacy.hourly[field];delete legacy.hourly_units[field];}
+ await fs.writeFile(storagePath,JSON.stringify({version:2,entries:[{location:city,raw:legacy,fetchedAt:epoch}]}));
+ const service=createWeatherService({storagePath,now:()=>epoch,fetcher:async()=>{if(offline)throw Error('Offline');return structuredClone(require('./fixtures/weather-station.cjs'));}});
+ const cached=await service.get(city);assert.equal(cached.weather.current.pressure,1014.5);assert.equal(cached.weather.hourly[0].humidity,null);assert.equal(cached.weather.hourly[0].pressure,1018);
+ offline=false;epoch+=31000;const updated=await service.get(city);assert.equal(updated.weather.hourly[0].humidity,78);await service.flush();
+ assert.equal(JSON.parse(await fs.readFile(storagePath,'utf8')).version,3);
+});
+test('the bounded eight-city disk cache can retain expanded hourly forecasts above the former single-response limit',async t=>{
+ const epoch=raw.current.time*1000,dir=await fs.mkdtemp(path.join(os.tmpdir(),'atomic-weather-cities-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));const storagePath=path.join(dir,'cache.json');
+ const service=createWeatherService({storagePath,now:()=>epoch,fetcher:async url=>{
+  const sample=structuredClone(require('./fixtures/weather-station.cjs'));sample.latitude=Number(new URL(url).searchParams.get('latitude'));sample.sourceMetadata='x'.repeat(40000);return sample;
+ }});
+ const cities=Array.from({length:8},(_,i)=>({...city,latitude:city.latitude+i*.001}));
+ for(const place of cities)await service.get(place);await service.flush();assert.ok((await fs.stat(storagePath)).size>256000);
+ let calls=0;const restored=createWeatherService({storagePath,now:()=>epoch,fetcher:async()=>{calls++;throw Error('Use saved forecasts');}});
+ for(const place of cities)assert.equal((await restored.get(place)).weather.hourly[0].humidity,78);
+ assert.equal(calls,0);
 });

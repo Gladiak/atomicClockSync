@@ -2,6 +2,7 @@ const https=require('node:https');
 const fs=require('node:fs/promises');
 const path=require('node:path');
 const MINUTE=60000,MAX_AGE=6*60*MINUTE;
+const CACHE_VERSION=3,MAX_RESPONSE_BYTES=256000,MAX_CACHE_BYTES=8*(MAX_RESPONSE_BYTES+2048);
 const finite=(value,low,high)=>typeof value==='number'&&Number.isFinite(value)&&value>=low&&value<=high;
 const optional=(value,low,high)=>finite(value,low,high)?value:null;
 function weatherLocation(value){
@@ -15,7 +16,7 @@ function weatherUrl(location){
   for(const [key,value]of Object.entries({latitude:city.latitude,longitude:city.longitude,timezone:city.timeZone,timeformat:'unixtime',forecast_days:7,forecast_hours:168,past_hours:3,
     temperature_unit:'celsius',wind_speed_unit:'kmh',precipitation_unit:'mm',
     current:'temperature_2m,apparent_temperature,relative_humidity_2m,dew_point_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,cloud_cover,visibility,is_day',
-    hourly:'temperature_2m,weather_code,precipitation_probability,pressure_msl,is_day',
+    hourly:'temperature_2m,weather_code,precipitation_probability,pressure_msl,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,cloud_cover,is_day',
     daily:'temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum'}))url.searchParams.set(key,String(value));
   return url.href;
 }
@@ -34,7 +35,7 @@ function validateWeather(raw,location){
   // Older cached responses can omit station readings; absent units never turn
   // an unknown measurement into a zero or a value in the wrong unit.
   const extendedUnits={current:{dew_point_2m:'°C',wind_direction_10m:'°',wind_gusts_10m:'km/h',pressure_msl:'hPa',cloud_cover:'%',visibility:'m'},
-    hourly:{pressure_msl:'hPa'},daily:{precipitation_sum:'mm'}};
+    hourly:{pressure_msl:'hPa',relative_humidity_2m:'%',wind_speed_10m:'km/h',wind_gusts_10m:'km/h',cloud_cover:'%'},daily:{precipitation_sum:'mm'}};
   for(const [group,fields]of Object.entries(extendedUnits))for(const [key,unit]of Object.entries(fields)){
     if(raw[group+'_units']?.[key]!==undefined&&raw[group+'_units'][key]!==unit)throw Error('Unexpected weather units');
     if(group!=='current'&&raw[group]?.[key]!==undefined&&(!Array.isArray(raw[group][key])||raw[group][key].length!==raw[group].time?.length))throw Error('Invalid forecast series');
@@ -51,7 +52,9 @@ function validateWeather(raw,location){
     dewPoint:measure('current','dew_point_2m','°C',-130,70),windDirection:measure('current','wind_direction_10m','°',0,360),gusts:measure('current','wind_gusts_10m','km/h',0,500),
     pressure:measure('current','pressure_msl','hPa',800,1100),cloud:measure('current','cloud_cover','%',0,100),visibility:measure('current','visibility','m',0,500000)},
     hourly:raw.hourly.time.map((time,i)=>({time:stamp(time),temperature:optional(raw.hourly.temperature_2m[i],-100,70),code:code(raw.hourly.weather_code[i]),rain:optional(raw.hourly.precipitation_probability[i],0,100),
-      pressure:measure('hourly','pressure_msl','hPa',800,1100,i),isDay:raw.hourly.is_day[i]===1?true:raw.hourly.is_day[i]===0?false:null})),
+      pressure:measure('hourly','pressure_msl','hPa',800,1100,i),humidity:measure('hourly','relative_humidity_2m','%',0,100,i),
+      wind:measure('hourly','wind_speed_10m','km/h',0,500,i),gusts:measure('hourly','wind_gusts_10m','km/h',0,500,i),
+      cloud:measure('hourly','cloud_cover','%',0,100,i),isDay:raw.hourly.is_day[i]===1?true:raw.hourly.is_day[i]===0?false:null})),
     // Open-Meteo daily Unix dates use the response offset, not future DST offsets.
     // Hourly instants are UTC; the renderer formats those with the city's IANA zone.
     daily:raw.daily.time.map((time,i)=>{let high=optional(raw.daily.temperature_2m_max[i],-100,70),low=optional(raw.daily.temperature_2m_min[i],-100,70);if(high!==null&&low!==null&&high<low)high=low=null;
@@ -68,7 +71,7 @@ function fetchWeather(url){
       if(response.statusCode!==200){const error=Error('Weather provider unavailable');
         const retry=response.headers['retry-after'];if(retry){const duration=/^\d+$/.test(retry)?Number(retry)*1000:Date.parse(retry)-Date.now();if(duration>0)error.retryAfterMs=Math.min(duration,3600000);}
         response.resume();finish(error);return;}
-      let body='',bytes=0;response.on('data',chunk=>{bytes+=chunk.length;if(bytes>256000){request.destroy();finish(Error('Weather response too large'));}else body+=chunk;});
+      let body='',bytes=0;response.on('data',chunk=>{bytes+=chunk.length;if(bytes>MAX_RESPONSE_BYTES){request.destroy();finish(Error('Weather response too large'));}else body+=chunk;});
       response.on('end',()=>{try{finish(null,JSON.parse(body));}catch{finish(Error('Invalid weather response'));}});response.on('error',error=>finish(error));
     });
     const deadline=setTimeout(()=>{request.destroy();finish(Error('Weather request timed out'));},8500);request.on('error',error=>finish(error));
@@ -78,12 +81,13 @@ function createWeatherService({storagePath,fetcher=fetchWeather,now=Date.now}={}
   const entries=new Map(),pending=new Map(),failures=new Map();let loading,starts=[],blockedUntil=0,writes=Promise.resolve();
   const result=(entry,connectivity)=>({weather:entry&&now()-entry.fetchedAt>=0&&now()-entry.fetchedAt<MAX_AGE?entry.weather:null,fetchedAt:entry?.fetchedAt||null,connectivity});
   function load(){return loading ||= (async()=>{if(!storagePath)return;try{
-    if((await fs.stat(storagePath)).size>256000)return;
-    const saved=JSON.parse(await fs.readFile(storagePath,'utf8'));if(![1,2].includes(saved.version)||!Array.isArray(saved.entries))return;
+    if((await fs.stat(storagePath)).size>MAX_CACHE_BYTES)return;
+    const saved=JSON.parse(await fs.readFile(storagePath,'utf8'));if(![1,2,CACHE_VERSION].includes(saved.version)||!Array.isArray(saved.entries))return;
     for(const entry of saved.entries.slice(-8))try{if(!finite(entry.fetchedAt,now()-MAX_AGE,now()))continue;const location=weatherLocation(entry.location);
-      entries.set(locationKey(location),{...entry,location,needsUpgrade:saved.version===1||entry.needsUpgrade===true,weather:validateWeather(entry.raw,location)});}catch{/* Discard an invalid cached city. */}
+      entries.set(locationKey(location),{...entry,location,needsUpgrade:saved.version!==CACHE_VERSION||entry.needsUpgrade===true,weather:validateWeather(entry.raw,location)});}catch{/* Discard an invalid cached city. */}
   }catch{/* A cache is optional. */}})();}
-  function persist(){if(!storagePath)return;const saved=JSON.stringify({version:2,entries:[...entries.values()].map(({weather,...entry})=>entry)});
+  function persist(){if(!storagePath)return;const saved=JSON.stringify({version:CACHE_VERSION,entries:[...entries.values()].map(({weather,...entry})=>entry)});
+    if(Buffer.byteLength(saved)>MAX_CACHE_BYTES)return;
     writes=writes.then(async()=>{await fs.mkdir(path.dirname(storagePath),{recursive:true});const temp=storagePath+'.'+process.pid+'.tmp';await fs.writeFile(temp,saved);await fs.rename(temp,storagePath);}).catch(()=>{});}
   async function get(value){
     const location=weatherLocation(value),key=locationKey(location);await load();const previous=entries.get(key);

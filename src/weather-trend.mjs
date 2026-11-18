@@ -7,7 +7,7 @@ export function createWeatherTrend(root,id,{interactive=true}={}){
     <svg class="trend-chart" viewBox="0 0 320 56" preserveAspectRatio="none" role="img" tabindex="-1" aria-labelledby="${id}-title ${id}-description">
       <title id="${id}-title"></title><desc id="${id}-description"></desc>
       <defs><linearGradient id="${id}-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".18"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>
-      <path class="trend-area" fill="url(#${id}-fill)"/><path class="trend-line"/><g class="trend-cursor" visibility="hidden"><line y1="3" y2="54"/><circle r="3"/></g>
+      ${interactive?'':'<line class="trend-baseline" x1="6" x2="314" y1="54" y2="54"/>'}<path class="trend-area" fill="url(#${id}-fill)"/><path class="trend-line"/><g class="trend-cursor" visibility="hidden"><line y1="3" y2="54"/><circle r="3"/></g>
     </svg><div class="trend-axis" aria-hidden="true"><span></span><span></span><span></span></div><p class="trend-empty"></p>`;
   const $=selector=>root.querySelector(selector),svg=$('svg'),output=$('output');
   output.hidden=!interactive;
