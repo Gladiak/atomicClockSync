@@ -45,6 +45,10 @@ export function createClockView({desktop,getNow,getObserver,getReference}){
     const icon=document.createElement('span');icon.className='dial-weather-icon';icon.innerHTML=weatherIcon(row.code,daily?true:row.isDay??solarAltitude(city,solarPosition(row.time))>=0);icon.title=t(weatherCondition(row.code)[0]);icon.setAttribute('role','img');icon.setAttribute('aria-label',icon.title);
     const value=document.createElement('strong');value.textContent=temperature(daily?row.high:row.temperature);
     item.append(label,icon);
+    const rain=document.createElement('div');rain.className=daily?'dial-day-rain':'dial-forecast-detail';
+    const rainLabel=document.createElement('span');rainLabel.className='dial-rain-label';rainLabel.textContent=t('Rain');
+    const probability=document.createElement('strong');probability.textContent=Number.isFinite(row.rain)?decimal(row.rain,0)+'%':'—';
+    rain.setAttribute('aria-label',t('Rain chance {0}',probability.textContent));rain.append(rainLabel,probability);
     if(daily){
       const temperatures=document.createElement('dl');temperatures.className='dial-day-temperatures';
       const low=document.createElement('strong');low.className='dial-day-low';low.textContent=temperature(row.low);
@@ -52,12 +56,9 @@ export function createClockView({desktop,getNow,getObserver,getReference}){
         const group=document.createElement('div'),label=document.createElement('dt'),number=document.createElement('dd');
         label.textContent=t(name);number.append(reading);group.append(label,number);temperatures.append(group);
       }
-      const rain=document.createElement('div');rain.className='dial-day-rain';
-      const rainLabel=document.createElement('span');rainLabel.className='dial-day-rain-label';rainLabel.textContent=t('Rain');
-      const probability=document.createElement('strong');probability.textContent=Number.isFinite(row.rain)?decimal(row.rain,0)+'%':'—';
-      rain.setAttribute('aria-label',t('Rain chance {0}',probability.textContent));rain.append(rainLabel,probability);item.append(temperatures,rain);
+      item.append(temperatures,rain);
     }else{
-      const detail=document.createElement('span');detail.className='dial-forecast-detail';detail.textContent=Number.isFinite(row.rain)?decimal(row.rain,0)+'%':'—';detail.title=t('Rain chance');item.append(value,detail);
+      item.append(value,rain);
     }
     return item;
   }
